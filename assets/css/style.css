@@ -1,0 +1,536 @@
+/* ========== พื้นฐาน ========== */
+:root {
+  --sage: #8a9a7b;
+  --sage-dark: #5f6e52;
+  --sage-light: #c8d5bb;
+  --cream: #f7f3ec;
+  --paper: #fffdf9;
+  --sand: #d9c7a7;
+  --clay: #b08968;
+  --ink: #3a3733;
+  --ink-soft: #6d675f;
+  --radius: 14px;
+  --shadow: 0 18px 44px rgba(58, 55, 51, .1);
+  --serif: 'Noto Serif Thai', Georgia, serif;
+  --script: 'Charm', 'Cormorant Garamond', Georgia, serif;
+  --latin: 'Cormorant Garamond', Georgia, serif;
+  --arabic: 'Noto Naskh Arabic', serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  font-family: var(--serif);
+  font-weight: 300;
+  color: var(--ink);
+  background: var(--cream);
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+/* ========== ซองจดหมาย ========== */
+.envelope {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 40%, #fdfbf7, var(--sage-light));
+  cursor: pointer;
+  transition: opacity .8s ease, visibility .8s;
+}
+.envelope.is-open { opacity: 0; visibility: hidden; }
+
+.envelope__inner { text-align: center; animation: floaty 3.5s ease-in-out infinite; }
+
+.envelope__seal {
+  width: 108px;
+  height: 108px;
+  fill: none;
+  stroke: var(--sage-dark);
+  stroke-width: 1.6;
+}
+.envelope__seal path { fill: var(--sage-dark); opacity: .85; stroke: none; }
+
+.envelope__hint {
+  margin-top: 1.2rem;
+  letter-spacing: .22em;
+  font-size: .85rem;
+  color: var(--sage-dark);
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+/* ========== การ์ด ========== */
+.card {
+  max-width: 720px;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* ========== ปก ========== */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem 5rem;
+  background:
+    linear-gradient(180deg, rgba(255,253,249,.2), rgba(255,253,249,.92)),
+    radial-gradient(circle at 20% 15%, var(--sage-light), transparent 55%),
+    radial-gradient(circle at 82% 78%, var(--sand), transparent 55%),
+    var(--paper);
+  text-align: center;
+}
+
+.hero__frame {
+  border: 1px solid rgba(138, 154, 123, .45);
+  padding: clamp(2rem, 7vw, 3.5rem) clamp(1.25rem, 5vw, 2.5rem);
+  position: relative;
+  max-width: 100%;
+}
+.hero__frame::before,
+.hero__frame::after {
+  content: '';
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--sage);
+}
+.hero__frame::before { top: -6px; left: -6px; border-width: 1px 0 0 1px; }
+.hero__frame::after  { bottom: -6px; right: -6px; border-width: 0 1px 1px 0; }
+
+.bismillah {
+  font-family: var(--arabic);
+  font-size: 1.5rem;
+  color: var(--sage-dark);
+  margin: 0 0 1.5rem;
+  direction: rtl;
+}
+
+.hero__eyebrow {
+  margin: 0 0 1rem;
+  letter-spacing: .4em;
+  text-indent: .4em;
+  font-size: .78rem;
+  color: var(--ink-soft);
+}
+
+.hero__names {
+  font-family: var(--script);
+  font-weight: 500;
+  font-size: clamp(2rem, 8.5vw, 3.8rem);
+  line-height: 1.3;
+  margin: 0;
+  color: var(--sage-dark);
+  overflow-wrap: anywhere;
+}
+.hero__amp {
+  display: block;
+  font-family: var(--latin);
+  font-size: .55em;
+  color: var(--clay);
+}
+
+.hero__date {
+  margin: 1.6rem 0 0;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+.hero__date--en {
+  margin-top: .1rem;
+  font-family: var(--latin);
+  font-size: .95rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+.hero__scroll {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 52px;
+  background: linear-gradient(var(--sage), transparent);
+}
+.hero__scroll span {
+  position: absolute;
+  top: 0;
+  left: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sage);
+  animation: drop 2s ease-in-out infinite;
+}
+@keyframes drop {
+  0%   { top: 0; opacity: 1; }
+  80%  { top: 44px; opacity: 0; }
+  100% { top: 0; opacity: 0; }
+}
+
+/* ========== ส่วนเนื้อหา ========== */
+.section {
+  padding: clamp(3rem, 9vw, 4.5rem) clamp(1.25rem, 6vw, 3rem);
+  text-align: center;
+  border-bottom: 1px solid rgba(138, 154, 123, .16);
+}
+.section:last-of-type { border-bottom: 0; }
+
+.section__title {
+  font-family: var(--script);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 6vw, 2.5rem);
+  color: var(--sage-dark);
+  margin: 0 0 2rem;
+}
+.section__title::after {
+  content: '';
+  display: block;
+  width: 46px;
+  height: 1px;
+  margin: .9rem auto 0;
+  background: var(--clay);
+}
+
+.ornament {
+  width: 120px;
+  height: 26px;
+  margin: 0 auto 2rem;
+  background: no-repeat center/contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26'%3E%3Cg fill='none' stroke='%238a9a7b' stroke-width='1.2'%3E%3Cpath d='M2 13h34M84 13h34'/%3E%3Cpath d='M60 4c6 5 9 7 9 9a9 9 0 0 1-18 0c0-2 3-4 9-9z'/%3E%3Cpath d='M44 13c3-4 6-4 8 0-2 4-5 4-8 0zM76 13c-3-4-6-4-8 0 2 4 5 4 8 0z'/%3E%3C/g%3E%3C/svg%3E");
+}
+.ornament--flip { transform: rotate(180deg); margin: 0 auto 1.5rem; }
+
+/* ---- คำเชิญ ---- */
+.invite__lead {
+  max-width: 34ch;
+  margin: 0 auto 2.5rem;
+  color: var(--ink-soft);
+}
+
+.invite__people {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+@media (min-width: 620px) {
+  .invite__people { grid-template-columns: 1fr auto 1fr; gap: 2rem; }
+}
+
+.person__role {
+  margin: 0 0 .4rem;
+  font-size: .74rem;
+  letter-spacing: .3em;
+  text-indent: .3em;
+  color: var(--clay);
+}
+.person__name {
+  margin: 0;
+  font-size: 1.28rem;
+  font-weight: 500;
+  color: var(--sage-dark);
+}
+.person__parents {
+  margin: .5rem 0 0;
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+.person__divider {
+  font-family: var(--latin);
+  font-size: 2rem;
+  color: var(--clay);
+}
+
+.quote {
+  margin: 3rem auto 0;
+  max-width: 38ch;
+  font-style: italic;
+  color: var(--ink-soft);
+  position: relative;
+}
+.quote p { margin: 0; }
+.quote cite { display: block; margin-top: .8rem; font-size: .85rem; font-style: normal; }
+.quote cite:not(:empty)::before { content: '— '; }
+
+/* ---- นับถอยหลัง ---- */
+.countdown {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .5rem;
+  max-width: 420px;
+  margin: 0 auto 2rem;
+  padding: 0;
+}
+.countdown li {
+  min-width: 0;
+  background: var(--cream);
+  border: 1px solid rgba(138, 154, 123, .28);
+  border-radius: var(--radius);
+  padding: .9rem .2rem;
+}
+.countdown strong {
+  display: block;
+  font-size: clamp(1.4rem, 6vw, 1.9rem);
+  font-weight: 500;
+  color: var(--sage-dark);
+  font-variant-numeric: tabular-nums;
+}
+.countdown span { font-size: .74rem; color: var(--ink-soft); }
+.countdown__done { color: var(--sage-dark); font-size: 1.05rem; }
+
+/* ---- ปุ่ม ---- */
+.btn {
+  display: inline-block;
+  padding: .72rem 1.9rem;
+  border: 1px solid var(--sage-dark);
+  border-radius: 999px;
+  background: var(--sage-dark);
+  color: #fff;
+  text-decoration: none;
+  font-size: .92rem;
+  letter-spacing: .06em;
+  transition: background .25s, color .25s, transform .15s;
+}
+.btn:hover { background: var(--sage); border-color: var(--sage); }
+.btn:active { transform: scale(.98); }
+.btn--ghost { background: transparent; color: var(--sage-dark); }
+.btn--ghost:hover { background: var(--sage-dark); color: #fff; }
+
+/* ---- กำหนดการ ---- */
+.timeline {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 420px;
+  text-align: left;
+  position: relative;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 4.4rem;
+  top: .6rem;
+  bottom: .6rem;
+  width: 1px;
+  background: rgba(138, 154, 123, .4);
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: 3.6rem 1fr;
+  gap: 1.6rem;
+  padding: .85rem 0;
+  position: relative;
+}
+.timeline li::before {
+  content: '';
+  position: absolute;
+  left: calc(4.4rem - 4px);
+  top: 1.55rem;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--sage);
+}
+.timeline__time {
+  font-variant-numeric: tabular-nums;
+  color: var(--clay);
+  font-size: .95rem;
+  text-align: right;
+}
+.timeline__title { margin: 0; font-weight: 500; color: var(--sage-dark); }
+.timeline__note { margin: .15rem 0 0; font-size: .85rem; color: var(--ink-soft); }
+
+/* ---- สถานที่ ---- */
+.venue__name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--sage-dark);
+}
+.venue__address {
+  margin: .5rem auto 1.8rem;
+  max-width: 36ch;
+  font-size: .92rem;
+  color: var(--ink-soft);
+}
+.venue__map {
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1.8rem;
+  border: 1px solid rgba(138, 154, 123, .28);
+}
+.venue__map:empty { display: none; }
+.venue__map iframe { display: block; width: 100%; height: 300px; border: 0; }
+
+/* ---- การแต่งกาย ---- */
+.dress__note { margin: 0 auto 1.8rem; max-width: 32ch; color: var(--ink-soft); }
+.palette {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .8rem;
+  padding: 0;
+  margin: 0;
+}
+.palette li {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07);
+}
+
+/* ---- แกลเลอรี ---- */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .6rem;
+}
+@media (min-width: 620px) {
+  .gallery { grid-template-columns: repeat(3, 1fr); }
+}
+.gallery figure {
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--sage-light);
+}
+.gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s ease;
+}
+.gallery figure:hover img { transform: scale(1.06); }
+.gallery figure.is-missing {
+  display: grid;
+  place-items: center;
+  color: var(--sage-dark);
+  font-size: .78rem;
+  letter-spacing: .1em;
+}
+
+/* ---- RSVP / ของขวัญ ---- */
+.rsvp__deadline { margin: 0 0 1.6rem; color: var(--ink-soft); font-size: .92rem; }
+.rsvp__actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
+
+.gift__note { margin: 0 auto 2rem; max-width: 36ch; color: var(--ink-soft); font-size: .95rem; }
+.accounts { display: grid; gap: 1rem; max-width: 380px; margin: 0 auto; }
+.account {
+  border: 1px solid rgba(138, 154, 123, .3);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  background: var(--cream);
+}
+.account__bank { margin: 0; font-size: .85rem; color: var(--clay); letter-spacing: .1em; }
+.account__number {
+  margin: .35rem 0;
+  font-size: 1.22rem;
+  font-weight: 500;
+  color: var(--sage-dark);
+  font-variant-numeric: tabular-nums;
+}
+.account__name { margin: 0 0 .9rem; font-size: .88rem; color: var(--ink-soft); }
+.account__qr { width: 150px; margin: 0 auto 1rem; border-radius: 8px; }
+.account__copy {
+  border: 1px solid var(--sage);
+  background: transparent;
+  color: var(--sage-dark);
+  border-radius: 999px;
+  padding: .38rem 1.2rem;
+  font: inherit;
+  font-size: .82rem;
+  cursor: pointer;
+}
+.account__copy:hover { background: var(--sage); color: #fff; }
+
+/* ---- ท้ายการ์ด ---- */
+.footer {
+  padding: 3.5rem 1.5rem 4rem;
+  text-align: center;
+  background: linear-gradient(180deg, var(--paper), var(--cream));
+}
+.footer__thanks { margin: 0 auto; max-width: 30ch; color: var(--ink-soft); font-size: .95rem; }
+.footer__names {
+  font-family: var(--script);
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 500;
+  color: var(--sage-dark);
+  margin: 1rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- toast ---- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translate(-50%, 1.5rem);
+  background: var(--ink);
+  color: #fff;
+  padding: .6rem 1.4rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 60;
+}
+.toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---- ปุ่มเพลง ---- */
+.music-toggle {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--sage);
+  background: var(--paper);
+  color: var(--sage-dark);
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 55;
+  box-shadow: 0 6px 18px rgba(58, 55, 51, .14);
+}
+.music-toggle.is-playing { background: var(--sage-dark); color: #fff; }
+
+/* ---- เอฟเฟกต์ตอนเลื่อน ---- */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity .9s ease, transform .9s ease;
+}
+.reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ---- พิมพ์ออกกระดาษ ---- */
+@media print {
+  .envelope, .hero__scroll, .music-toggle, .toast, .btn, .account__copy { display: none !important; }
+  body { background: #fff; }
+  .card { box-shadow: none; max-width: none; }
+  .reveal { opacity: 1; transform: none; }
+  .section { page-break-inside: avoid; }
+}
