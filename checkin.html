@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เช็คอิน &amp; อวยพร</title>
+<meta name="theme-color" content="#3D0F1C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Charm:wght@400;500;700&family=Noto+Sans+Thai:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/checkin.css">
+</head>
+<body>
+
+<main class="wrap">
+
+  <!-- ---------- ยังไม่ได้ตั้งค่า ---------- -->
+  <section class="card" id="setupNotice" hidden>
+    <h1 class="title">ยังไม่ได้ตั้งค่า</h1>
+    <p class="lead">
+      หน้านี้ต้องเชื่อมกับ Supabase ก่อนถึงจะใช้งานได้<br>
+      กรอก <code>supabase.url</code> และ <code>supabase.anonKey</code> ใน <code>assets/js/config.js</code>
+    </p>
+  </section>
+
+  <!-- ---------- ขั้นที่ 1: เช็คอิน ---------- -->
+  <section class="card" id="stepCheckin" hidden>
+    <p class="bismillah" dir="rtl">السَّلَامُ عَلَيْكُمْ</p>
+    <h1 class="title" id="coupleTitle">—</h1>
+    <p class="lead">ยินดีต้อนรับสู่งานวะลีมะฮฺ<br>กรุณาเช็คอินเพื่อแจ้งว่าท่านมาถึงแล้ว</p>
+
+    <form id="checkinForm">
+      <label class="field">
+        <span class="field__label">ชื่อของท่าน</span>
+        <input class="field__input" id="guestName" type="text" placeholder="ชื่อ–นามสกุล"
+               autocomplete="name" required maxlength="120">
+      </label>
+
+      <label class="field">
+        <span class="field__label">มากันกี่ท่าน</span>
+        <select class="field__input" id="partySize"></select>
+      </label>
+
+      <button class="btn btn--solid" type="submit" id="checkinSubmit">เช็คอิน</button>
+    </form>
+  </section>
+
+  <!-- ---------- ขั้นที่ 2: อวยพร ---------- -->
+  <section class="card" id="stepWish" hidden>
+    <p class="welcome" id="welcome"></p>
+    <h2 class="title title--sm">ร่วมอวยพรบ่าวสาว</h2>
+    <p class="lead">เลือกวิธีที่ท่านถนัด</p>
+
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" type="button" data-mode="text" role="tab" aria-selected="true">ข้อความ</button>
+      <button class="tab" type="button" data-mode="photo" role="tab" aria-selected="false">การ์ดรูป</button>
+      <button class="tab" type="button" data-mode="video" role="tab" aria-selected="false">คลิปวิดีโอ</button>
+    </div>
+
+    <!-- ข้อความ -->
+    <div class="pane is-active" data-pane="text">
+      <label class="field">
+        <span class="field__label">คำอวยพร</span>
+        <textarea class="field__input field__input--area" id="wishText" rows="5"
+                  maxlength="1000" placeholder="ขอให้ทั้งสองมีความสุข บารอกัลลอฮุ ลากุมา..."></textarea>
+      </label>
+      <button class="btn btn--solid" type="button" id="sendText">ส่งคำอวยพร</button>
+    </div>
+
+    <!-- การ์ดรูป -->
+    <div class="pane" data-pane="photo">
+      <p class="hint">ถ่ายรูปหรือเลือกจากคลัง แล้วใส่ข้อความ ระบบจะประกอบเป็นการ์ดอวยพรให้</p>
+
+      <input class="file" id="photoInput" type="file" accept="image/*" capture="environment">
+      <label class="btn btn--ghost" for="photoInput" id="photoPick">เลือก / ถ่ายรูป</label>
+
+      <div class="preview" id="photoPreview" hidden>
+        <canvas id="photoCanvas"></canvas>
+      </div>
+
+      <label class="field" id="photoMessageField" hidden>
+        <span class="field__label">ข้อความบนการ์ด</span>
+        <textarea class="field__input field__input--area" id="photoMessage" rows="3"
+                  maxlength="180" placeholder="ขอแสดงความยินดีด้วยนะ"></textarea>
+      </label>
+
+      <button class="btn btn--solid" type="button" id="sendPhoto" hidden>ส่งการ์ดอวยพร</button>
+    </div>
+
+    <!-- คลิปวิดีโอ -->
+    <div class="pane" data-pane="video">
+      <p class="hint">อัดคลิปสั้น ๆ ไม่เกิน 30 วินาที</p>
+
+      <div class="video-box">
+        <video id="videoLive" playsinline muted hidden></video>
+        <video id="videoPlayback" playsinline controls hidden></video>
+        <p class="video-empty" id="videoEmpty">กด “เปิดกล้อง” เพื่อเริ่ม</p>
+        <span class="rec" id="recBadge" hidden><i></i><span id="recTime">0:00</span></span>
+      </div>
+
+      <div class="video-actions">
+        <button class="btn btn--ghost" type="button" id="cameraStart">เปิดกล้อง</button>
+        <button class="btn btn--ghost" type="button" id="recordToggle" hidden>เริ่มอัด</button>
+        <button class="btn btn--ghost" type="button" id="recordRedo" hidden>อัดใหม่</button>
+      </div>
+
+      <label class="field" id="videoMessageField" hidden>
+        <span class="field__label">ข้อความเพิ่มเติม (ไม่ใส่ก็ได้)</span>
+        <input class="field__input" id="videoMessage" type="text" maxlength="180">
+      </label>
+
+      <button class="btn btn--solid" type="button" id="sendVideo" hidden>ส่งคลิปอวยพร</button>
+      <p class="hint" id="videoUnsupported" hidden>
+        เบราว์เซอร์นี้อัดวิดีโอไม่ได้ ลองใช้ Chrome หรือ Safari รุ่นใหม่ หรือเลือกส่งเป็นข้อความ/รูปแทน
+      </p>
+    </div>
+
+    <button class="skip" type="button" id="skipWish">ไว้ทีหลัง</button>
+  </section>
+
+  <!-- ---------- ขั้นที่ 3: เสร็จแล้ว ---------- -->
+  <section class="card" id="stepDone" hidden>
+    <div class="tick" aria-hidden="true">
+      <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="24"/><path d="M15 27l8 8 15-16"/></svg>
+    </div>
+    <h2 class="title title--sm" id="doneTitle">ขอบคุณครับ</h2>
+    <p class="lead" id="doneText"></p>
+    <p class="dua" dir="rtl">بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</p>
+    <div class="done-actions">
+      <button class="btn btn--ghost" type="button" id="againBtn">ส่งอีกครั้ง</button>
+      <a class="btn btn--ghost" href="index.html">กลับไปหน้าการ์ด</a>
+    </div>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/checkin.js"></script>
+</body>
+</html>

@@ -8,24 +8,58 @@
   var login = $('#login');
   var dash = $('#dash');
 
-  var entries = [];
-  var filter = 'all';
-  var query = '';
+  var view = 'rsvp';
+  var rsvps = [], checkins = [], wishes = [];
+  var rsvpFilter = 'all', rsvpQuery = '';
+  var checkinQuery = '';
+  var wishFilter = 'all', wishQuery = '';
 
-  /* ---------- ยังไม่ได้ตั้งค่า Supabase ---------- */
   if (!window.SB || !window.SB.configured()) {
     setupNotice.hidden = false;
     return;
   }
 
-  /* ---------- toast ---------- */
+  /* ---------- ตัวช่วย ---------- */
   function toast(message) {
     var box = $('#toast');
-    if (!box) return;
     box.textContent = message;
     box.classList.add('is-visible');
     clearTimeout(toast._t);
     toast._t = setTimeout(function () { box.classList.remove('is-visible'); }, 2600);
+  }
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function formatWhen(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    try {
+      return d.toLocaleString('th-TH', {
+        day: 'numeric', month: 'short', year: '2-digit',
+        hour: '2-digit', minute: '2-digit',
+      });
+    } catch (e) {
+      return d.toISOString().slice(0, 16).replace('T', ' ');
+    }
+  }
+
+  function deleteButton(label, onConfirm) {
+    var button = el('button', 'del', '×');
+    button.type = 'button';
+    button.title = 'ลบรายการนี้';
+    button.setAttribute('aria-label', 'ลบรายการของ ' + label);
+    button.addEventListener('click', function () {
+      if (!window.confirm('ลบรายการของ "' + label + '" ใช่ไหม?')) return;
+      button.disabled = true;
+      onConfirm().then(function () { toast('ลบรายการแล้ว'); },
+                       function (err) { button.disabled = false; toast('ลบไม่สำเร็จ: ' + err.message); });
+    });
+    return button;
   }
 
   /* ---------- เข้าสู่ระบบ ---------- */
@@ -42,9 +76,7 @@
     window.SB.signIn($('#loginEmail').value.trim(), $('#loginPassword').value)
       .then(function () { showDash(); })
       .catch(function (err) {
-        loginError.textContent = /invalid/i.test(err.message)
-          ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
-          : err.message;
+        loginError.textContent = /invalid/i.test(err.message) ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : err.message;
         loginError.hidden = false;
       })
       .then(function () {
@@ -57,192 +89,321 @@
     window.SB.signOut().then(function () { location.reload(); });
   });
 
-  /* ---------- โหลดข้อมูล ---------- */
   function showDash() {
     login.hidden = true;
     dash.hidden = false;
     var session = window.SB.session();
     $('#dashUser').textContent = (session && session.email) || '';
-    load();
+    loadAll();
   }
 
-  function load() {
-    var state = $('#state');
-    state.textContent = 'กำลังโหลด...';
-    $('#table').hidden = true;
-
-    return window.SB.listRsvps()
-      .then(function (rows) {
-        entries = Array.isArray(rows) ? rows : [];
-        render();
-      })
-      .catch(function (err) {
-        if (/เข้าสู่ระบบ|หมดเวลา/.test(err.message) || err.status === 401) {
-          window.SB.signOut().then(function () { location.reload(); });
-          return;
-        }
-        state.textContent = 'โหลดข้อมูลไม่สำเร็จ: ' + err.message;
-      });
-  }
-
-  $('#refreshBtn').addEventListener('click', function () {
-    load().then(function () { toast('อัปเดตข้อมูลแล้ว'); });
-  });
-
-  /* ---------- ตัวกรอง ---------- */
-  $('#search').addEventListener('input', function (e) {
-    query = e.target.value.trim().toLowerCase();
-    render();
-  });
-
-  $$('.tab').forEach(function (tab) {
+  /* ---------- สลับมุมมอง ---------- */
+  $$('.view-tab').forEach(function (tab) {
     tab.addEventListener('click', function () {
-      $$('.tab').forEach(function (other) {
+      $$('.view-tab').forEach(function (other) {
         other.classList.remove('is-active');
         other.setAttribute('aria-selected', 'false');
       });
       tab.classList.add('is-active');
       tab.setAttribute('aria-selected', 'true');
-      filter = tab.dataset.filter;
-      render();
+      view = tab.dataset.view;
+      $('#viewRsvp').hidden = view !== 'rsvp';
+      $('#viewCheckin').hidden = view !== 'checkin';
+      $('#viewWish').hidden = view !== 'wish';
     });
   });
 
-  function visible() {
-    return entries.filter(function (row) {
-      if (filter === 'yes' && !row.attending) return false;
-      if (filter === 'no' && row.attending) return false;
-      if (query && String(row.name || '').toLowerCase().indexOf(query) === -1) return false;
+  /* ---------- โหลดข้อมูล ---------- */
+  function handleAuthError(err) {
+    if (err.status === 401 || /เข้าสู่ระบบ|หมดเวลา/.test(err.message)) {
+      window.SB.signOut().then(function () { location.reload(); });
+      return true;
+    }
+    return false;
+  }
+
+  function loadAll() {
+    var jobs = [
+      window.SB.listRsvps().then(function (rows) { rsvps = rows || []; renderRsvps(); },
+        function (err) { if (!handleAuthError(err)) $('#state').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
+      window.SB.listCheckins().then(function (rows) { checkins = rows || []; renderCheckins(); },
+        function (err) { if (!handleAuthError(err)) $('#stateCheckin').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
+      window.SB.listWishes().then(function (rows) { wishes = rows || []; renderWishes(); },
+        function (err) { if (!handleAuthError(err)) $('#stateWish').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
+    ];
+    return Promise.all(jobs);
+  }
+
+  $('#refreshBtn').addEventListener('click', function () {
+    loadAll().then(function () { toast('อัปเดตข้อมูลแล้ว'); });
+  });
+
+  /* ---------- มุมมองที่ 1: ตอบรับคำเชิญ ---------- */
+  $('#search').addEventListener('input', function (e) {
+    rsvpQuery = e.target.value.trim().toLowerCase();
+    renderRsvps();
+  });
+
+  $$('#viewRsvp .tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      $$('#viewRsvp .tab').forEach(function (other) {
+        other.classList.remove('is-active');
+        other.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('is-active');
+      tab.setAttribute('aria-selected', 'true');
+      rsvpFilter = tab.dataset.filter;
+      renderRsvps();
+    });
+  });
+
+  function renderRsvps() {
+    var yes = rsvps.filter(function (r) { return r.attending; });
+    $('#statGuests').textContent = yes.reduce(function (sum, r) { return sum + (Number(r.guests) || 0); }, 0);
+    $('#statYes').textContent = yes.length;
+    $('#statNo').textContent = rsvps.length - yes.length;
+    $('#statTotal').textContent = rsvps.length;
+
+    var visible = rsvps.filter(function (row) {
+      if (rsvpFilter === 'yes' && !row.attending) return false;
+      if (rsvpFilter === 'no' && row.attending) return false;
+      if (rsvpQuery && String(row.name || '').toLowerCase().indexOf(rsvpQuery) === -1) return false;
       return true;
     });
-  }
 
-  /* ---------- แสดงผล ---------- */
-  function formatWhen(iso) {
-    var d = new Date(iso);
-    if (isNaN(d)) return '';
-    try {
-      return d.toLocaleString('th-TH', {
-        day: 'numeric', month: 'short', year: '2-digit',
-        hour: '2-digit', minute: '2-digit',
-      });
-    } catch (e) {
-      return d.toISOString().slice(0, 16).replace('T', ' ');
-    }
-  }
-
-  function render() {
-    var yes = entries.filter(function (r) { return r.attending; });
-    var no = entries.length - yes.length;
-    var heads = yes.reduce(function (sum, r) { return sum + (Number(r.guests) || 0); }, 0);
-
-    $('#statGuests').textContent = heads;
-    $('#statYes').textContent = yes.length;
-    $('#statNo').textContent = no;
-    $('#statTotal').textContent = entries.length;
-
-    var rows = visible();
     var body = $('#rows');
     var table = $('#table');
     var state = $('#state');
-
     body.textContent = '';
 
-    if (!entries.length) {
-      table.hidden = true;
-      state.textContent = 'ยังไม่มีใครตอบรับ';
-      return;
-    }
-    if (!rows.length) {
-      table.hidden = true;
-      state.textContent = 'ไม่พบรายการที่ตรงกับที่ค้นหา';
-      return;
-    }
+    if (!rsvps.length) { table.hidden = true; state.textContent = 'ยังไม่มีใครตอบรับ'; return; }
+    if (!visible.length) { table.hidden = true; state.textContent = 'ไม่พบรายการที่ตรงกับที่ค้นหา'; return; }
 
     state.textContent = '';
     table.hidden = false;
 
-    rows.forEach(function (row) {
+    visible.forEach(function (row) {
       var tr = document.createElement('tr');
+      tr.appendChild(el('td', 'name', row.name || '—'));
 
-      var name = document.createElement('td');
-      name.className = 'name';
-      name.textContent = row.name || '—';
-      tr.appendChild(name);
-
-      var status = document.createElement('td');
-      var pill = document.createElement('span');
-      pill.className = 'pill ' + (row.attending ? 'pill--yes' : 'pill--no');
-      pill.textContent = row.attending ? 'มาร่วมงาน' : 'ไม่สะดวก';
-      status.appendChild(pill);
+      var status = el('td');
+      status.appendChild(el('span', 'pill ' + (row.attending ? 'pill--yes' : 'pill--no'),
+        row.attending ? 'มาร่วมงาน' : 'ไม่สะดวก'));
       tr.appendChild(status);
 
-      var guests = document.createElement('td');
-      guests.className = 'num';
-      guests.textContent = row.attending ? (row.guests || 0) : '—';
-      tr.appendChild(guests);
+      tr.appendChild(el('td', 'num', row.attending ? String(row.guests || 0) : '—'));
+      tr.appendChild(el('td', 'when', formatWhen(row.created_at)));
 
-      var when = document.createElement('td');
-      when.className = 'when';
-      when.textContent = formatWhen(row.created_at);
-      tr.appendChild(when);
-
-      var actions = document.createElement('td');
-      actions.className = 'num';
-      var del = document.createElement('button');
-      del.className = 'del';
-      del.type = 'button';
-      del.textContent = '×';
-      del.title = 'ลบรายการนี้';
-      del.setAttribute('aria-label', 'ลบรายการของ ' + (row.name || ''));
-      del.addEventListener('click', function () { remove(row, del); });
-      actions.appendChild(del);
+      var actions = el('td', 'num');
+      actions.appendChild(deleteButton(row.name || '', function () {
+        return window.SB.deleteRsvp(row.id).then(function () {
+          rsvps = rsvps.filter(function (r) { return r.id !== row.id; });
+          renderRsvps();
+        });
+      }));
       tr.appendChild(actions);
-
       body.appendChild(tr);
     });
   }
 
-  function remove(row, button) {
-    if (!window.confirm('ลบรายการของ "' + (row.name || '') + '" ใช่ไหม?')) return;
-    button.disabled = true;
-    window.SB.deleteRsvp(row.id)
-      .then(function () {
-        entries = entries.filter(function (r) { return r.id !== row.id; });
-        render();
-        toast('ลบรายการแล้ว');
-      })
-      .catch(function (err) {
-        button.disabled = false;
-        toast('ลบไม่สำเร็จ: ' + err.message);
+  /* ---------- มุมมองที่ 2: เช็คอินหน้างาน ---------- */
+  $('#searchCheckin').addEventListener('input', function (e) {
+    checkinQuery = e.target.value.trim().toLowerCase();
+    renderCheckins();
+  });
+
+  function renderCheckins() {
+    $('#statHeads').textContent = checkins.reduce(function (sum, r) { return sum + (Number(r.party_size) || 0); }, 0);
+    $('#statParties').textContent = checkins.length;
+
+    var visible = checkins.filter(function (row) {
+      return !checkinQuery || String(row.name || '').toLowerCase().indexOf(checkinQuery) !== -1;
+    });
+
+    var body = $('#rowsCheckin');
+    var table = $('#tableCheckin');
+    var state = $('#stateCheckin');
+    body.textContent = '';
+
+    if (!checkins.length) { table.hidden = true; state.textContent = 'ยังไม่มีใครเช็คอิน'; return; }
+    if (!visible.length) { table.hidden = true; state.textContent = 'ไม่พบรายการที่ตรงกับที่ค้นหา'; return; }
+
+    state.textContent = '';
+    table.hidden = false;
+
+    visible.forEach(function (row) {
+      var tr = document.createElement('tr');
+      tr.appendChild(el('td', 'name', row.name || '—'));
+      tr.appendChild(el('td', 'num', String(row.party_size || 1)));
+      tr.appendChild(el('td', 'when', formatWhen(row.created_at)));
+
+      var actions = el('td', 'num');
+      actions.appendChild(deleteButton(row.name || '', function () {
+        return window.SB.deleteCheckin(row.id).then(function () {
+          checkins = checkins.filter(function (r) { return r.id !== row.id; });
+          renderCheckins();
+        });
+      }));
+      tr.appendChild(actions);
+      body.appendChild(tr);
+    });
+  }
+
+  /* ---------- มุมมองที่ 3: คำอวยพร ---------- */
+  $('#searchWish').addEventListener('input', function (e) {
+    wishQuery = e.target.value.trim().toLowerCase();
+    renderWishes();
+  });
+
+  $$('#viewWish .tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      $$('#viewWish .tab').forEach(function (other) {
+        other.classList.remove('is-active');
+        other.setAttribute('aria-selected', 'false');
       });
+      tab.classList.add('is-active');
+      tab.setAttribute('aria-selected', 'true');
+      wishFilter = tab.dataset.wish;
+      renderWishes();
+    });
+  });
+
+  var KIND_LABEL = { text: 'ข้อความ', photo: 'การ์ดรูป', video: 'คลิปวิดีโอ' };
+
+  function renderWishes() {
+    $('#statWishAll').textContent = wishes.length;
+    $('#statWishText').textContent = wishes.filter(function (w) { return w.kind === 'text'; }).length;
+    $('#statWishPhoto').textContent = wishes.filter(function (w) { return w.kind === 'photo'; }).length;
+    $('#statWishVideo').textContent = wishes.filter(function (w) { return w.kind === 'video'; }).length;
+
+    var visible = wishes.filter(function (row) {
+      if (wishFilter !== 'all' && row.kind !== wishFilter) return false;
+      if (!wishQuery) return true;
+      var haystack = ((row.name || '') + ' ' + (row.message || '')).toLowerCase();
+      return haystack.indexOf(wishQuery) !== -1;
+    });
+
+    var grid = $('#wishes');
+    var state = $('#stateWish');
+    grid.textContent = '';
+
+    if (!wishes.length) { state.textContent = 'ยังไม่มีคำอวยพร'; return; }
+    if (!visible.length) { state.textContent = 'ไม่พบรายการที่ตรงกับที่ค้นหา'; return; }
+    state.textContent = '';
+
+    visible.forEach(function (row) { grid.appendChild(wishCard(row)); });
+  }
+
+  function wishCard(row) {
+    var card = el('article', 'wish');
+
+    var head = el('div', 'wish__head');
+    head.appendChild(el('p', 'wish__name', row.name || '—'));
+    head.appendChild(el('span', 'pill pill--' + row.kind, KIND_LABEL[row.kind] || row.kind));
+    card.appendChild(head);
+
+    if (row.message) card.appendChild(el('p', 'wish__message', row.message));
+
+    if (row.media_path) {
+      var slot = el('div', 'wish__media');
+      card.appendChild(slot);
+      if (row.kind === 'photo') loadPhoto(slot, row.media_path);
+      else loadVideoButton(slot, row.media_path);
+    }
+
+    var foot = el('div', 'wish__foot');
+    foot.appendChild(el('span', 'when', formatWhen(row.created_at)));
+    foot.appendChild(deleteButton(row.name || '', function () {
+      return window.SB.deleteWish(row.id).then(function () {
+        wishes = wishes.filter(function (w) { return w.id !== row.id; });
+        renderWishes();
+      });
+    }));
+    card.appendChild(foot);
+
+    return card;
+  }
+
+  function loadPhoto(slot, path) {
+    slot.appendChild(el('p', 'wish__loading', 'กำลังโหลดรูป...'));
+    window.SB.signedMediaUrl(path).then(function (url) {
+      slot.textContent = '';
+      var link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      var img = document.createElement('img');
+      img.src = url;
+      img.alt = 'การ์ดอวยพร';
+      img.loading = 'lazy';
+      link.appendChild(img);
+      slot.appendChild(link);
+    }, function (err) {
+      slot.textContent = '';
+      slot.appendChild(el('p', 'wish__loading', 'เปิดรูปไม่ได้: ' + err.message));
+    });
+  }
+
+  function loadVideoButton(slot, path) {
+    var button = el('button', 'btn', 'เล่นคลิป');
+    button.type = 'button';
+    button.addEventListener('click', function () {
+      button.disabled = true;
+      button.textContent = 'กำลังโหลด...';
+      window.SB.signedMediaUrl(path).then(function (url) {
+        slot.textContent = '';
+        var video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        slot.appendChild(video);
+      }, function (err) {
+        button.disabled = false;
+        button.textContent = 'เล่นคลิป';
+        toast('เปิดคลิปไม่ได้: ' + err.message);
+      });
+    });
+    slot.appendChild(button);
   }
 
   /* ---------- ดาวน์โหลด CSV ---------- */
   $('#exportBtn').addEventListener('click', function () {
-    if (!entries.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
-
     var cell = function (value) {
       var text = value == null ? '' : String(value);
       return /[",\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
     };
 
-    var lines = [['ชื่อ', 'สถานะ', 'จำนวน', 'ตอบเมื่อ'].join(',')];
-    entries.forEach(function (row) {
-      lines.push([
-        cell(row.name),
-        cell(row.attending ? 'มาร่วมงาน' : 'ไม่สะดวก'),
-        cell(row.attending ? (row.guests || 0) : 0),
-        cell(formatWhen(row.created_at)),
-      ].join(','));
-    });
+    var header, rows, filename;
 
+    if (view === 'rsvp') {
+      if (!rsvps.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
+      filename = 'rsvp.csv';
+      header = ['ชื่อ', 'สถานะ', 'จำนวน', 'ตอบเมื่อ'];
+      rows = rsvps.map(function (r) {
+        return [r.name, r.attending ? 'มาร่วมงาน' : 'ไม่สะดวก', r.attending ? (r.guests || 0) : 0, formatWhen(r.created_at)];
+      });
+    } else if (view === 'checkin') {
+      if (!checkins.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
+      filename = 'checkin.csv';
+      header = ['ชื่อ', 'จำนวน', 'เช็คอินเมื่อ'];
+      rows = checkins.map(function (r) { return [r.name, r.party_size || 1, formatWhen(r.created_at)]; });
+    } else {
+      if (!wishes.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
+      filename = 'wishes.csv';
+      header = ['ชื่อ', 'ประเภท', 'ข้อความ', 'ไฟล์', 'ส่งเมื่อ'];
+      rows = wishes.map(function (r) {
+        return [r.name, KIND_LABEL[r.kind] || r.kind, r.message || '', r.media_path || '', formatWhen(r.created_at)];
+      });
+    }
+
+    var lines = [header.join(',')].concat(rows.map(function (r) { return r.map(cell).join(','); }));
     // BOM ข้างหน้า เพื่อให้ Excel อ่านภาษาไทยไม่เป็นตัวต่างดาว
     var blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
     var url = URL.createObjectURL(blob);
     var link = document.createElement('a');
     link.href = url;
-    link.download = 'rsvp.csv';
+    link.download = filename;
     link.click();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   });

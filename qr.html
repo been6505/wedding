@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ป้าย QR สำหรับหน้างาน</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3D0F1C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Charm:wght@400;500;700&family=Noto+Sans+Thai:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --wine-900: #2a0912;
+    --wine-800: #3d0f1c;
+    --wine:     #55162b;
+    --gold:      #c9a063;
+    --gold-soft: #e0c081;
+    --gold-dim:  #a1804d;
+    --cream:     #f4ece0;
+    --line: rgba(201, 160, 99, .25);
+    --th-display: 'Charm', Georgia, serif;
+    --th-body: 'Noto Sans Thai', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    font-family: var(--th-body);
+    font-weight: 300;
+    color: var(--cream);
+    background: var(--wine-900);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .panel { max-width: 640px; margin: 0 auto; }
+
+  h1 {
+    margin: 0 0 .4rem;
+    font-family: var(--th-display);
+    font-weight: 500;
+    font-size: 1.9rem;
+    text-align: center;
+  }
+  .sub { margin: 0 0 2rem; text-align: center; font-size: .92rem; color: rgba(244,236,224,.6); }
+
+  .field { display: block; margin-bottom: 1rem; }
+  .field__label { display: block; margin-bottom: .35rem; font-size: .8rem; letter-spacing: .18em; color: var(--gold-dim); }
+  .field__input {
+    width: 100%;
+    padding: .6rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: rgba(0,0,0,.25);
+    color: var(--cream);
+    font: inherit;
+    font-size: 1rem;
+  }
+  .field__input:focus { outline: none; border-color: var(--gold); }
+
+  .row { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin: 1.4rem 0 2.4rem; }
+  .btn {
+    padding: .6rem 1.4rem;
+    border: 1px solid rgba(201,160,99,.5);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cream);
+    font: inherit;
+    font-size: .95rem;
+    cursor: pointer;
+  }
+  .btn:hover { background: rgba(201,160,99,.15); border-color: var(--gold); }
+  .btn--solid { background: var(--gold); border-color: var(--gold); color: var(--wine-900); }
+
+  .error { margin: 0 0 1rem; text-align: center; color: #f0a3a3; font-size: .9rem; }
+
+  /* ---------- ป้ายสำหรับพิมพ์ ---------- */
+  .poster {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    aspect-ratio: 1 / 1.414;          /* สัดส่วน A4 / A5 */
+    padding: 6% 7%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    border-radius: 10px;
+    background: radial-gradient(120% 60% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
+    box-shadow: 0 20px 50px rgba(0,0,0,.45);
+    position: relative;
+  }
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 3.2%;
+    border: 1px solid rgba(201,160,99,.4);
+    border-radius: 4px;
+    pointer-events: none;
+  }
+
+  .poster__eyebrow { margin: 0; font-size: .8rem; letter-spacing: .38em; text-indent: .38em; color: var(--gold-dim); }
+  .poster__names { margin: .5rem 0 0; font-family: var(--th-display); font-weight: 500; font-size: 1.75rem; color: var(--cream); }
+  .poster__ar { margin: .2rem 0 0; font-family: 'Amiri', serif; font-size: 1.2rem; color: var(--gold); }
+
+  .poster__qr {
+    width: 62%;
+    padding: 4%;
+    background: #fff;
+    border-radius: 8px;
+    line-height: 0;
+  }
+  .poster__qr svg { width: 100%; height: auto; display: block; }
+
+  .poster__cta { margin: 0; font-family: var(--th-display); font-size: 1.5rem; color: var(--gold-soft); }
+  .poster__hint { margin: .3rem 0 0; font-size: .82rem; color: rgba(244,236,224,.55); line-height: 1.7; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .panel > *:not(.poster) { display: none !important; }
+    .poster {
+      max-width: none;
+      width: 100%;
+      height: 100vh;
+      aspect-ratio: auto;
+      border-radius: 0;
+      box-shadow: none;
+      break-inside: avoid;
+    }
+    @page { margin: 0; size: A4 portrait; }
+  }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <h1>ป้าย QR สำหรับหน้างาน</h1>
+  <p class="sub">พิมพ์ออกมาวางที่โต๊ะต้อนรับ แขกสแกนแล้วเช็คอินและอวยพรได้เลย</p>
+
+  <label class="field">
+    <span class="field__label">ลิงก์หน้าเช็คอิน</span>
+    <input class="field__input" id="url" type="url" spellcheck="false">
+  </label>
+
+  <p class="error" id="error" hidden></p>
+
+  <div class="row">
+    <button class="btn btn--solid" type="button" id="print">สั่งพิมพ์</button>
+    <button class="btn" type="button" id="svg">ดาวน์โหลด SVG</button>
+    <button class="btn" type="button" id="png">ดาวน์โหลด PNG</button>
+  </div>
+
+  <div class="poster" id="poster">
+    <div>
+      <p class="poster__eyebrow">วะลีมะตุลอุรุส</p>
+      <p class="poster__names" id="names">—</p>
+      <p class="poster__ar" dir="rtl" id="namesAr"></p>
+    </div>
+
+    <div class="poster__qr" id="qrBox"></div>
+
+    <div>
+      <p class="poster__cta">สแกนเพื่อเช็คอิน</p>
+      <p class="poster__hint">
+        เปิดกล้องมือถือส่องที่ QR แล้วแตะลิงก์<br>
+        เช็คอิน · ส่งคำอวยพร · ถ่ายการ์ด · อัดคลิป
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/qrcode.js"></script>
+<script>
+(function () {
+  'use strict';
+  var cfg = window.WEDDING_CONFIG || {};
+  var couple = cfg.couple || {};
+  var $ = function (s) { return document.querySelector(s); };
+
+  var groom = (couple.groom && couple.groom.th) || '';
+  var bride = (couple.bride && couple.bride.th) || '';
+  $('#names').textContent = groom && bride ? groom + ' & ' + bride : 'งานวะลีมะฮฺ';
+
+  var groomAr = (couple.groom && couple.groom.ar) || '';
+  var brideAr = (couple.bride && couple.bride.ar) || '';
+  $('#namesAr').textContent = groomAr && brideAr ? groomAr + ' & ' + brideAr : '';
+
+  var input = $('#url');
+  var defaultUrl = location.href.replace(/qr\.html.*$/, 'checkin.html');
+  input.value = (location.protocol === 'file:') ? 'https://example.com/checkin.html' : defaultUrl;
+
+  function render() {
+    var box = $('#qrBox');
+    var error = $('#error');
+    var value = input.value.trim();
+
+    box.textContent = '';
+    error.hidden = true;
+
+    if (!value) { error.textContent = 'กรุณาใส่ลิงก์หน้าเช็คอิน'; error.hidden = false; return; }
+
+    try {
+      box.innerHTML = window.QRCode.toSvg(value, { scale: 8, margin: 1, dark: '#2a0912', light: '#ffffff' });
+    } catch (err) {
+      error.textContent = err.message;
+      error.hidden = false;
+    }
+  }
+
+  input.addEventListener('input', render);
+  render();
+
+  $('#print').addEventListener('click', function () { window.print(); });
+
+  function download(href, filename) {
+    var link = document.createElement('a');
+    link.href = href;
+    link.download = filename;
+    link.click();
+  }
+
+  $('#svg').addEventListener('click', function () {
+    var svg = $('#qrBox').innerHTML;
+    if (!svg) return;
+    var blob = new Blob([svg], { type: 'image/svg+xml' });
+    var url = URL.createObjectURL(blob);
+    download(url, 'checkin-qr.svg');
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  });
+
+  $('#png').addEventListener('click', function () {
+    var value = input.value.trim();
+    if (!value) return;
+
+    // วาดลงแคนวาสเองเพื่อให้ได้ไฟล์คมชัดขนาดใหญ่ ไม่ต้องพึ่งการแปลง SVG
+    var qr = window.QRCode.generate(value);
+    var margin = 4;
+    var scale = 16;
+    var side = (qr.size + margin * 2) * scale;
+
+    var canvas = document.createElement('canvas');
+    canvas.width = side;
+    canvas.height = side;
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, side, side);
+    ctx.fillStyle = '#2a0912';
+    for (var r = 0; r < qr.size; r++) {
+      for (var c = 0; c < qr.size; c++) {
+        if (qr.modules[r][c]) {
+          ctx.fillRect((c + margin) * scale, (r + margin) * scale, scale, scale);
+        }
+      }
+    }
+    download(canvas.toDataURL('image/png'), 'checkin-qr.png');
+  });
+})();
+</script>
+</body>
+</html>

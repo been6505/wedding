@@ -148,6 +148,24 @@ body {
 .dash__sub { margin: 0; font-size: .85rem; color: var(--gold-dim); }
 .dash__tools { display: flex; flex-wrap: wrap; gap: .5rem; }
 
+.views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-top: 1.4rem;
+}
+.view-tab {
+  padding: .55rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(244, 236, 224, .7);
+  font: inherit;
+  font-size: .95rem;
+  cursor: pointer;
+}
+.view-tab.is-active { background: var(--gold); border-color: var(--gold); color: var(--wine-900); }
+
 .stats {
   list-style: none;
   display: grid;
@@ -156,7 +174,11 @@ body {
   margin: 1.8rem 0;
   padding: 0;
 }
-@media (min-width: 640px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+.stats--two { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 640px) {
+  .stats { grid-template-columns: repeat(4, 1fr); }
+  .stats--two { grid-template-columns: repeat(2, 1fr); }
+}
 
 .stat {
   padding: 1.1rem .8rem;
@@ -241,6 +263,63 @@ body {
 }
 .pill--yes { background: rgba(201, 160, 99, .2); color: var(--gold-soft); }
 .pill--no  { background: rgba(255, 255, 255, .07); color: rgba(244, 236, 224, .55); }
+.pill--text  { background: rgba(255, 255, 255, .08); color: rgba(244, 236, 224, .7); }
+.pill--photo { background: rgba(201, 160, 99, .2); color: var(--gold-soft); }
+.pill--video { background: rgba(224, 140, 140, .16); color: #f0b9b9; }
+
+/* ---------- คำอวยพร ---------- */
+.wishes {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 700px) { .wishes { grid-template-columns: repeat(2, 1fr); } }
+
+.wish {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, .16);
+}
+.wish__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+}
+.wish__name { margin: 0; font-size: 1.05rem; color: var(--cream); }
+.wish__message {
+  margin: 0;
+  font-family: var(--th-display);
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: rgba(244, 236, 224, .9);
+  white-space: pre-wrap;
+}
+.wish__media img,
+.wish__media video {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  max-height: 340px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(0, 0, 0, .25);
+}
+.wish__loading { margin: 0; font-size: .85rem; color: rgba(244, 236, 224, .45); }
+.wish__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-top: auto;
+  padding-top: .4rem;
+  border-top: 1px solid var(--line);
+}
 
 .when { font-size: .85rem; color: rgba(244, 236, 224, .5); white-space: nowrap; }
 

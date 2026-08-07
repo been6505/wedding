@@ -69,6 +69,53 @@ window.SB = (function () {
     });
   }
 
+  /* ---------- ฝั่งแขก: เช็คอินหน้างาน + คำอวยพร ---------- */
+  function submitCheckin(entry) {
+    if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Supabase'));
+    return request('/rest/v1/checkins', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: { name: entry.name, party_size: entry.partySize || 1 },
+    });
+  }
+
+  function submitWish(entry) {
+    if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Supabase'));
+    return request('/rest/v1/wishes', {
+      method: 'POST',
+      headers: { Prefer: 'return=minimal' },
+      body: {
+        name: entry.name,
+        kind: entry.kind,
+        message: entry.message || null,
+        media_path: entry.mediaPath || null,
+      },
+    });
+  }
+
+  // อัปโหลดไฟล์ดิบขึ้น storage (ไม่ผ่าน request เพราะ body ไม่ใช่ JSON)
+  function uploadMedia(blob, filename) {
+    if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Supabase'));
+    var path = 'wishes/' + filename;
+    return fetch(baseUrl + '/storage/v1/object/' + path, {
+      method: 'POST',
+      headers: {
+        apikey: anonKey,
+        Authorization: 'Bearer ' + anonKey,
+        'Content-Type': blob.type || 'application/octet-stream',
+        'x-upsert': 'false',
+      },
+      body: blob,
+    }).then(function (res) {
+      if (res.ok) return path;
+      return res.json().catch(function () { return null; }).then(function (payload) {
+        var err = new Error((payload && (payload.message || payload.error)) || 'อัปโหลดไฟล์ไม่สำเร็จ');
+        err.status = res.status;
+        throw err;
+      });
+    });
+  }
+
   /* ---------- ฝั่งเจ้าภาพ: ล็อกอิน ---------- */
   function signIn(email, password) {
     return request('/auth/v1/token?grant_type=password', {
@@ -125,14 +172,26 @@ window.SB = (function () {
     });
   }
 
-  function listRsvps() {
-    return authed('/rest/v1/' + encodeURIComponent(table) + '?select=*&order=created_at.desc');
+  function list(name) {
+    return authed('/rest/v1/' + encodeURIComponent(name) + '?select=*&order=created_at.desc');
   }
 
-  function deleteRsvp(id) {
-    return authed('/rest/v1/' + encodeURIComponent(table) + '?id=eq.' + encodeURIComponent(id), {
+  function remove(name, id) {
+    return authed('/rest/v1/' + encodeURIComponent(name) + '?id=eq.' + encodeURIComponent(id), {
       method: 'DELETE',
       headers: { Prefer: 'return=minimal' },
+    });
+  }
+
+  // ลิงก์ชั่วคราวสำหรับดูไฟล์ใน bucket ที่ไม่เปิดสาธารณะ
+  function signedMediaUrl(path, expiresIn) {
+    var objectPath = String(path).replace(/^wishes\//, '');
+    return authed('/storage/v1/object/sign/wishes/' + objectPath, {
+      method: 'POST',
+      body: { expiresIn: expiresIn || 3600 },
+    }).then(function (data) {
+      if (!data || !data.signedURL) throw new Error('ขอลิงก์ไฟล์ไม่สำเร็จ');
+      return baseUrl + '/storage/v1' + data.signedURL;
     });
   }
 
@@ -141,8 +200,18 @@ window.SB = (function () {
     session: readSession,
     signIn: signIn,
     signOut: signOut,
+
     submitRsvp: submitRsvp,
-    listRsvps: listRsvps,
-    deleteRsvp: deleteRsvp,
+    submitCheckin: submitCheckin,
+    submitWish: submitWish,
+    uploadMedia: uploadMedia,
+
+    listRsvps: function () { return list(table); },
+    listCheckins: function () { return list('checkins'); },
+    listWishes: function () { return list('wishes'); },
+    deleteRsvp: function (id) { return remove(table, id); },
+    deleteCheckin: function (id) { return remove('checkins', id); },
+    deleteWish: function (id) { return remove('wishes', id); },
+    signedMediaUrl: signedMediaUrl,
   };
 })();
