@@ -15,12 +15,12 @@
     "cleanUrls": true,
     "headers": [
       {
-        "source": "**/*.@(jpg|jpeg|png|svg|webp|mp3|woff2)",
-        "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+        "source": "**",
+        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
       },
       {
-        "source": "**/*.@(js|css|html)",
-        "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+        "source": "**/*.@(jpg|jpeg|png|svg|webp|mp3|woff2)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
       },
       {
         "source": "/@(admin|qr)",

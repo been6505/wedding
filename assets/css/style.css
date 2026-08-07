@@ -182,19 +182,19 @@ img { max-width: 100%; display: block; }
 .panel {
   position: relative;
   padding: clamp(2.5rem, 8vw, 4rem) clamp(1.1rem, 5vw, 2.6rem) clamp(3rem, 9vw, 4rem);
-  border-radius: 50% 50% 14px 14px / 16% 16% 14px 14px;
+  border-radius: 0;
   background:
     radial-gradient(120% 55% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
   box-shadow: 0 18px 44px rgba(162, 25, 37, .12);
   overflow: hidden;
 }
-/* เส้นทองซ้อนตามรูปโค้ง */
+/* เส้นกรอบด้านในขนานไปกับขอบการ์ด */
 .panel::before {
   content: '';
   position: absolute;
   inset: 12px;
   border: 1px solid rgba(162, 25, 37, .3);
-  border-radius: 50% 50% 8px 8px / 15% 15% 8px 8px;
+  border-radius: 0;
   pointer-events: none;
 }
 
@@ -225,10 +225,7 @@ img { max-width: 100%; display: block; }
 }
 
 .invite-line {
-  /* บล็อกนี้อยู่สูงพอที่ขอบโค้งของการ์ดยังไม่บานออก ถ้าปล่อยยาวเป็นบรรทัดเดียว
-     หัวท้ายจะโดนขอบโค้งตัดหาย จำกัดความกว้างให้ตัดบรรทัดเองแทน */
-  max-width: 17ch;
-  margin: 0 auto 2.4rem;
+  margin: 0 0 2.4rem;
   font-size: .88rem;
   letter-spacing: .12em;
   text-indent: .12em;
