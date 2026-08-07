@@ -1,12 +1,12 @@
 :root {
-  --wine-900: #2a0912;
-  --wine-800: #3d0f1c;
-  --wine:     #55162b;
-  --gold:      #c9a063;
-  --gold-soft: #e0c081;
-  --gold-dim:  #a1804d;
-  --cream:     #f4ece0;
-  --line: rgba(201, 160, 99, .22);
+  --wine-900: #ffffff;
+  --wine-800: #fdfbfa;
+  --wine:     #fffdfc;
+  --gold:      #a21925;
+  --gold-soft: #c2303c;
+  --gold-dim:  #8d2833;
+  --cream:     #241d1c;
+  --line: rgba(162, 25, 37, .22);
 
   --th-display: 'Sriracha', 'Charm', cursive;
   --th-body: 'Mali', 'Noto Sans Thai', system-ui, sans-serif;
@@ -42,7 +42,7 @@ body {
 /* ---------- ปุ่ม / ช่องกรอก ---------- */
 .btn {
   padding: .55rem 1.3rem;
-  border: 1px solid rgba(201, 160, 99, .5);
+  border: 1px solid rgba(162, 25, 37, .5);
   border-radius: 4px;
   background: transparent;
   color: var(--cream);
@@ -51,7 +51,7 @@ body {
   cursor: pointer;
   transition: background .2s, border-color .2s;
 }
-.btn:hover { background: rgba(201, 160, 99, .16); border-color: var(--gold); }
+.btn:hover { background: rgba(162, 25, 37, .16); border-color: var(--gold); }
 .btn--solid {
   width: 100%;
   margin-top: .6rem;
@@ -76,13 +76,13 @@ body {
   padding: .55rem .7rem;
   border: 1px solid var(--line);
   border-radius: 4px;
-  background: rgba(0, 0, 0, .18);
+  background: rgba(162, 25, 37, .01);
   color: var(--cream);
   font: inherit;
   font-size: 1rem;
 }
 .field__input:focus { outline: none; border-color: var(--gold); }
-.field__input::placeholder { color: rgba(244, 236, 224, .35); }
+.field__input::placeholder { color: rgba(36, 29, 28, .35); }
 
 /* ---------- หน้าเข้าสู่ระบบ / แจ้งเตือน ---------- */
 .gate {
@@ -96,7 +96,7 @@ body {
   padding: 2.5rem 2rem;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: rgba(0, 0, 0, .22);
+  background: rgba(162, 25, 37, .02);
 }
 .gate__title {
   margin: 0 0 .3rem;
@@ -109,7 +109,7 @@ body {
   margin: 0 0 2rem;
   text-align: center;
   font-size: .92rem;
-  color: rgba(244, 236, 224, .6);
+  color: rgba(36, 29, 28, .6);
 }
 .gate__text code {
   font-size: .88em;
@@ -120,7 +120,7 @@ body {
   margin: 1rem 0 0;
   text-align: center;
   font-size: .9rem;
-  color: #f0a3a3;
+  color: #b3121f;
 }
 
 /* ---------- แดชบอร์ด ---------- */
@@ -159,7 +159,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: rgba(244, 236, 224, .7);
+  color: rgba(36, 29, 28, .7);
   font: inherit;
   font-size: .95rem;
   cursor: pointer;
@@ -185,7 +185,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 8px;
   text-align: center;
-  background: rgba(0, 0, 0, .16);
+  background: rgba(162, 25, 37, .01);
 }
 .stat strong {
   display: block;
@@ -214,7 +214,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: rgba(244, 236, 224, .7);
+  color: rgba(36, 29, 28, .7);
   font: inherit;
   font-size: .88rem;
   cursor: pointer;
@@ -225,7 +225,7 @@ body {
   color: var(--wine-900);
 }
 
-.state { margin: 2.5rem 0; text-align: center; color: rgba(244, 236, 224, .55); }
+.state { margin: 2.5rem 0; text-align: center; color: rgba(36, 29, 28, .55); }
 .state:empty { display: none; }
 
 .table-wrap { overflow-x: auto; }
@@ -250,7 +250,7 @@ body {
   white-space: nowrap;
 }
 .table .num, .table td.num { text-align: right; font-variant-numeric: tabular-nums; }
-.table tbody tr:hover { background: rgba(201, 160, 99, .06); }
+.table tbody tr:hover { background: rgba(162, 25, 37, .06); }
 
 .name { font-size: 1.02rem; }
 
@@ -261,11 +261,11 @@ body {
   font-size: .82rem;
   white-space: nowrap;
 }
-.pill--yes { background: rgba(201, 160, 99, .2); color: var(--gold-soft); }
-.pill--no  { background: rgba(255, 255, 255, .07); color: rgba(244, 236, 224, .55); }
-.pill--text  { background: rgba(255, 255, 255, .08); color: rgba(244, 236, 224, .7); }
-.pill--photo { background: rgba(201, 160, 99, .2); color: var(--gold-soft); }
-.pill--video { background: rgba(224, 140, 140, .16); color: #f0b9b9; }
+.pill--yes { background: rgba(162, 25, 37, .2); color: var(--gold-soft); }
+.pill--no  { background: rgba(162, 25, 37, .00); color: rgba(36, 29, 28, .55); }
+.pill--text  { background: rgba(162, 25, 37, .00); color: rgba(36, 29, 28, .7); }
+.pill--photo { background: rgba(162, 25, 37, .2); color: var(--gold-soft); }
+.pill--video { background: rgba(162, 25, 37, .16); color: #8d2833; }
 
 /* ---------- คำอวยพร ---------- */
 .wishes {
@@ -282,7 +282,7 @@ body {
   padding: 1.2rem;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: rgba(0, 0, 0, .16);
+  background: rgba(162, 25, 37, .01);
 }
 .wish__head {
   display: flex;
@@ -296,7 +296,7 @@ body {
   font-family: var(--th-display);
   font-size: 1.15rem;
   line-height: 1.8;
-  color: rgba(244, 236, 224, .9);
+  color: rgba(36, 29, 28, .9);
   white-space: pre-wrap;
 }
 .wish__media img,
@@ -308,9 +308,9 @@ body {
   object-fit: contain;
   border-radius: 8px;
   border: 1px solid var(--line);
-  background: rgba(0, 0, 0, .25);
+  background: rgba(162, 25, 37, .02);
 }
-.wish__loading { margin: 0; font-size: .85rem; color: rgba(244, 236, 224, .45); }
+.wish__loading { margin: 0; font-size: .85rem; color: rgba(36, 29, 28, .45); }
 .wish__foot {
   display: flex;
   align-items: center;
@@ -321,12 +321,12 @@ body {
   border-top: 1px solid var(--line);
 }
 
-.when { font-size: .85rem; color: rgba(244, 236, 224, .5); white-space: nowrap; }
+.when { font-size: .85rem; color: rgba(36, 29, 28, .5); white-space: nowrap; }
 
 .del {
   border: 0;
   background: transparent;
-  color: rgba(244, 236, 224, .35);
+  color: rgba(36, 29, 28, .35);
   font: inherit;
   font-size: 1.1rem;
   line-height: 1;
@@ -334,7 +334,7 @@ body {
   padding: .2rem .5rem;
   border-radius: 4px;
 }
-.del:hover { color: #f0a3a3; background: rgba(240, 163, 163, .1); }
+.del:hover { color: #b3121f; background: rgba(179, 18, 31, .1); }
 
 /* ---------- toast ---------- */
 .toast {

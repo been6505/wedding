@@ -268,13 +268,13 @@
     var ctx = canvas.getContext('2d');
     var message = $('#photoMessage').value.trim();
 
-    ctx.fillStyle = '#3d0f1c';
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-    // ไล่เฉดพื้นหลัง
+    // ไล่เฉดพื้นหลัง ขาวอมชมพูจาง ๆ ให้ไม่แบนจนเกินไป
     var bg = ctx.createRadialGradient(CARD_W / 2, 0, 0, CARD_W / 2, CARD_H, CARD_H);
-    bg.addColorStop(0, '#55162b');
-    bg.addColorStop(1, '#2a0912');
+    bg.addColorStop(0, '#ffffff');
+    bg.addColorStop(1, '#fbf1f0');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, CARD_W, CARD_H);
 
@@ -292,20 +292,20 @@
       ctx.restore();
     }
 
-    // กรอบทองรอบรูป
-    ctx.strokeStyle = 'rgba(201,160,99,.75)';
+    // กรอบแดงรอบรูป
+    ctx.strokeStyle = 'rgba(162,25,37,.75)';
     ctx.lineWidth = 3;
     ctx.strokeRect(box.x, box.y, box.w, box.h);
 
-    // กรอบทองรอบการ์ด
-    ctx.strokeStyle = 'rgba(201,160,99,.4)';
+    // กรอบแดงรอบการ์ด
+    ctx.strokeStyle = 'rgba(162,25,37,.45)';
     ctx.lineWidth = 2;
     ctx.strokeRect(34, 34, CARD_W - 68, CARD_H - 68);
 
     ctx.textAlign = 'center';
 
     // ชื่อคู่บ่าวสาวด้านบน
-    ctx.fillStyle = '#c9a063';
+    ctx.fillStyle = '#a21925';
     ctx.font = '400 46px Sriracha, Charm, cursive';
     ctx.fillText(coupleNames(), CARD_W / 2, 108);
 
@@ -316,7 +316,7 @@
 
     if (message) {
       var fit = fitMessage(ctx, message, CARD_W - 220, textSpace);
-      ctx.fillStyle = '#f4ece0';
+      ctx.fillStyle = '#241d1c';
       ctx.font = '400 ' + fit.size + 'px Sriracha, Charm, cursive';
       var y = textTop + fit.lineHeight * 0.8;
       fit.lines.forEach(function (line) {
@@ -326,14 +326,14 @@
     }
 
     // เส้นคั่นและชื่อผู้ส่ง
-    ctx.strokeStyle = 'rgba(201,160,99,.5)';
+    ctx.strokeStyle = 'rgba(162,25,37,.5)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(CARD_W / 2 - 90, footY - 56);
     ctx.lineTo(CARD_W / 2 + 90, footY - 56);
     ctx.stroke();
 
-    ctx.fillStyle = '#e0c081';
+    ctx.fillStyle = '#8d2833';
     ctx.font = '300 38px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText('จาก ' + guest.name, CARD_W / 2, footY);
   }

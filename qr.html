@@ -5,21 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ป้าย QR สำหรับหน้างาน</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#3D0F1C">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%233d0f1c'/%3E%3Ccircle cx='13' cy='17' r='7' fill='none' stroke='%23c9a063' stroke-width='2'/%3E%3Ccircle cx='20' cy='17' r='7' fill='none' stroke='%23e0c081' stroke-width='2'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23ffffff'/%3E%3Ccircle cx='13' cy='17' r='7' fill='none' stroke='%23a21925' stroke-width='2'/%3E%3Ccircle cx='20' cy='17' r='7' fill='none' stroke='%23c2303c' stroke-width='2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Amiri&family=Sriracha&family=Mali:wght@200;300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --wine-900: #2a0912;
-    --wine-800: #3d0f1c;
-    --wine:     #55162b;
-    --gold:      #c9a063;
-    --gold-soft: #e0c081;
-    --gold-dim:  #a1804d;
-    --cream:     #f4ece0;
-    --line: rgba(201, 160, 99, .25);
+    --wine-900: #ffffff;
+    --wine-800: #fdfbfa;
+    --wine:     #fffdfc;
+    --gold:      #a21925;
+    --gold-soft: #c2303c;
+    --gold-dim:  #8d2833;
+    --cream:     #241d1c;
+    --line: rgba(162, 25, 37, .25);
     --th-display: 'Sriracha', 'Charm', cursive;
     --th-body: 'Mali', 'Noto Sans Thai', system-ui, sans-serif;
   }
@@ -45,7 +45,7 @@
     font-size: 1.9rem;
     text-align: center;
   }
-  .sub { margin: 0 0 2rem; text-align: center; font-size: .92rem; color: rgba(244,236,224,.6); }
+  .sub { margin: 0 0 2rem; text-align: center; font-size: .92rem; color: rgba(36, 29, 28,.6); }
 
   .field { display: block; margin-bottom: 1rem; }
   .field__label { display: block; margin-bottom: .35rem; font-size: .8rem; letter-spacing: .18em; color: var(--gold-dim); }
@@ -54,7 +54,7 @@
     padding: .6rem .8rem;
     border: 1px solid var(--line);
     border-radius: 6px;
-    background: rgba(0,0,0,.25);
+    background: rgba(162, 25, 37, .02);
     color: var(--cream);
     font: inherit;
     font-size: 1rem;
@@ -64,7 +64,7 @@
   .row { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin: 1.4rem 0 2.4rem; }
   .btn {
     padding: .6rem 1.4rem;
-    border: 1px solid rgba(201,160,99,.5);
+    border: 1px solid rgba(162, 25, 37,.5);
     border-radius: 6px;
     background: transparent;
     color: var(--cream);
@@ -72,10 +72,10 @@
     font-size: .95rem;
     cursor: pointer;
   }
-  .btn:hover { background: rgba(201,160,99,.15); border-color: var(--gold); }
+  .btn:hover { background: rgba(162, 25, 37,.15); border-color: var(--gold); }
   .btn--solid { background: var(--gold); border-color: var(--gold); color: var(--wine-900); }
 
-  .error { margin: 0 0 1rem; text-align: center; color: #f0a3a3; font-size: .9rem; }
+  .error { margin: 0 0 1rem; text-align: center; color: #b3121f; font-size: .9rem; }
 
   /* ---------- ป้ายสำหรับพิมพ์ ---------- */
   .poster {
@@ -91,14 +91,14 @@
     text-align: center;
     border-radius: 10px;
     background: radial-gradient(120% 60% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
-    box-shadow: 0 20px 50px rgba(0,0,0,.45);
+    box-shadow: 0 20px 50px rgba(162, 25, 37, .04);
     position: relative;
   }
   .poster::before {
     content: '';
     position: absolute;
     inset: 3.2%;
-    border: 1px solid rgba(201,160,99,.4);
+    border: 1px solid rgba(162, 25, 37,.4);
     border-radius: 4px;
     pointer-events: none;
   }
@@ -117,7 +117,7 @@
   .poster__qr svg { width: 100%; height: auto; display: block; }
 
   .poster__cta { margin: 0; font-family: var(--th-display); font-size: 1.5rem; color: var(--gold-soft); }
-  .poster__hint { margin: .3rem 0 0; font-size: .82rem; color: rgba(244,236,224,.55); line-height: 1.7; }
+  .poster__hint { margin: .3rem 0 0; font-size: .82rem; color: rgba(36, 29, 28,.55); line-height: 1.7; }
 
   @media print {
     body { background: #fff; padding: 0; }

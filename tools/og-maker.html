@@ -10,18 +10,18 @@
 <style>
   body {
     margin: 0; padding: 2rem;
-    background: #2a0912; color: #f4ece0;
+    background: #f6f0ee; color: #241d1c;
     font-family: 'Noto Sans Thai', system-ui, sans-serif; font-weight: 300;
     text-align: center;
   }
   h1 { font-family: Charmonman, cursive; font-weight: 400; }
-  canvas { width: 100%; max-width: 900px; border: 1px solid rgba(201,160,99,.35); border-radius: 8px; }
+  canvas { width: 100%; max-width: 900px; border: 1px solid rgba(162,25,37,.35); border-radius: 8px; }
   a.dl {
     display: inline-block; margin-top: 1.2rem; padding: .6rem 1.4rem;
     border: 1px solid #c9a063; border-radius: 999px;
     color: #e0c081; text-decoration: none;
   }
-  p { color: rgba(244,236,224,.6); font-size: .9rem; }
+  p { color: rgba(36,29,28,.6); font-size: .9rem; }
 </style>
 </head>
 <body>
@@ -50,22 +50,22 @@
   function draw() {
     // พื้นหลังไล่เฉดเบอร์กันดี
     var bg = ctx.createRadialGradient(W / 2, H * 0.15, 40, W / 2, H, H * 1.15);
-    bg.addColorStop(0, '#55162b');
-    bg.addColorStop(1, '#2a0912');
+    bg.addColorStop(0, '#ffffff');
+    bg.addColorStop(1, '#fbf1f0');
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
     // กรอบทองสองชั้น
-    ctx.strokeStyle = 'rgba(201,160,99,.55)';
+    ctx.strokeStyle = 'rgba(162,25,37,.55)';
     ctx.lineWidth = 2;
     ctx.strokeRect(34, 34, W - 68, H - 68);
-    ctx.strokeStyle = 'rgba(201,160,99,.22)';
+    ctx.strokeStyle = 'rgba(162,25,37,.25)';
     ctx.lineWidth = 1;
     ctx.strokeRect(46, 46, W - 92, H - 92);
 
     // ห่วงคู่ตรงกลางบน
     ctx.save();
-    ctx.strokeStyle = 'rgba(201,160,99,.35)';
+    ctx.strokeStyle = 'rgba(162,25,37,.35)';
     ctx.lineWidth = 2;
     ctx.beginPath(); ctx.arc(W / 2 - 16, 122, 22, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(W / 2 + 16, 122, 22, 0, Math.PI * 2); ctx.stroke();
@@ -74,27 +74,27 @@
     ctx.textAlign = 'center';
 
     // คำเชิญ
-    ctx.fillStyle = 'rgba(224,192,129,.85)';
+    ctx.fillStyle = 'rgba(141,40,51,.9)';
     ctx.font = '300 27px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(pick('inviteLine', 'ขอเรียนเชิญร่วมงานวะลีมะตุลอุรุส'), W / 2, 216);
 
     // ชื่อคู่บ่าวสาว ภาษาไทย
     var groom = pick('couple.groom.th', '');
     var bride = pick('couple.bride.th', '');
-    ctx.fillStyle = '#f4ece0';
+    ctx.fillStyle = '#241d1c';
     ctx.font = '400 86px Sriracha, Charm, cursive';
     ctx.fillText(groom + '  &  ' + bride, W / 2, 320);
 
     // ชื่อภาษาอาหรับ — วางเรียงขวาไปซ้ายให้ตรงกับที่แสดงบนการ์ด (เจ้าบ่าวอยู่ขวา)
     ctx.save();
     ctx.direction = 'rtl';
-    ctx.fillStyle = '#c9a063';
+    ctx.fillStyle = '#a21925';
     ctx.font = '400 46px "Aref Ruqaa", Amiri, serif';
     ctx.fillText(pick('couple.groom.ar', '') + ' & ' + pick('couple.bride.ar', ''), W / 2, 392);
     ctx.restore();
 
     // เส้นคั่น
-    ctx.strokeStyle = 'rgba(201,160,99,.5)';
+    ctx.strokeStyle = 'rgba(162,25,37,.5)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(W / 2 - 110, 436); ctx.lineTo(W / 2 + 110, 436);
@@ -109,12 +109,12 @@
       date.weekdayTh ? date.weekdayTh + (date.day ? 'ที่ ' + thaiDigits(date.day) : '') : thaiDigits(date.day || ''),
       date.monthYearTh || '',
     ].filter(Boolean).join(' ');
-    ctx.fillStyle = '#f4ece0';
+    ctx.fillStyle = '#241d1c';
     ctx.font = '400 34px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(line, W / 2, 496);
 
     // สถานที่
-    ctx.fillStyle = 'rgba(244,236,224,.62)';
+    ctx.fillStyle = 'rgba(36,29,28,.6)';
     ctx.font = '300 25px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(pick('venue.name', ''), W / 2, 542);
   }
