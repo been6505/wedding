@@ -472,6 +472,28 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   color: var(--cream);
 }
 
+.form__thanks p { margin: 0 0 .5rem; }
+
+.form__thanks-detail {
+  font-family: var(--th-body);
+  font-size: .88rem;
+  color: rgba(244, 236, 224, .6);
+}
+
+.link-btn {
+  padding: .2rem .4rem;
+  border: 0;
+  background: none;
+  color: var(--gold-soft);
+  font-family: var(--th-body);
+  font-size: .84rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.link-btn:hover { color: var(--gold); }
+
 #rsvpSubmit[disabled] { opacity: .6; cursor: default; }
 
 /* ================= ร่วมแสดงความยินดี ================= */

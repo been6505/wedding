@@ -74,7 +74,11 @@
     var list = $('#agenda');
     if (!list) return;
     var items = cfg.schedule || [];
-    if (!items.length) { list.closest('.block').hidden = true; return; }
+    if (!items.length) {
+      var block = list.closest('.block');
+      if (block) block.hidden = true;
+      return;
+    }
 
     items.forEach(function (item) {
       var li = el('li');
@@ -213,12 +217,50 @@
       });
     });
 
-    // ต่อ Supabase ได้ = ส่งถึงเจ้าภาพโดยตรง / ไม่ได้ตั้งค่า = คัดลอกไปวางในไลน์แทน
-    var online = !!(window.BACKEND && window.BACKEND.configured());
+    // ต่อฐานข้อมูลได้ = ส่งถึงเจ้าภาพโดยตรง / ไม่ได้ตั้งค่า = คัดลอกไปวางในไลน์แทน
+    // ดูเฉพาะฐานข้อมูล — ฟอร์มนี้ไม่ต้องใช้ที่เก็บไฟล์ (รูป/คลิปอยู่หน้าเช็คอิน)
+    var online = !!(window.BACKEND && window.BACKEND.dbConfigured());
     var note = $('.form__note', form);
     if (note && !online && rsvp.noteFallback) note.textContent = rsvp.noteFallback;
 
     var submitButton = $('#rsvpSubmit');
+
+    // จำไว้ว่าเครื่องนี้ตอบไปแล้ว กันกดซ้ำหรือกดย้ำตอนเน็ตหน่วง
+    // เก็บที่เครื่องแขกล้วน ไม่ได้ผูกกับฐานข้อมูล — ล้างแคชแล้วตอบใหม่ได้
+    var SENT_KEY = 'wedding.rsvp.sent';
+
+    function readSent() {
+      try { return JSON.parse(localStorage.getItem(SENT_KEY) || 'null'); }
+      catch (e) { return null; }
+    }
+
+    function markSent(entry) {
+      try { localStorage.setItem(SENT_KEY, JSON.stringify(entry)); } catch (e) { /* โหมดส่วนตัว */ }
+    }
+
+    function showThanks(entry) {
+      form.hidden = true;
+      var box = el('div', 'form__thanks');
+      box.appendChild(el('p', null, rsvp.thanks || 'ขอบคุณที่ตอบรับ'));
+      box.appendChild(el('p', 'form__thanks-detail',
+        'บันทึกไว้ในชื่อ “' + entry.name + '” · ' +
+        (entry.attending ? 'มาร่วมงาน ' + entry.guests + ' ท่าน' : 'ไม่สะดวก')));
+
+      var redo = el('button', 'link-btn', 'แก้ไขคำตอบ');
+      redo.type = 'button';
+      redo.addEventListener('click', function () {
+        box.remove();
+        form.hidden = false;
+        submitButton.disabled = false;
+        submitButton.textContent = 'ส่งคำตอบรับ';
+        $('#rsvpName').focus();
+      });
+      box.appendChild(redo);
+      form.parentNode.appendChild(box);
+    }
+
+    var already = online ? readSent() : null;
+    if (already && already.name) showThanks(already);
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -255,9 +297,9 @@
 
       window.BACKEND.submitRsvp({ name: name, attending: attending, guests: guests })
         .then(function () {
-          form.hidden = true;
-          var thanks = el('p', 'form__thanks', rsvp.thanks || 'ขอบคุณที่ตอบรับ');
-          form.parentNode.appendChild(thanks);
+          var entry = { name: name, attending: attending, guests: guests };
+          markSent(entry);
+          showThanks(entry);
           toast('ส่งคำตอบรับเรียบร้อยแล้ว');
         })
         .catch(function (err) {

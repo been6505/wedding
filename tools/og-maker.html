@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>สร้างรูปพรีวิวตอนแชร์ (og.jpg)</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Charm:wght@400;500;700&family=Cormorant+Garamond:wght@300;400&family=Noto+Sans+Thai:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  body {
+    margin: 0; padding: 2rem;
+    background: #2a0912; color: #f4ece0;
+    font-family: 'Noto Sans Thai', system-ui, sans-serif; font-weight: 300;
+    text-align: center;
+  }
+  h1 { font-family: Charm, Georgia, serif; font-weight: 500; }
+  canvas { width: 100%; max-width: 900px; border: 1px solid rgba(201,160,99,.35); border-radius: 8px; }
+  a.dl {
+    display: inline-block; margin-top: 1.2rem; padding: .6rem 1.4rem;
+    border: 1px solid #c9a063; border-radius: 999px;
+    color: #e0c081; text-decoration: none;
+  }
+  p { color: rgba(244,236,224,.6); font-size: .9rem; }
+</style>
+</head>
+<body>
+
+<h1>รูปพรีวิวตอนแชร์</h1>
+<p>วาดจากค่าใน <code>assets/js/config.js</code> — กดดาวน์โหลดแล้วเอาไฟล์ไปวางที่ <code>assets/img/og.jpg</code></p>
+
+<canvas id="og" width="1200" height="630"></canvas>
+<br>
+<a class="dl" id="download" download="og.jpg" href="#">ดาวน์โหลด og.jpg</a>
+
+<script src="../assets/js/config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var cfg = window.WEDDING_CONFIG || {};
+  var W = 1200, H = 630;
+  var canvas = document.getElementById('og');
+  var ctx = canvas.getContext('2d');
+
+  function pick(path, fallback) {
+    var value = path.split('.').reduce(function (acc, k) { return acc == null ? undefined : acc[k]; }, cfg);
+    return value == null || value === '' ? fallback : value;
+  }
+
+  function draw() {
+    // พื้นหลังไล่เฉดเบอร์กันดี
+    var bg = ctx.createRadialGradient(W / 2, H * 0.15, 40, W / 2, H, H * 1.15);
+    bg.addColorStop(0, '#55162b');
+    bg.addColorStop(1, '#2a0912');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // กรอบทองสองชั้น
+    ctx.strokeStyle = 'rgba(201,160,99,.55)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(34, 34, W - 68, H - 68);
+    ctx.strokeStyle = 'rgba(201,160,99,.22)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(46, 46, W - 92, H - 92);
+
+    // ห่วงคู่ตรงกลางบน
+    ctx.save();
+    ctx.strokeStyle = 'rgba(201,160,99,.35)';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(W / 2 - 16, 122, 22, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(W / 2 + 16, 122, 22, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+
+    ctx.textAlign = 'center';
+
+    // คำเชิญ
+    ctx.fillStyle = 'rgba(224,192,129,.85)';
+    ctx.font = '300 27px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.fillText(pick('inviteLine', 'ขอเรียนเชิญร่วมงานวะลีมะตุลอุรุส'), W / 2, 216);
+
+    // ชื่อคู่บ่าวสาว ภาษาไทย
+    var groom = pick('couple.groom.th', '');
+    var bride = pick('couple.bride.th', '');
+    ctx.fillStyle = '#f4ece0';
+    ctx.font = '500 86px Charm, Georgia, serif';
+    ctx.fillText(groom + '  &  ' + bride, W / 2, 320);
+
+    // ชื่อภาษาอาหรับ — วางเรียงขวาไปซ้ายให้ตรงกับที่แสดงบนการ์ด (เจ้าบ่าวอยู่ขวา)
+    ctx.save();
+    ctx.direction = 'rtl';
+    ctx.fillStyle = '#c9a063';
+    ctx.font = '400 46px "Aref Ruqaa", Amiri, serif';
+    ctx.fillText(pick('couple.groom.ar', '') + ' & ' + pick('couple.bride.ar', ''), W / 2, 392);
+    ctx.restore();
+
+    // เส้นคั่น
+    ctx.strokeStyle = 'rgba(201,160,99,.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 110, 436); ctx.lineTo(W / 2 + 110, 436);
+    ctx.stroke();
+
+    // วันที่ — แปลงเลขอารบิกเป็นเลขไทย ให้เข้าชุดกับปีที่เขียนเป็นเลขไทยใน config
+    var date = cfg.date || {};
+    var thaiDigits = function (text) {
+      return String(text).replace(/[0-9]/g, function (d) { return '๐๑๒๓๔๕๖๗๘๙'[+d]; });
+    };
+    var line = [
+      date.weekdayTh ? date.weekdayTh + (date.day ? 'ที่ ' + thaiDigits(date.day) : '') : thaiDigits(date.day || ''),
+      date.monthYearTh || '',
+    ].filter(Boolean).join(' ');
+    ctx.fillStyle = '#f4ece0';
+    ctx.font = '400 34px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.fillText(line, W / 2, 496);
+
+    // สถานที่
+    ctx.fillStyle = 'rgba(244,236,224,.62)';
+    ctx.font = '300 25px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.fillText(pick('venue.name', ''), W / 2, 542);
+  }
+
+  function render() {
+    draw();
+    document.getElementById('download').href = canvas.toDataURL('image/jpeg', 0.92);
+  }
+
+  // รอฟอนต์โหลดก่อน ไม่งั้นได้ฟอนต์สำรองของระบบ
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  else window.addEventListener('load', render);
+
+  window.OG_DATA_URL = function () { return canvas.toDataURL('image/jpeg', 0.92); };
+})();
+</script>
+</body>
+</html>

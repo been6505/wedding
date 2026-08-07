@@ -134,6 +134,10 @@ cloudinary: {
 
 ถ้ายังไม่ได้ตั้งค่าครบ หน้า `admin.html` และ `checkin.html` จะบอกตรง ๆ ว่าขาดค่าไหน ไม่ใช่ขึ้นหน้าเปล่า
 
+> **ตั้งค่าครึ่งเดียวก็ใช้งานได้บางส่วน** — ฐานข้อมูลกับที่เก็บไฟล์แยกกันคนละเรื่อง
+> ถ้ากรอกแค่ Firebase แต่ยังไม่ได้ทำ Cloudinary ฟอร์มตอบรับ การเช็คอิน และการอวยพรเป็นข้อความ
+> ยังทำงานเต็มที่ แค่แท็บ "การ์ดรูป" กับ "คลิปวิดีโอ" จะถูกซ่อนไว้จนกว่าจะตั้งค่า Cloudinary เสร็จ
+
 ### ถ้าอยากใช้ Supabase แทน
 
 โค้ดรองรับทั้งสองเจ้า สลับได้ที่บรรทัดเดียวใน `config.js`
@@ -238,6 +242,27 @@ repo นี้มี workflow `.github/workflows/pages.yml` เตรียม�
 2. ที่ **Source** เลือก **GitHub Actions**
 3. push ขึ้น branch `main` — เว็บจะขึ้นอัตโนมัติที่ `https://<username>.github.io/wedding/`
 
+### หลัง deploy เสร็จ ทำอีกสองอย่าง
+
+**1. แก้ลิงก์รูปพรีวิวให้เป็นโดเมนจริง**
+
+ตัวขูดข้อมูลของไลน์กับเฟซบุ๊กไม่รันจาวาสคริปต์ จึงอ่านค่าจาก `config.js` ไม่ได้
+ต้องแก้ที่ `index.html` ตรง ๆ สองบรรทัด ให้เป็น URL เต็มของเว็บที่ deploy แล้ว
+
+```html
+<meta property="og:url" content="https://โดเมนของคุณ/">
+<meta property="og:image" content="https://โดเมนของคุณ/assets/img/og.jpg">
+```
+
+ถ้าเปลี่ยนชื่อบ่าวสาวหรือวันงานใน `config.js` แล้วอยากให้รูปพรีวิวตามไปด้วย
+เปิด **`tools/og-maker.html`** ผ่านเซิร์ฟเวอร์ กด **ดาวน์โหลด og.jpg** แล้วเอาไฟล์ไปทับ `assets/img/og.jpg`
+
+**2. เอาลิงก์ไปทดสอบ**
+
+- ส่งลิงก์เข้าห้องไลน์ของตัวเองก่อน ดูว่าพรีวิวขึ้นถูกไหม
+- เปิด `admin.html` ล็อกอินให้ผ่าน แล้วลองตอบรับจากมือถือเครื่องอื่นดูว่าข้อมูลเข้าจริง
+- เปิด `qr.html` สั่งพิมพ์ แล้วลองสแกนด้วยกล้องมือถือว่าเข้าหน้าเช็คอินได้
+
 > repo เป็น **private** อยู่ ถ้าจะเปิด GitHub Pages ต้องใช้บัญชี GitHub Pro ขึ้นไป
 > บัญชีฟรีให้เปลี่ยน repo เป็น public ก่อน หรือ deploy ที่ Netlify / Vercel / Cloudflare Pages
 > (ลากโฟลเดอร์ทั้งอันไปวางได้เลย ไม่ต้องตั้งค่า build)
@@ -284,9 +309,11 @@ assets/js/firebase.js     คุย Firestore + Auth ผ่าน REST
 assets/js/supabase.js     คุย Supabase ผ่าน REST (ทางเลือกสำรอง)
 assets/js/cloudinary.js   อัปโหลดรูป/คลิปขึ้น Cloudinary
 
-assets/img/               รูปภาพ
+assets/img/og.jpg         รูปพรีวิวตอนแชร์ในไลน์/เฟซบุ๊ก (1200×630)
+assets/img/               รูปภาพอื่น ๆ
 firebase/firestore.rules  กฎความปลอดภัย เอาไปวางใน Firestore Rules
 supabase/schema.sql       ตาราง สิทธิ์ และ bucket สำหรับกรณีใช้ Supabase
+tools/og-maker.html       เครื่องมือวาด og.jpg ใหม่จากค่าใน config.js
 ```
 
 ฟอนต์ที่ใช้ (โหลดจาก Google Fonts): **Aref Ruqaa** และ **Amiri** สำหรับภาษาอาหรับ,

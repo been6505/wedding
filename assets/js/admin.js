@@ -14,9 +14,11 @@
   var checkinQuery = '';
   var wishFilter = 'all', wishQuery = '';
 
-  if (!window.BACKEND || !window.BACKEND.configured()) {
+  // ไม่มีฐานข้อมูล = อ่านอะไรไม่ได้เลย ต้องหยุด
+  // ไม่มีที่เก็บไฟล์ = ยังดูรายชื่อและคำอวยพรที่เป็นข้อความได้ แค่เปิดรูป/คลิปไม่ได้
+  if (!window.BACKEND || !window.BACKEND.dbConfigured()) {
     var list = document.getElementById('setupIssues');
-    var reasons = (window.BACKEND && window.BACKEND.issues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
+    var reasons = (window.BACKEND && window.BACKEND.dbIssues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
     reasons.forEach(function (reason) {
       var item = document.createElement('li');
       item.textContent = reason;

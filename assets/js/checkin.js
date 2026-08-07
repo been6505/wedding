@@ -47,10 +47,14 @@
     if (button.dataset.label) button.textContent = button.dataset.label;
   }
 
-  /* ---------- ยังไม่ได้ตั้งค่า ---------- */
-  if (!window.BACKEND || !window.BACKEND.configured()) {
+  /* ---------- ยังไม่ได้ตั้งค่า ----------
+   * ไม่มีฐานข้อมูล = หน้านี้ทำอะไรไม่ได้เลย ต้องหยุด
+   * มีฐานข้อมูลแต่ไม่มีที่เก็บไฟล์ = เช็คอินและอวยพรเป็นข้อความยังทำได้
+   *   แค่ซ่อนแท็บการ์ดรูปกับคลิปไว้
+   */
+  if (!window.BACKEND || !window.BACKEND.dbConfigured()) {
     var list = $('#setupIssues');
-    var reasons = (window.BACKEND && window.BACKEND.issues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
+    var reasons = (window.BACKEND && window.BACKEND.dbIssues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
     reasons.forEach(function (reason) {
       var item = document.createElement('li');
       item.textContent = reason;
@@ -59,6 +63,8 @@
     show('setupNotice');
     return;
   }
+
+  var canUpload = window.BACKEND.mediaConfigured();
 
   /* ---------- ขั้นที่ 1: เช็คอิน ---------- */
   $('#coupleTitle').textContent = coupleNames();
@@ -98,20 +104,28 @@
   show('stepCheckin');
 
   /* ---------- แท็บวิธีอวยพร ---------- */
-  $$('.tab').forEach(function (tab) {
-    tab.addEventListener('click', function () {
-      $$('.tab').forEach(function (other) {
-        other.classList.remove('is-active');
-        other.setAttribute('aria-selected', 'false');
-      });
-      tab.classList.add('is-active');
-      tab.setAttribute('aria-selected', 'true');
-
-      $$('.pane').forEach(function (pane) {
-        pane.classList.toggle('is-active', pane.dataset.pane === tab.dataset.mode);
-      });
-      if (tab.dataset.mode !== 'video') stopCamera();
+  // ไม่มีที่เก็บไฟล์ก็ส่งรูปหรือคลิปไม่ได้ ซ่อนแท็บทิ้งดีกว่าปล่อยให้กดแล้วพัง
+  // (ซ่อนอย่างเดียว ไม่ลบทิ้ง โค้ดข้างล่างยังหา element เจอเหมือนเดิม)
+  if (!canUpload) {
+    $$('.tab').forEach(function (tab) {
+      if (tab.dataset.mode !== 'text') tab.hidden = true;
     });
+  }
+
+  function selectTab(mode) {
+    $$('.tab').forEach(function (tab) {
+      var on = tab.dataset.mode === mode;
+      tab.classList.toggle('is-active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    $$('.pane').forEach(function (pane) {
+      pane.classList.toggle('is-active', pane.dataset.pane === mode);
+    });
+    if (mode !== 'video') stopCamera();
+  }
+
+  $$('.tab').forEach(function (tab) {
+    tab.addEventListener('click', function () { selectTab(tab.dataset.mode); });
   });
 
   function finish(message) {
@@ -124,18 +138,33 @@
     finish('เช็คอินของท่านถูกบันทึกแล้ว ขอบคุณที่มาร่วมงาน');
   });
 
-  $('#againBtn').addEventListener('click', function () {
+  // คืนหน้าอวยพรให้กลับเป็นสภาพเริ่มต้นทุกช่อง
+  // (เดิมลืมคืนปุ่มกล้อง ทำให้กด "ส่งอีกครั้ง" แล้วอัดคลิปใหม่ไม่ได้)
+  function resetWishForm() {
     photoBlob = null; photoImage = null; videoBlob = null;
     $('#wishText').value = '';
     $('#photoMessage').value = '';
     $('#photoPreview').hidden = true;
     $('#photoMessageField').hidden = true;
     $('#sendPhoto').hidden = true;
-    $('#videoPlayback').hidden = true;
+    $('#photoInput').value = '';
+    $('#photoPick').textContent = 'เลือก / ถ่ายรูป';
+
+    $('#videoMessage').value = '';
+    playback.hidden = true;
+    playback.removeAttribute('src');
     $('#videoEmpty').hidden = false;
     $('#videoMessageField').hidden = true;
     $('#sendVideo').hidden = true;
     $('#recordRedo').hidden = true;
+    $('#recordToggle').hidden = true;
+    $('#recordToggle').textContent = 'เริ่มอัด';
+    $('#cameraStart').hidden = !supportsRecording();
+  }
+
+  $('#againBtn').addEventListener('click', function () {
+    resetWishForm();
+    selectTab('text');
     show('stepWish');
   });
 

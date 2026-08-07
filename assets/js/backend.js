@@ -19,12 +19,15 @@ window.BACKEND = (function () {
   var cloud = window.MEDIA_CLOUDINARY;
 
   // ปัญหาการตั้งค่าที่ทำให้ใช้งานไม่ได้ เก็บไว้บอกผู้ใช้เป็นภาษาคน
-  var problems = [];
+  // แยกสองกอง เพราะฐานข้อมูลกับที่เก็บไฟล์ล้มคนละเรื่องกัน:
+  // ไม่มีที่เก็บไฟล์ = ส่งรูป/คลิปไม่ได้ แต่ตอบรับ เช็คอิน และอวยพรเป็นข้อความยังทำได้ปกติ
+  var dbProblems = [];
+  var mediaProblems = [];
 
   if (!db) {
-    problems.push('ไม่พบไฟล์ของผู้ให้บริการ "' + choice + '" — ตรวจว่า <script> โหลดครบหรือยัง');
+    dbProblems.push('ไม่พบไฟล์ของผู้ให้บริการ "' + choice + '" — ตรวจว่า <script> โหลดครบหรือยัง');
   } else if (!db.configured()) {
-    problems.push(choice === 'firebase'
+    dbProblems.push(choice === 'firebase'
       ? 'ยังไม่ได้กรอก firebase.projectId และ firebase.apiKey ใน assets/js/config.js'
       : 'ยังไม่ได้กรอก supabase.url และ supabase.anonKey ใน assets/js/config.js');
   }
@@ -32,9 +35,9 @@ window.BACKEND = (function () {
   var media = null;
   if (mediaChoice === 'cloudinary') {
     if (!cloud) {
-      problems.push('ไม่พบไฟล์ assets/js/cloudinary.js');
+      mediaProblems.push('ไม่พบไฟล์ assets/js/cloudinary.js');
     } else if (!cloud.configured()) {
-      problems.push('ยังไม่ได้กรอก cloudinary.cloudName และ cloudinary.uploadPreset ใน assets/js/config.js');
+      mediaProblems.push('ยังไม่ได้กรอก cloudinary.cloudName และ cloudinary.uploadPreset ใน assets/js/config.js');
     } else {
       media = cloud;
     }
@@ -46,14 +49,16 @@ window.BACKEND = (function () {
       posterUrl: function () { return null; },
     };
   } else {
-    problems.push('ผู้ให้บริการ "' + choice + '" ไม่มีที่เก็บไฟล์ในตัว ต้องตั้ง media.provider เป็น "cloudinary"');
+    mediaProblems.push('ผู้ให้บริการ "' + choice + '" ไม่มีที่เก็บไฟล์ในตัว ต้องตั้ง media.provider เป็น "cloudinary"');
   }
 
-  function configured() { return problems.length === 0; }
-  function issues() { return problems.slice(); }
+  function dbConfigured() { return dbProblems.length === 0; }
+  function mediaConfigured() { return !!media; }
+  function configured() { return dbConfigured() && mediaConfigured(); }
+  function issues() { return dbProblems.concat(mediaProblems); }
 
   function guard() {
-    return Promise.reject(new Error(problems[0] || 'ยังไม่ได้ตั้งค่าระบบหลังบ้าน'));
+    return Promise.reject(new Error(issues()[0] || 'ยังไม่ได้ตั้งค่าระบบหลังบ้าน'));
   }
 
   function via(method) {
@@ -68,6 +73,12 @@ window.BACKEND = (function () {
     mediaProvider: media ? media.name : null,
     configured: configured,
     issues: issues,
+
+    // ตรวจแยกทีละส่วน สำหรับหน้าที่ทำงานต่อได้แม้ไม่มีที่เก็บไฟล์
+    dbConfigured: dbConfigured,
+    dbIssues: function () { return dbProblems.slice(); },
+    mediaConfigured: mediaConfigured,
+    mediaIssues: function () { return mediaProblems.slice(); },
 
     session: function () { return db && db.configured() ? db.session() : null; },
     signIn: via('signIn'),
