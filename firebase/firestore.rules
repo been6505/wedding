@@ -1,0 +1,73 @@
+rules_version = '2';
+
+// =====================================================================
+// สิทธิ์การเข้าถึงข้อมูลของการ์ดงานแต่ง
+// วิธีใช้: Firebase console > Firestore Database > Rules > วางทั้งไฟล์ > Publish
+//
+// หลักการ: แขก (ไม่ได้ล็อกอิน) "เพิ่ม" ข้อมูลได้อย่างเดียว
+//          อ่านของคนอื่นไม่ได้ แก้ไม่ได้ ลบไม่ได้
+//          เจ้าภาพที่ล็อกอินแล้วเท่านั้นจึงอ่านและลบได้
+// =====================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function validName(value) {
+      return value is string && value.size() > 0 && value.size() <= 120;
+    }
+
+    function validCount(value) {
+      return value is int && value >= 0 && value <= 20;
+    }
+
+    // เวลาที่ส่งมาต้องใกล้เคียงเวลาจริงของเซิร์ฟเวอร์ กันการย้อนวันเวลา
+    function freshTimestamp(value) {
+      return value is timestamp
+             && value <= request.time + duration.value(5, 'm')
+             && value >= request.time - duration.value(1, 'h');
+    }
+
+    function isHost() {
+      return request.auth != null;
+    }
+
+    // ---------- ตอบรับคำเชิญ ----------
+    match /rsvps/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'attending', 'guests', 'created_at'])
+                    && validName(request.resource.data.name)
+                    && request.resource.data.attending is bool
+                    && validCount(request.resource.data.guests)
+                    && freshTimestamp(request.resource.data.created_at);
+      allow read, delete: if isHost();
+      allow update: if false;
+    }
+
+    // ---------- เช็คอินหน้างาน ----------
+    match /checkins/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'party_size', 'created_at'])
+                    && validName(request.resource.data.name)
+                    && validCount(request.resource.data.party_size)
+                    && request.resource.data.party_size >= 1
+                    && freshTimestamp(request.resource.data.created_at);
+      allow read, delete: if isHost();
+      allow update: if false;
+    }
+
+    // ---------- คำอวยพร ----------
+    match /wishes/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['name', 'kind', 'message', 'media', 'created_at'])
+                    && validName(request.resource.data.name)
+                    && request.resource.data.kind in ['text', 'photo', 'video']
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 1000
+                    && (request.resource.data.media == null || request.resource.data.media is map)
+                    && freshTimestamp(request.resource.data.created_at);
+      allow read, delete: if isHost();
+      allow update: if false;
+    }
+
+    // ---------- ที่เหลือปิดหมด ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

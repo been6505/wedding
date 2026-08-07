@@ -17,10 +17,8 @@
   <!-- ---------- ยังไม่ได้ตั้งค่า ---------- -->
   <section class="card" id="setupNotice" hidden>
     <h1 class="title">ยังไม่ได้ตั้งค่า</h1>
-    <p class="lead">
-      หน้านี้ต้องเชื่อมกับ Supabase ก่อนถึงจะใช้งานได้<br>
-      กรอก <code>supabase.url</code> และ <code>supabase.anonKey</code> ใน <code>assets/js/config.js</code>
-    </p>
+    <p class="lead">หน้านี้ต้องเชื่อมกับระบบหลังบ้านก่อนถึงจะใช้งานได้</p>
+    <ul class="issues" id="setupIssues"></ul>
   </section>
 
   <!-- ---------- ขั้นที่ 1: เช็คอิน ---------- -->
@@ -137,7 +135,10 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="assets/js/config.js"></script>
+<script src="assets/js/cloudinary.js"></script>
+<script src="assets/js/firebase.js"></script>
 <script src="assets/js/supabase.js"></script>
+<script src="assets/js/backend.js"></script>
 <script src="assets/js/checkin.js"></script>
 </body>
 </html>

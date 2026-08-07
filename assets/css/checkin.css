@@ -277,3 +277,13 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- รายการสิ่งที่ยังไม่ได้ตั้งค่า ---------- */
+.issues {
+  margin: 0;
+  padding: 0 0 0 1.1rem;
+  text-align: left;
+  font-size: .9rem;
+  color: var(--gold-soft);
+}
+.issues li { margin-bottom: .5rem; }

@@ -67,16 +67,46 @@ window.WEDDING_CONFIG = {
     lineUrl: '',
   },
 
-  /* ---------- Supabase (ที่เก็บคำตอบรับ) ----------
-   * ตั้งค่าตามขั้นตอนใน README ส่วน "เปิดหน้าดูรายชื่อคนมางาน"
-   * ทั้งสองค่านี้เปิดเผยได้ ไม่ใช่ความลับ — anon key ถูกจำกัดสิทธิ์ให้ "เพิ่มคำตอบ"
-   * ได้อย่างเดียว อ่านรายชื่อไม่ได้ (ดู supabase/schema.sql)
-   * ถ้าเว้นว่างไว้ ฟอร์มจะกลับไปใช้วิธีคัดลอกข้อความให้ไปวางในไลน์แทน
+  /* =====================================================================
+   * ระบบหลังบ้าน — เก็บคำตอบรับ เช็คอิน และคำอวยพร
+   * ตั้งค่าตามขั้นตอนใน README ส่วน "ตั้งค่าระบบหลังบ้าน"
+   * ถ้าเว้นว่างไว้ทั้งหมด เว็บยังใช้งานได้ปกติ เพียงแต่ฟอร์มตอบรับจะกลับไป
+   * ใช้วิธีคัดลอกข้อความให้ไปวางในไลน์ และหน้าเช็คอินจะบอกว่ายังไม่ได้ตั้งค่า
+   * ===================================================================== */
+
+  // ฐานข้อมูล: 'firebase' (แนะนำ — ไม่ถูกพักเมื่อไม่มีคนใช้) หรือ 'supabase'
+  backend: 'firebase',
+
+  // ที่เก็บรูปและคลิป: 'cloudinary' หรือ 'backend' (ใช้ที่เก็บของฐานข้อมูลเอง)
+  // Firebase Storage ต้องผูกบัตรก่อนใช้ ถ้าเลือก firebase จึงต้องใช้ cloudinary
+  media: { provider: 'cloudinary' },
+
+  /* ---------- Firebase ----------
+   * ทั้งสองค่าเปิดเผยได้ ไม่ใช่ความลับ — สิทธิ์จริงคุมด้วย firebase/firestore.rules
+   * หาได้จาก Project settings > General > Your apps > Web app > SDK setup
+   */
+  firebase: {
+    projectId: '',  // เช่น 'wedding-mubeen-fahada'
+    apiKey: '',     // เช่น 'AIzaSy...'
+  },
+
+  /* ---------- Cloudinary ----------
+   * uploadPreset ต้องตั้งเป็นแบบ Unsigned ใน Settings > Upload
+   * คีย์ลับ (API Secret) ไม่ต้องใช้และห้ามเอามาใส่ที่นี่
+   */
+  cloudinary: {
+    cloudName: '',            // เช่น 'dxxxxxxx'
+    uploadPreset: '',         // ชื่อ unsigned upload preset
+    folder: 'wedding-wishes', // โฟลเดอร์ปลายทางในบัญชี Cloudinary
+  },
+
+  /* ---------- Supabase (ทางเลือกสำรอง) ----------
+   * ใช้เมื่อตั้ง backend เป็น 'supabase' เท่านั้น
+   * anon key เปิดเผยได้ สิทธิ์จริงคุมด้วย supabase/schema.sql
    */
   supabase: {
     url: '',      // เช่น 'https://abcdefghijk.supabase.co'
     anonKey: '',  // Project API keys > anon public
-    table: 'rsvps',
   },
 
   /* ---------- ดุอาอ์ปิดท้าย ---------- */

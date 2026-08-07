@@ -214,7 +214,7 @@
     });
 
     // ต่อ Supabase ได้ = ส่งถึงเจ้าภาพโดยตรง / ไม่ได้ตั้งค่า = คัดลอกไปวางในไลน์แทน
-    var online = !!(window.SB && window.SB.configured());
+    var online = !!(window.BACKEND && window.BACKEND.configured());
     var note = $('.form__note', form);
     if (note && !online && rsvp.noteFallback) note.textContent = rsvp.noteFallback;
 
@@ -253,7 +253,7 @@
       submitButton.disabled = true;
       submitButton.textContent = 'กำลังส่ง...';
 
-      window.SB.submitRsvp({ name: name, attending: attending, guests: guests })
+      window.BACKEND.submitRsvp({ name: name, attending: attending, guests: guests })
         .then(function () {
           form.hidden = true;
           var thanks = el('p', 'form__thanks', rsvp.thanks || 'ขอบคุณที่ตอบรับ');

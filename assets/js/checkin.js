@@ -36,11 +36,6 @@
     return groom && bride ? groom + ' & ' + bride : 'งานวะลีมะฮฺ';
   }
 
-  function uid() {
-    if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
-    return 'x' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-  }
-
   function busy(button, label) {
     button.disabled = true;
     button.dataset.label = button.textContent;
@@ -53,7 +48,14 @@
   }
 
   /* ---------- ยังไม่ได้ตั้งค่า ---------- */
-  if (!window.SB || !window.SB.configured()) {
+  if (!window.BACKEND || !window.BACKEND.configured()) {
+    var list = $('#setupIssues');
+    var reasons = (window.BACKEND && window.BACKEND.issues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
+    reasons.forEach(function (reason) {
+      var item = document.createElement('li');
+      item.textContent = reason;
+      list.appendChild(item);
+    });
     show('setupNotice');
     return;
   }
@@ -81,7 +83,7 @@
     guest.name = name;
     guest.partySize = parseInt(partySelect.value, 10) || 1;
 
-    window.SB.submitCheckin(guest)
+    window.BACKEND.submitCheckin(guest)
       .then(function () {
         $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
         show('stepWish');
@@ -145,7 +147,7 @@
 
     var button = this;
     busy(button, 'กำลังส่ง...');
-    window.SB.submitWish({ name: guest.name, kind: 'text', message: message })
+    window.BACKEND.submitWish({ name: guest.name, kind: 'text', message: message })
       .then(function () { finish('คำอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว'); })
       .catch(function (err) {
         console.error(err);
@@ -351,13 +353,13 @@
       photoBlob = blob;
       if (blob.size > MAX_UPLOAD) { idle(button); toast('ไฟล์ใหญ่เกินไป'); return; }
 
-      window.SB.uploadMedia(blob, uid() + '.jpg')
-        .then(function (path) {
-          return window.SB.submitWish({
+      window.BACKEND.uploadMedia(blob, 'photo')
+        .then(function (media) {
+          return window.BACKEND.submitWish({
             name: guest.name,
             kind: 'photo',
             message: $('#photoMessage').value.trim(),
-            mediaPath: path,
+            media: media,
           });
         })
         .then(function () { finish('การ์ดอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว'); })
@@ -511,14 +513,13 @@
     var button = this;
     busy(button, 'กำลังอัปโหลด...');
 
-    var ext = (videoBlob.type.indexOf('mp4') !== -1) ? 'mp4' : 'webm';
-    window.SB.uploadMedia(videoBlob, uid() + '.' + ext)
-      .then(function (path) {
-        return window.SB.submitWish({
+    window.BACKEND.uploadMedia(videoBlob, 'video')
+      .then(function (media) {
+        return window.BACKEND.submitWish({
           name: guest.name,
           kind: 'video',
           message: $('#videoMessage').value.trim(),
-          mediaPath: path,
+          media: media,
         });
       })
       .then(function () { finish('คลิปอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว'); })

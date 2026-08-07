@@ -14,7 +14,14 @@
   var checkinQuery = '';
   var wishFilter = 'all', wishQuery = '';
 
-  if (!window.SB || !window.SB.configured()) {
+  if (!window.BACKEND || !window.BACKEND.configured()) {
+    var list = document.getElementById('setupIssues');
+    var reasons = (window.BACKEND && window.BACKEND.issues()) || ['ไม่พบไฟล์ assets/js/backend.js'];
+    reasons.forEach(function (reason) {
+      var item = document.createElement('li');
+      item.textContent = reason;
+      list.appendChild(item);
+    });
     setupNotice.hidden = false;
     return;
   }
@@ -73,7 +80,7 @@
     loginSubmit.disabled = true;
     loginSubmit.textContent = 'กำลังเข้าสู่ระบบ...';
 
-    window.SB.signIn($('#loginEmail').value.trim(), $('#loginPassword').value)
+    window.BACKEND.signIn($('#loginEmail').value.trim(), $('#loginPassword').value)
       .then(function () { showDash(); })
       .catch(function (err) {
         loginError.textContent = /invalid/i.test(err.message) ? 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' : err.message;
@@ -86,13 +93,13 @@
   });
 
   $('#logoutBtn').addEventListener('click', function () {
-    window.SB.signOut().then(function () { location.reload(); });
+    window.BACKEND.signOut().then(function () { location.reload(); });
   });
 
   function showDash() {
     login.hidden = true;
     dash.hidden = false;
-    var session = window.SB.session();
+    var session = window.BACKEND.session();
     $('#dashUser').textContent = (session && session.email) || '';
     loadAll();
   }
@@ -116,7 +123,7 @@
   /* ---------- โหลดข้อมูล ---------- */
   function handleAuthError(err) {
     if (err.status === 401 || /เข้าสู่ระบบ|หมดเวลา/.test(err.message)) {
-      window.SB.signOut().then(function () { location.reload(); });
+      window.BACKEND.signOut().then(function () { location.reload(); });
       return true;
     }
     return false;
@@ -124,11 +131,11 @@
 
   function loadAll() {
     var jobs = [
-      window.SB.listRsvps().then(function (rows) { rsvps = rows || []; renderRsvps(); },
+      window.BACKEND.listRsvps().then(function (rows) { rsvps = rows || []; renderRsvps(); },
         function (err) { if (!handleAuthError(err)) $('#state').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
-      window.SB.listCheckins().then(function (rows) { checkins = rows || []; renderCheckins(); },
+      window.BACKEND.listCheckins().then(function (rows) { checkins = rows || []; renderCheckins(); },
         function (err) { if (!handleAuthError(err)) $('#stateCheckin').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
-      window.SB.listWishes().then(function (rows) { wishes = rows || []; renderWishes(); },
+      window.BACKEND.listWishes().then(function (rows) { wishes = rows || []; renderWishes(); },
         function (err) { if (!handleAuthError(err)) $('#stateWish').textContent = 'โหลดไม่สำเร็จ: ' + err.message; }),
     ];
     return Promise.all(jobs);
@@ -192,11 +199,11 @@
       tr.appendChild(status);
 
       tr.appendChild(el('td', 'num', row.attending ? String(row.guests || 0) : '—'));
-      tr.appendChild(el('td', 'when', formatWhen(row.created_at)));
+      tr.appendChild(el('td', 'when', formatWhen(row.createdAt)));
 
       var actions = el('td', 'num');
       actions.appendChild(deleteButton(row.name || '', function () {
-        return window.SB.deleteRsvp(row.id).then(function () {
+        return window.BACKEND.deleteRsvp(row.id).then(function () {
           rsvps = rsvps.filter(function (r) { return r.id !== row.id; });
           renderRsvps();
         });
@@ -213,7 +220,7 @@
   });
 
   function renderCheckins() {
-    $('#statHeads').textContent = checkins.reduce(function (sum, r) { return sum + (Number(r.party_size) || 0); }, 0);
+    $('#statHeads').textContent = checkins.reduce(function (sum, r) { return sum + (Number(r.partySize) || 0); }, 0);
     $('#statParties').textContent = checkins.length;
 
     var visible = checkins.filter(function (row) {
@@ -234,12 +241,12 @@
     visible.forEach(function (row) {
       var tr = document.createElement('tr');
       tr.appendChild(el('td', 'name', row.name || '—'));
-      tr.appendChild(el('td', 'num', String(row.party_size || 1)));
-      tr.appendChild(el('td', 'when', formatWhen(row.created_at)));
+      tr.appendChild(el('td', 'num', String(row.partySize || 1)));
+      tr.appendChild(el('td', 'when', formatWhen(row.createdAt)));
 
       var actions = el('td', 'num');
       actions.appendChild(deleteButton(row.name || '', function () {
-        return window.SB.deleteCheckin(row.id).then(function () {
+        return window.BACKEND.deleteCheckin(row.id).then(function () {
           checkins = checkins.filter(function (r) { return r.id !== row.id; });
           renderCheckins();
         });
@@ -304,17 +311,17 @@
 
     if (row.message) card.appendChild(el('p', 'wish__message', row.message));
 
-    if (row.media_path) {
+    if (row.media) {
       var slot = el('div', 'wish__media');
       card.appendChild(slot);
-      if (row.kind === 'photo') loadPhoto(slot, row.media_path);
-      else loadVideoButton(slot, row.media_path);
+      if (row.kind === 'photo') loadPhoto(slot, row.media);
+      else loadVideoButton(slot, row.media);
     }
 
     var foot = el('div', 'wish__foot');
-    foot.appendChild(el('span', 'when', formatWhen(row.created_at)));
+    foot.appendChild(el('span', 'when', formatWhen(row.createdAt)));
     foot.appendChild(deleteButton(row.name || '', function () {
-      return window.SB.deleteWish(row.id).then(function () {
+      return window.BACKEND.deleteWish(row.id).then(function () {
         wishes = wishes.filter(function (w) { return w.id !== row.id; });
         renderWishes();
       });
@@ -324,9 +331,9 @@
     return card;
   }
 
-  function loadPhoto(slot, path) {
+  function loadPhoto(slot, ref) {
     slot.appendChild(el('p', 'wish__loading', 'กำลังโหลดรูป...'));
-    window.SB.signedMediaUrl(path).then(function (url) {
+    window.BACKEND.mediaUrl(ref).then(function (url) {
       slot.textContent = '';
       var link = document.createElement('a');
       link.href = url;
@@ -344,19 +351,21 @@
     });
   }
 
-  function loadVideoButton(slot, path) {
+  function loadVideoButton(slot, ref) {
     var button = el('button', 'btn', 'เล่นคลิป');
     button.type = 'button';
     button.addEventListener('click', function () {
       button.disabled = true;
       button.textContent = 'กำลังโหลด...';
-      window.SB.signedMediaUrl(path).then(function (url) {
+      window.BACKEND.mediaUrl(ref).then(function (url) {
         slot.textContent = '';
         var video = document.createElement('video');
         video.src = url;
         video.controls = true;
         video.playsInline = true;
         video.preload = 'metadata';
+        var poster = window.BACKEND.mediaPoster(ref);
+        if (poster) video.poster = poster;
         slot.appendChild(video);
       }, function (err) {
         button.disabled = false;
@@ -381,19 +390,20 @@
       filename = 'rsvp.csv';
       header = ['ชื่อ', 'สถานะ', 'จำนวน', 'ตอบเมื่อ'];
       rows = rsvps.map(function (r) {
-        return [r.name, r.attending ? 'มาร่วมงาน' : 'ไม่สะดวก', r.attending ? (r.guests || 0) : 0, formatWhen(r.created_at)];
+        return [r.name, r.attending ? 'มาร่วมงาน' : 'ไม่สะดวก', r.attending ? (r.guests || 0) : 0, formatWhen(r.createdAt)];
       });
     } else if (view === 'checkin') {
       if (!checkins.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
       filename = 'checkin.csv';
       header = ['ชื่อ', 'จำนวน', 'เช็คอินเมื่อ'];
-      rows = checkins.map(function (r) { return [r.name, r.party_size || 1, formatWhen(r.created_at)]; });
+      rows = checkins.map(function (r) { return [r.name, r.partySize || 1, formatWhen(r.createdAt)]; });
     } else {
       if (!wishes.length) { toast('ยังไม่มีข้อมูลให้ดาวน์โหลด'); return; }
       filename = 'wishes.csv';
       header = ['ชื่อ', 'ประเภท', 'ข้อความ', 'ไฟล์', 'ส่งเมื่อ'];
       rows = wishes.map(function (r) {
-        return [r.name, KIND_LABEL[r.kind] || r.kind, r.message || '', r.media_path || '', formatWhen(r.created_at)];
+        var file = r.media ? (r.media.id || r.media.path || '') : '';
+        return [r.name, KIND_LABEL[r.kind] || r.kind, r.message || '', file, formatWhen(r.createdAt)];
       });
     }
 
@@ -409,6 +419,6 @@
   });
 
   /* ---------- เริ่มทำงาน ---------- */
-  if (window.SB.session()) showDash();
+  if (window.BACKEND.session()) showDash();
   else login.hidden = false;
 })();

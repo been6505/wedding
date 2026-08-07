@@ -17,11 +17,9 @@
 <section class="gate" id="setupNotice" hidden>
   <div class="gate__box">
     <h1 class="gate__title">ยังไม่ได้ตั้งค่า</h1>
-    <p class="gate__text">
-      หน้านี้ต้องเชื่อมกับ Supabase ก่อนถึงจะใช้งานได้<br>
-      กรอก <code>supabase.url</code> และ <code>supabase.anonKey</code>
-      ใน <code>assets/js/config.js</code> แล้วดูขั้นตอนทั้งหมดได้ใน README
-    </p>
+    <p class="gate__text">หน้านี้ต้องเชื่อมกับระบบหลังบ้านก่อนถึงจะใช้งานได้</p>
+    <ul class="gate__issues" id="setupIssues"></ul>
+    <p class="gate__text">ดูขั้นตอนทั้งหมดได้ใน README หัวข้อ "ตั้งค่าระบบหลังบ้าน"</p>
   </div>
 </section>
 
@@ -158,7 +156,10 @@
 </main>
 
 <script src="assets/js/config.js"></script>
+<script src="assets/js/cloudinary.js"></script>
+<script src="assets/js/firebase.js"></script>
 <script src="assets/js/supabase.js"></script>
+<script src="assets/js/backend.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>
 </html>

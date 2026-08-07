@@ -357,3 +357,13 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------- รายการสิ่งที่ยังไม่ได้ตั้งค่า ---------- */
+.gate__issues {
+  margin: 0 0 1.4rem;
+  padding: 0 0 0 1.1rem;
+  text-align: left;
+  font-size: .88rem;
+  color: var(--gold-soft);
+}
+.gate__issues li { margin-bottom: .5rem; }
