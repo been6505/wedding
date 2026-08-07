@@ -55,19 +55,61 @@
     var lock = $('#coverLock');
     var opening = false;
 
-    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนคลายไปเลย
+    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนกับประตูไปเลย
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var UNLOCK_MS = calm ? 0 : 700;
+    var DOOR_MS = calm ? 0 : 1050;
 
-    function reveal() {
-      cover.classList.add('is-open');
-      card.hidden = false;
-      requestAnimationFrame(revealFirst);
-      if (cfg.options && cfg.options.backgroundMusic) tryPlayMusic();
-      setTimeout(function () { cover.remove(); }, 1000);
+    /* ผ่าซองที่เห็นอยู่ออกเป็นบานซ้าย–ขวา โดยไม่แตะหน้าตาตอนยังไม่กด
+       วิธี: โคลนซองสองชุดวางทับที่เดิม ชุดหนึ่งครอบไว้เฉพาะครึ่งซ้าย อีกชุดครึ่งขวา
+       แล้วหมุนคนละทาง — ตัวจริงซ่อนไว้ ภาพที่เห็นจึงเหมือนเดิมเป๊ะก่อนเริ่มหมุน */
+    function splitIntoDoors() {
+      var panel = cover.querySelector('.cover__panel');
+      if (!panel) return false;
+
+      var box = panel.getBoundingClientRect();
+      ['l', 'r'].forEach(function (side) {
+        var door = document.createElement('div');
+        door.className = 'door door--' + side;
+        door.style.left = box.left + 'px';
+        door.style.top = box.top + 'px';
+        door.style.width = box.width + 'px';
+        door.style.height = box.height + 'px';
+
+        var clone = panel.cloneNode(true);
+        // id ซ้ำในหน้าเดียวกันทำให้ getElementById หยิบผิดตัว ตัดทิ้งให้หมด
+        clone.removeAttribute('id');
+        Array.prototype.forEach.call(clone.querySelectorAll('[id]'), function (node) {
+          node.removeAttribute('id');
+        });
+        door.appendChild(clone);
+        cover.appendChild(door);
+      });
+
+      panel.style.visibility = 'hidden';
+      // บังคับให้เบราว์เซอร์คำนวณตำแหน่งเริ่มต้นเดี๋ยวนี้ ไม่งั้นการใส่คลาสหมุนทันที
+      // จะถูกยุบรวมเป็นสถานะเดียว แล้ว transition ไม่ทำงาน
+      void cover.offsetWidth;
+      return true;
     }
 
-    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วค่อยเปิดการ์ด
+    function reveal() {
+      card.hidden = false;                 // ต้องโผล่ก่อน ไม่งั้นประตูเปิดออกมาเจอที่ว่าง
+      requestAnimationFrame(revealFirst);
+      if (cfg.options && cfg.options.backgroundMusic) tryPlayMusic();
+
+      var swung = !calm && splitIntoDoors();
+      cover.classList.add('is-open');       // ทำให้พื้นซองโปร่งใส เห็นการ์ดข้างหลัง
+      if (swung) cover.classList.add('is-swung');
+
+      var wait = swung ? DOOR_MS : 0;
+      setTimeout(function () {
+        cover.classList.add('is-gone');
+        setTimeout(function () { cover.remove(); }, 520);
+      }, wait);
+    }
+
+    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วประตูค่อยเปิด
     function open() {
       if (opening) return;
       opening = true;

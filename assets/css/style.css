@@ -53,9 +53,43 @@ img { max-width: 100%; display: block; }
   padding: 1rem;
   background: var(--wine-900);
   cursor: pointer;
-  transition: opacity .9s ease, visibility .9s;
+  perspective: 1500px;
+  perspective-origin: 50% 45%;
+  transition: opacity .5s ease, visibility .5s, background-color .35s ease;
 }
-.cover.is-open { opacity: 0; visibility: hidden; }
+/* พอเริ่มเปิด พื้นซองต้องโปร่งใส ไม่งั้นบานประตูหมุนออกไปแล้วยังเจอพื้นขาวบังการ์ดอยู่ */
+.cover.is-open { background: transparent; }
+.cover.is-gone { opacity: 0; visibility: hidden; }
+
+/* ---------- บานประตู: ร่างโคลนของซอง ครอบไว้คนละครึ่ง ---------- */
+.door {
+  position: fixed;
+  overflow: hidden;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  transition: transform 1.05s cubic-bezier(.62, .02, .2, 1);
+  will-change: transform;
+}
+.door--l { transform-origin: left center;  clip-path: inset(0 50% 0 0); }
+.door--r { transform-origin: right center; clip-path: inset(0 0 0 50%); }
+.door .cover__panel { width: 100%; height: 100%; margin: 0; visibility: visible; }
+
+.cover.is-swung .door--l { transform: rotateY(-108deg); }
+.cover.is-swung .door--r { transform: rotateY(108deg); }
+
+/* เงาที่บานทอดลงตอนกำลังหมุน ช่วยให้เห็นความลึก */
+.door::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.05s ease;
+  pointer-events: none;
+}
+.door--l::after { background: linear-gradient(90deg, rgba(90, 20, 30, .32), transparent 70%); }
+.door--r::after { background: linear-gradient(270deg, rgba(90, 20, 30, .32), transparent 70%); }
+.cover.is-swung .door::after { opacity: 1; }
 
 .cover__panel {
   position: relative;
