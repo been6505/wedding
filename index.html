@@ -27,8 +27,50 @@
 </head>
 <body>
 
+<!-- ---------- คลังลายเส้น ใช้ซ้ำด้วย <use href="#..."> ---------- -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- เส้นคั่นระหว่างหมวด: เส้นตรงสองข้าง ขนาบใบไม้และข้าวหลามตัดตรงกลาง -->
+    <symbol id="orn-divider" viewBox="0 0 260 26">
+      <path d="M6 13 H94"/>
+      <path d="M166 13 H254"/>
+      <path d="M130 4 L139 13 L130 22 L121 13 Z"/>
+      <path d="M104 13 C110 5, 118 5, 118 13 C118 21, 110 21, 104 13 Z"/>
+      <path d="M156 13 C150 5, 142 5, 142 13 C142 21, 150 21, 156 13 Z"/>
+      <circle cx="99" cy="13" r="1.6"/>
+      <circle cx="161" cy="13" r="1.6"/>
+    </symbol>
+
+    <!-- มุมการ์ด: เส้นโค้งซ้อนสองชั้นกับจุดเล็ก ๆ -->
+    <symbol id="orn-corner" viewBox="0 0 64 64">
+      <path d="M2 30 C2 14, 14 2, 30 2"/>
+      <path d="M2 46 C2 20, 20 2, 46 2" opacity=".45"/>
+      <path d="M13 13 l7 0 m-7 0 l0 7"/>
+      <circle cx="13" cy="13" r="2.2"/>
+    </symbol>
+  </defs>
+</svg>
+
 <!-- ---------- ซองจดหมาย ---------- -->
 <div class="cover" id="cover">
+ <div class="cover__stage">
+
+  <!-- บานประตูซ้าย–ขวา หมุนออกตอนปลดล็อค เผยการ์ดที่อยู่ข้างหลัง -->
+  <div class="door door--l" aria-hidden="true">
+    <div class="door__face">
+      <span class="door__panel"></span>
+      <span class="door__knob"></span>
+    </div>
+    <span class="door__shade"></span>
+  </div>
+  <div class="door door--r" aria-hidden="true">
+    <div class="door__face">
+      <span class="door__panel"></span>
+      <span class="door__knob"></span>
+    </div>
+    <span class="door__shade"></span>
+  </div>
+
   <div class="cover__panel">
     <p class="cover__word" dir="rtl" data-bind="coverWord">&nbsp;</p>
     <div class="cover__arch">
@@ -64,11 +106,17 @@
       <span data-bind="couple.bride.en"></span>
     </p>
   </div>
+
+ </div>
 </div>
 
 <!-- ---------- การ์ด ---------- -->
 <main class="sheet" id="card" hidden>
  <article class="panel">
+  <svg class="corner corner--tl" viewBox="0 0 64 64" aria-hidden="true"><use href="#orn-corner"/></svg>
+  <svg class="corner corner--tr" viewBox="0 0 64 64" aria-hidden="true"><use href="#orn-corner"/></svg>
+  <svg class="corner corner--bl" viewBox="0 0 64 64" aria-hidden="true"><use href="#orn-corner"/></svg>
+  <svg class="corner corner--br" viewBox="0 0 64 64" aria-hidden="true"><use href="#orn-corner"/></svg>
 
   <!-- เปิดการ์ด -->
   <section class="block block--open">
@@ -134,6 +182,19 @@
   <section class="block block--gallery reveal" id="gallery" hidden>
     <p class="label">ช่วงเวลาของเรา</p>
     <div class="gallery" id="galleryGrid"></div>
+  </section>
+
+
+  <!-- สแกนเข้างาน (โผล่เฉพาะเมื่อเปิดไว้ใน config) -->
+  <section class="block block--scan reveal" id="scan" hidden>
+    <p class="label" data-bind="checkin.title"></p>
+    <p class="scan__note" data-bind="checkin.note"></p>
+    <a class="btn btn--solid btn--scan" id="scanLink" href="checkin.html">
+      <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4M7 12h10"/>
+      </svg>
+      <span data-bind="checkin.button"></span>
+    </a>
   </section>
 
   <!-- ตอบรับคำเชิญ -->

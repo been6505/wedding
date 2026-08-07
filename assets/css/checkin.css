@@ -287,3 +287,170 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   color: var(--gold-soft);
 }
 .issues li { margin-bottom: .5rem; }
+
+/* ================= เมนูหน้างาน ================= */
+.menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .8rem;
+  margin: 1.6rem 0 1.4rem;
+}
+.menu__item {
+  display: grid;
+  justify-items: center;
+  gap: .35rem;
+  padding: 1.2rem .7rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--cream);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, transform .15s, box-shadow .2s;
+}
+.menu__item--wide { grid-column: 1 / -1; }
+.menu__item:hover:not(:disabled),
+.menu__item:focus-visible {
+  border-color: var(--gold);
+  box-shadow: 0 6px 18px rgba(162, 25, 37, .1);
+  outline: none;
+}
+.menu__item:active:not(:disabled) { transform: scale(.98); }
+.menu__item.is-off { opacity: .38; cursor: not-allowed; }
+
+.menu__icon {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.menu__label { font-family: var(--th-display); font-size: 1.02rem; }
+.menu__sub { font-size: .74rem; line-height: 1.5; color: rgba(36, 29, 28, .55); }
+
+/* ปุ่มย้อนกลับหน้าเมนู */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  margin: 0 0 .8rem;
+  padding: .3rem .1rem;
+  border: 0;
+  background: none;
+  color: var(--gold-dim);
+  font: inherit;
+  font-size: .86rem;
+  cursor: pointer;
+}
+.back svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ================= Photobooth ================= */
+.video-box--booth { aspect-ratio: 4 / 3; }
+
+.booth__count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--th-display);
+  font-size: 5rem;
+  color: #fff;
+  text-shadow: 0 3px 18px rgba(90, 20, 30, .55);
+  pointer-events: none;
+}
+.booth__count.is-tick { animation: boothTick 1s ease-out; }
+@keyframes boothTick {
+  0%   { transform: scale(1.5); opacity: 0; }
+  25%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(.85); opacity: .5; }
+}
+
+.booth__flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+.booth__flash.is-on { animation: boothFlash .26s ease-out; }
+@keyframes boothFlash {
+  0%   { opacity: .9; }
+  100% { opacity: 0; }
+}
+
+.booth__shot {
+  position: absolute;
+  top: .6rem;
+  left: .6rem;
+  padding: .18rem .6rem;
+  border-radius: 999px;
+  background: rgba(162, 25, 37, .85);
+  color: #fff;
+  font-size: .76rem;
+}
+
+.booth__done {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1rem;
+}
+
+/* ================= Feed อวยพร ================= */
+.feed__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: 0 0 1rem;
+}
+.chip {
+  padding: .3rem .85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: none;
+  color: var(--gold-dim);
+  font: inherit;
+  font-size: .8rem;
+  cursor: pointer;
+}
+.chip.is-active { background: var(--gold); border-color: var(--gold); color: #fff; }
+.chip--ghost { margin-left: auto; }
+
+.feed { display: grid; gap: .8rem; }
+
+.wish {
+  padding: .9rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  text-align: left;
+}
+.wish__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .6rem;
+  margin-bottom: .35rem;
+}
+.wish__name { margin: 0; font-family: var(--th-display); font-size: 1rem; color: var(--gold); }
+.wish__when { font-size: .72rem; color: rgba(36, 29, 28, .45); }
+.wish__message { margin: 0; font-size: .92rem; line-height: 1.75; white-space: pre-wrap; }
+.wish__media { margin-top: .7rem; }
+.wish__media img,
+.wish__media video { width: 100%; border-radius: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .booth__count.is-tick, .booth__flash.is-on { animation: none; }
+}

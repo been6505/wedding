@@ -55,25 +55,30 @@
     var lock = $('#coverLock');
     var opening = false;
 
-    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนคลายไปเลย
+    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนกับประตูไปเลย
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var UNLOCK_MS = calm ? 0 : 700;
+    var UNLOCK_MS = calm ? 0 : 700;   // แหวนคลายออกจากกัน
+    var DOOR_MS   = calm ? 0 : 1150;  // บานประตูหมุนเปิด
 
-    function reveal() {
+    // ลำดับ: แหวนคลาย -> เอาการ์ดมาวางไว้หลังประตู -> ประตูเปิดออก -> เก็บซองทิ้ง
+    function openDoors() {
+      card.hidden = false;              // ต้องโผล่ก่อน ไม่งั้นประตูเปิดออกมาเจอที่ว่าง
       cover.classList.add('is-open');
-      card.hidden = false;
       requestAnimationFrame(revealFirst);
       if (cfg.options && cfg.options.backgroundMusic) tryPlayMusic();
-      setTimeout(function () { cover.remove(); }, 1000);
+      setTimeout(function () {
+        cover.classList.add('is-gone');
+        setTimeout(function () { cover.remove(); }, 500);
+      }, DOOR_MS);
     }
 
-    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วค่อยเปิดการ์ด
+    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วประตูค่อยเปิด
     function open() {
       if (opening) return;
       opening = true;
       cover.classList.add('is-unlocked');
       if (lock) lock.disabled = true;
-      setTimeout(reveal, UNLOCK_MS);
+      setTimeout(openDoors, UNLOCK_MS);
     }
 
     cover.addEventListener('click', open);
@@ -389,6 +394,30 @@
     section.hidden = false;
   }
 
+  /* ---------- 8.5 สแกนเข้างาน ---------- */
+  function initScan() {
+    var section = $('#scan');
+    var checkin = cfg.checkin || {};
+    if (!section || !checkin.enabled) return;
+    section.hidden = false;
+  }
+
+  /* ---------- 8.6 ลายเส้นคั่นระหว่างหมวด ---------- */
+  function initOrnaments() {
+    var blocks = $$('.panel .block, .panel .block--dua');
+    blocks.forEach(function (block, i) {
+      if (i === 0) return;                 // หมวดแรกอยู่ชิดขอบบน ไม่ต้องมีเส้นคั่น
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'orn');
+      svg.setAttribute('viewBox', '0 0 260 26');   // ต้องมี ไม่งั้น <use> ไม่ยืดตามกล่อง
+      svg.setAttribute('aria-hidden', 'true');
+      var use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+      use.setAttribute('href', '#orn-divider');
+      svg.appendChild(use);
+      block.insertBefore(svg, block.firstChild);
+    });
+  }
+
   /* ---------- 9. เอฟเฟกต์ตอนเลื่อน ---------- */
   var revealFirst = function () {};
   function initReveal() {
@@ -448,8 +477,10 @@
   initVenue();
   initCountdown();
   initGallery();
+  initScan();
   initRsvp();
   initGifts();
+  initOrnaments();
   initReveal();
   initMusic();
 })();

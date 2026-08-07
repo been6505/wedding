@@ -61,7 +61,13 @@ service cloud.firestore {
                     && request.resource.data.message.size() <= 1000
                     && (request.resource.data.media == null || request.resource.data.media is map)
                     && freshTimestamp(request.resource.data.created_at);
-      allow read, delete: if isHost();
+
+      // เปิดให้อ่านได้ทุกคน เพราะหน้า "Feed อวยพร" ให้แขกดูคำอวยพรของกันและกัน
+      // แลกมาด้วยว่า ใครก็ตามที่ได้ลิงก์เว็บไป อ่านคำอวยพรทั้งหมดได้ (ชื่อ ข้อความ รูป คลิป)
+      // ถ้าไม่ต้องการให้เป็นสาธารณะ เปลี่ยนบรรทัดล่างเป็น  allow read: if isHost();
+      // แล้วปิด feed ด้วย  wishFeed.enabled: false  ใน assets/js/config.js
+      allow read: if true;
+      allow delete: if isHost();
       allow update: if false;
     }
 

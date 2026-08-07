@@ -9,9 +9,11 @@
   var MAX_UPLOAD = 45 * 1024 * 1024;
 
   var guest = { name: '', partySize: 1 };
-  var photoBlob = null;
   var photoImage = null;
   var videoBlob = null;
+  var boothBlob = null;
+
+  var STEPS = ['setupNotice', 'stepCheckin', 'stepHub', 'stepDo', 'stepDone'];
 
   /* ---------- ตัวช่วย ---------- */
   function toast(message) {
@@ -23,8 +25,9 @@
   }
 
   function show(id) {
-    ['setupNotice', 'stepCheckin', 'stepWish', 'stepDone'].forEach(function (key) {
-      $('#' + key).hidden = (key !== id);
+    STEPS.forEach(function (key) {
+      var node = $('#' + key);
+      if (node) node.hidden = (key !== id);
     });
     window.scrollTo(0, 0);
   }
@@ -38,7 +41,7 @@
 
   function busy(button, label) {
     button.disabled = true;
-    button.dataset.label = button.textContent;
+    button.dataset.label = button.dataset.label || button.textContent;
     button.textContent = label;
   }
 
@@ -47,10 +50,27 @@
     if (button.dataset.label) button.textContent = button.dataset.label;
   }
 
+  function formatWhen(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    try {
+      return d.toLocaleString('th-TH', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      return d.toISOString().slice(0, 16).replace('T', ' ');
+    }
+  }
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
   /* ---------- ยังไม่ได้ตั้งค่า ----------
    * ไม่มีฐานข้อมูล = หน้านี้ทำอะไรไม่ได้เลย ต้องหยุด
-   * มีฐานข้อมูลแต่ไม่มีที่เก็บไฟล์ = เช็คอินและอวยพรเป็นข้อความยังทำได้
-   *   แค่ซ่อนแท็บการ์ดรูปกับคลิปไว้
+   * มีฐานข้อมูลแต่ไม่มีที่เก็บไฟล์ = เช็คอิน เขียนอวยพร และดู feed ยังทำได้
+   *   เมนูที่ต้องใช้กล้องจะถูกปิดไว้
    */
   if (!window.BACKEND || !window.BACKEND.dbConfigured()) {
     var list = $('#setupIssues');
@@ -65,6 +85,7 @@
   }
 
   var canUpload = window.BACKEND.mediaConfigured();
+  var feedOn = !(cfg.wishFeed && cfg.wishFeed.enabled === false);
 
   /* ---------- ขั้นที่ 1: เช็คอิน ---------- */
   $('#coupleTitle').textContent = coupleNames();
@@ -92,7 +113,7 @@
     window.BACKEND.submitCheckin(guest)
       .then(function () {
         $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
-        show('stepWish');
+        show('stepHub');
       })
       .catch(function (err) {
         console.error(err);
@@ -103,34 +124,53 @@
 
   show('stepCheckin');
 
-  /* ---------- แท็บวิธีอวยพร ---------- */
-  // ไม่มีที่เก็บไฟล์ก็ส่งรูปหรือคลิปไม่ได้ ซ่อนแท็บทิ้งดีกว่าปล่อยให้กดแล้วพัง
-  // (ซ่อนอย่างเดียว ไม่ลบทิ้ง โค้ดข้างล่างยังหา element เจอเหมือนเดิม)
+  /* ---------- เมนูหน้างาน ---------- */
+  var TITLES = {
+    text: 'เขียนอวยพร',
+    photo: 'ถ่ายภาพอวยพร',
+    video: 'ถ่ายวิดีโออวยพร',
+    booth: 'Photobooth',
+    feed: 'Feed อวยพร',
+  };
+
+  // เมนูที่ต้องอัปโหลดไฟล์ กดไม่ได้ถ้ายังไม่ได้ตั้งค่าที่เก็บไฟล์
   if (!canUpload) {
-    $$('.tab').forEach(function (tab) {
-      if (tab.dataset.mode !== 'text') tab.hidden = true;
+    $$('.menu__item[data-needs-media]').forEach(function (item) {
+      item.disabled = true;
+      item.classList.add('is-off');
     });
+    $('#mediaOff').hidden = false;
+  }
+  if (!feedOn) {
+    var feedBtn = $('.menu__item[data-go="feed"]');
+    if (feedBtn) feedBtn.hidden = true;
   }
 
-  function selectTab(mode) {
-    $$('.tab').forEach(function (tab) {
-      var on = tab.dataset.mode === mode;
-      tab.classList.toggle('is-active', on);
-      tab.setAttribute('aria-selected', on ? 'true' : 'false');
-    });
+  function openPane(mode) {
+    $('#doTitle').textContent = TITLES[mode] || '';
     $$('.pane').forEach(function (pane) {
       pane.classList.toggle('is-active', pane.dataset.pane === mode);
     });
     if (mode !== 'video') stopCamera();
+    if (mode !== 'booth') stopBooth();
+    show('stepDo');
+    if (mode === 'feed') loadFeed();
   }
 
-  $$('.tab').forEach(function (tab) {
-    tab.addEventListener('click', function () { selectTab(tab.dataset.mode); });
+  $$('.menu__item').forEach(function (item) {
+    item.addEventListener('click', function () { openPane(item.dataset.go); });
+  });
+
+  $('#backHub').addEventListener('click', function () {
+    stopCamera();
+    stopBooth();
+    show('stepHub');
   });
 
   function finish(message) {
     $('#doneText').textContent = message;
     stopCamera();
+    stopBooth();
     show('stepDone');
   }
 
@@ -138,10 +178,9 @@
     finish('เช็คอินของท่านถูกบันทึกแล้ว ขอบคุณที่มาร่วมงาน');
   });
 
-  // คืนหน้าอวยพรให้กลับเป็นสภาพเริ่มต้นทุกช่อง
-  // (เดิมลืมคืนปุ่มกล้อง ทำให้กด "ส่งอีกครั้ง" แล้วอัดคลิปใหม่ไม่ได้)
-  function resetWishForm() {
-    photoBlob = null; photoImage = null; videoBlob = null;
+  // คืนทุกช่องให้กลับเป็นสภาพเริ่มต้น แล้วกลับไปหน้าเมนู
+  function resetAll() {
+    photoImage = null; videoBlob = null; boothBlob = null;
     $('#wishText').value = '';
     $('#photoMessage').value = '';
     $('#photoPreview').hidden = true;
@@ -160,12 +199,13 @@
     $('#recordToggle').hidden = true;
     $('#recordToggle').textContent = 'เริ่มอัด';
     $('#cameraStart').hidden = !supportsRecording();
+
+    resetBoothUi();
   }
 
   $('#againBtn').addEventListener('click', function () {
-    resetWishForm();
-    selectTab('text');
-    show('stepWish');
+    resetAll();
+    show('stepHub');
   });
 
   /* ---------- อวยพรด้วยข้อความ ---------- */
@@ -184,6 +224,25 @@
       })
       .then(function () { idle(button); });
   });
+
+  // อัปโหลดไฟล์แล้วบันทึกคำอวยพร ใช้ร่วมกันทั้งการ์ดรูป คลิป และ photobooth
+  function sendMedia(blob, kind, message, doneText, button) {
+    window.BACKEND.uploadMedia(blob, kind === 'video' ? 'video' : 'photo')
+      .then(function (media) {
+        return window.BACKEND.submitWish({
+          name: guest.name,
+          kind: kind === 'video' ? 'video' : 'photo',
+          message: message || '',
+          media: media,
+        });
+      })
+      .then(function () { finish(doneText); })
+      .catch(function (err) {
+        console.error(err);
+        toast('ส่งไม่สำเร็จ กรุณาลองใหม่');
+      })
+      .then(function () { idle(button); });
+  }
 
   /* ---------- อวยพรด้วยการ์ดรูป ---------- */
   var canvas = $('#photoCanvas');
@@ -379,26 +438,32 @@
 
     canvas.toBlob(function (blob) {
       if (!blob) { idle(button); toast('สร้างการ์ดไม่สำเร็จ'); return; }
-      photoBlob = blob;
       if (blob.size > MAX_UPLOAD) { idle(button); toast('ไฟล์ใหญ่เกินไป'); return; }
-
-      window.BACKEND.uploadMedia(blob, 'photo')
-        .then(function (media) {
-          return window.BACKEND.submitWish({
-            name: guest.name,
-            kind: 'photo',
-            message: $('#photoMessage').value.trim(),
-            media: media,
-          });
-        })
-        .then(function () { finish('การ์ดอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว'); })
-        .catch(function (err) {
-          console.error(err);
-          toast('ส่งไม่สำเร็จ กรุณาลองใหม่');
-        })
-        .then(function () { idle(button); });
+      sendMedia(blob, 'photo', $('#photoMessage').value.trim(),
+                'การ์ดอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว', button);
     }, 'image/jpeg', 0.88);
   });
+
+  /* ---------- กล้อง ---------- */
+  function supportsCamera() {
+    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  }
+  function supportsRecording() {
+    return supportsCamera() && !!window.MediaRecorder;
+  }
+
+  // withAudio: photobooth ไม่ต้องขอไมค์ ขอแค่ที่จำเป็นจะได้ไม่ต้องกวนผู้ใช้เกินเหตุ
+  function openCamera(videoEl, withAudio) {
+    return navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
+      audio: !!withAudio,
+    }).then(function (media) {
+      videoEl.srcObject = media;
+      videoEl.hidden = false;
+      videoEl.play();
+      return media;
+    });
+  }
 
   /* ---------- อวยพรด้วยคลิปวิดีโอ ---------- */
   var stream = null;
@@ -409,10 +474,6 @@
 
   var liveVideo = $('#videoLive');
   var playback = $('#videoPlayback');
-
-  function supportsRecording() {
-    return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-  }
 
   function pickMimeType() {
     var candidates = [
@@ -447,14 +508,8 @@
     var button = this;
     busy(button, 'กำลังเปิดกล้อง...');
 
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 960 } },
-      audio: true,
-    }).then(function (media) {
+    openCamera(liveVideo, true).then(function (media) {
       stream = media;
-      liveVideo.srcObject = media;
-      liveVideo.hidden = false;
-      liveVideo.play();
       playback.hidden = true;
       $('#videoEmpty').hidden = true;
       button.hidden = true;
@@ -526,38 +581,345 @@
     $('#videoMessageField').hidden = true;
     $('#sendVideo').hidden = true;
     this.hidden = true;
-    var start = $('#cameraStart');
-    start.hidden = false;
+    $('#cameraStart').hidden = false;
     $('#recordToggle').textContent = 'เริ่มอัด';
     $('#recordToggle').hidden = true;
   });
 
   $('#sendVideo').addEventListener('click', function () {
     if (!videoBlob) { toast('ยังไม่มีคลิป'); return; }
-    if (videoBlob.size > MAX_UPLOAD) {
-      toast('คลิปใหญ่เกินไป ลองอัดสั้นลง');
-      return;
-    }
+    if (videoBlob.size > MAX_UPLOAD) { toast('คลิปใหญ่เกินไป ลองอัดสั้นลง'); return; }
 
     var button = this;
     busy(button, 'กำลังอัปโหลด...');
-
-    window.BACKEND.uploadMedia(videoBlob, 'video')
-      .then(function (media) {
-        return window.BACKEND.submitWish({
-          name: guest.name,
-          kind: 'video',
-          message: $('#videoMessage').value.trim(),
-          media: media,
-        });
-      })
-      .then(function () { finish('คลิปอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว'); })
-      .catch(function (err) {
-        console.error(err);
-        toast('ส่งไม่สำเร็จ กรุณาลองใหม่');
-      })
-      .then(function () { idle(button); });
+    sendMedia(videoBlob, 'video', $('#videoMessage').value.trim(),
+              'คลิปอวยพรของท่านถูกส่งถึงบ่าวสาวแล้ว', button);
   });
 
-  window.addEventListener('pagehide', stopCamera);
+  /* ================= Photobooth ================= */
+  var SHOTS = 3;
+  var SHOT_W = 720;
+  var SHOT_H = 540;          // 4:3 ต่อช็อต
+  var STRIP_PAD = 30;
+  var STRIP_GAP = 18;
+  var STRIP_FOOT = 190;
+  var STRIP_W = SHOT_W + STRIP_PAD * 2;
+  var STRIP_H = STRIP_PAD + (SHOT_H * SHOTS) + (STRIP_GAP * (SHOTS - 1)) + STRIP_FOOT;
+
+  var boothStream = null;
+  var boothShots = [];
+  var boothBusy = false;
+  var boothLive = $('#boothLive');
+  var boothCanvas = $('#boothCanvas');
+  boothCanvas.width = STRIP_W;
+  boothCanvas.height = STRIP_H;
+
+  if (!supportsCamera()) {
+    $('#boothStart').hidden = true;
+    $('#boothUnsupported').hidden = false;
+  }
+
+  function stopBooth() {
+    if (boothStream) {
+      boothStream.getTracks().forEach(function (t) { t.stop(); });
+      boothStream = null;
+    }
+    boothLive.hidden = true;
+    $('#boothCount').hidden = true;
+    $('#boothShot').hidden = true;
+  }
+
+  function resetBoothUi() {
+    boothShots = [];
+    boothBlob = null;
+    boothBusy = false;
+    $('#boothPreview').hidden = true;
+    $('#boothDone').hidden = true;
+    $('#boothRedo').hidden = true;
+    $('#boothShoot').hidden = true;
+    $('#boothEmpty').hidden = false;
+    $('#boothStart').hidden = !supportsCamera();
+  }
+
+  $('#boothStart').addEventListener('click', function () {
+    var button = this;
+    busy(button, 'กำลังเปิดกล้อง...');
+    openCamera(boothLive, false).then(function (media) {
+      boothStream = media;
+      $('#boothEmpty').hidden = true;
+      $('#boothPreview').hidden = true;
+      button.hidden = true;
+      $('#boothShoot').hidden = false;
+    }).catch(function (err) {
+      console.error(err);
+      toast('เปิดกล้องไม่ได้ กรุณาอนุญาตให้ใช้กล้อง');
+    }).then(function () { idle(button); });
+  });
+
+  // ดึงภาพนิ่งจากกล้องหนึ่งเฟรม ครอบให้เต็มกรอบ 4:3 แบบ cover
+  function grabShot() {
+    var c = document.createElement('canvas');
+    c.width = SHOT_W;
+    c.height = SHOT_H;
+    var ctx = c.getContext('2d');
+    var vw = boothLive.videoWidth || SHOT_W;
+    var vh = boothLive.videoHeight || SHOT_H;
+    var scale = Math.max(SHOT_W / vw, SHOT_H / vh);
+    var dw = vw * scale;
+    var dh = vh * scale;
+    // กล้องหน้าแสดงภาพกลับด้านเหมือนส่องกระจก บันทึกให้ตรงกับที่เห็นบนจอ
+    ctx.translate(SHOT_W, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(boothLive, (SHOT_W - dw) / 2, (SHOT_H - dh) / 2, dw, dh);
+    return c;
+  }
+
+  function countdown(from) {
+    var badge = $('#boothCount');
+    badge.hidden = false;
+    return new Promise(function (resolve) {
+      var left = from;
+      var tick = function () {
+        badge.textContent = left;
+        badge.classList.remove('is-tick');
+        void badge.offsetWidth;   // บังคับให้แอนิเมชันเริ่มใหม่ทุกวินาที
+        badge.classList.add('is-tick');
+      };
+      tick();
+      var iv = setInterval(function () {
+        left--;
+        if (left <= 0) {
+          clearInterval(iv);
+          badge.hidden = true;
+          resolve();
+          return;
+        }
+        tick();
+      }, 1000);
+    });
+  }
+
+  function flash() {
+    var f = $('#boothFlash');
+    f.classList.remove('is-on');
+    void f.offsetWidth;
+    f.classList.add('is-on');
+    return new Promise(function (r) { setTimeout(r, 260); });
+  }
+
+  function drawStrip() {
+    var ctx = boothCanvas.getContext('2d');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, STRIP_W, STRIP_H);
+
+    boothShots.forEach(function (shot, i) {
+      var y = STRIP_PAD + i * (SHOT_H + STRIP_GAP);
+      ctx.drawImage(shot, STRIP_PAD, y, SHOT_W, SHOT_H);
+      ctx.strokeStyle = 'rgba(162,25,37,.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(STRIP_PAD, y, SHOT_W, SHOT_H);
+    });
+
+    // กรอบแดงรอบแถบ
+    ctx.strokeStyle = 'rgba(162,25,37,.55)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(10, 10, STRIP_W - 20, STRIP_H - 20);
+
+    // ท้ายแถบ: ชื่อบ่าวสาว วันที่ และชื่อคนถ่าย
+    var footTop = STRIP_H - STRIP_FOOT;
+    ctx.textAlign = 'center';
+
+    ctx.strokeStyle = 'rgba(162,25,37,.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(STRIP_W / 2 - 70, footTop + 26);
+    ctx.lineTo(STRIP_W / 2 + 70, footTop + 26);
+    ctx.stroke();
+
+    ctx.fillStyle = '#a21925';
+    ctx.font = '400 46px Sriracha, Charm, cursive';
+    ctx.fillText(coupleNames(), STRIP_W / 2, footTop + 90);
+
+    var date = cfg.date || {};
+    var line = [date.weekdayTh, date.monthYearTh].filter(Boolean).join(' · ');
+    ctx.fillStyle = 'rgba(36,29,28,.6)';
+    ctx.font = '300 26px Mali, "Noto Sans Thai", sans-serif';
+    ctx.fillText(line, STRIP_W / 2, footTop + 134);
+
+    if (guest.name) {
+      ctx.fillStyle = '#8d2833';
+      ctx.font = '300 24px Mali, "Noto Sans Thai", sans-serif';
+      ctx.fillText('— ' + guest.name + ' —', STRIP_W / 2, footTop + 172);
+    }
+  }
+
+  $('#boothShoot').addEventListener('click', function () {
+    if (boothBusy) return;
+    boothBusy = true;
+    this.hidden = true;
+    boothShots = [];
+
+    var shotBadge = $('#boothShot');
+    shotBadge.hidden = false;
+
+    var run = Promise.resolve();
+    for (var i = 0; i < SHOTS; i++) {
+      (function (index) {
+        run = run
+          .then(function () { shotBadge.textContent = (index + 1) + ' / ' + SHOTS; })
+          .then(function () { return countdown(3); })
+          .then(flash)
+          .then(function () {
+            boothShots.push(grabShot());
+            return new Promise(function (r) { setTimeout(r, 600); });
+          });
+      })(i);
+    }
+
+    run.then(function () {
+      shotBadge.hidden = true;
+      stopBooth();
+      if (document.fonts && document.fonts.ready) return document.fonts.ready.then(drawStrip);
+      drawStrip();
+      return null;
+    }).then(function () {
+      $('#boothPreview').hidden = false;
+      $('#boothRedo').hidden = false;
+      $('#boothDone').hidden = false;
+      boothCanvas.toBlob(function (blob) {
+        boothBlob = blob;
+        if (blob) $('#boothSave').href = URL.createObjectURL(blob);
+      }, 'image/jpeg', 0.9);
+      boothBusy = false;
+    }).catch(function (err) {
+      console.error(err);
+      toast('ถ่ายไม่สำเร็จ ลองใหม่อีกครั้ง');
+      resetBoothUi();
+    });
+  });
+
+  $('#boothRedo').addEventListener('click', function () {
+    stopBooth();
+    resetBoothUi();
+  });
+
+  $('#boothSend').addEventListener('click', function () {
+    if (!boothBlob) { toast('ยังไม่มีรูป'); return; }
+    if (boothBlob.size > MAX_UPLOAD) { toast('ไฟล์ใหญ่เกินไป'); return; }
+    var button = this;
+    busy(button, 'กำลังส่ง...');
+    sendMedia(boothBlob, 'photo', 'Photobooth', 'รูป Photobooth ถูกส่งถึงบ่าวสาวแล้ว', button);
+  });
+
+  /* ================= Feed อวยพร ================= */
+  var feedRows = [];
+  var feedFilter = 'all';
+  var feedLoaded = false;
+
+  $$('.chip[data-feed]').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      $$('.chip[data-feed]').forEach(function (o) { o.classList.remove('is-active'); });
+      chip.classList.add('is-active');
+      feedFilter = chip.dataset.feed;
+      renderFeed();
+    });
+  });
+
+  $('#feedRefresh').addEventListener('click', function () { loadFeed(true); });
+
+  function loadFeed(force) {
+    if (feedLoaded && !force) { renderFeed(); return; }
+    $('#feedState').hidden = false;
+    $('#feedState').textContent = 'กำลังโหลด...';
+    window.BACKEND.listPublicWishes(200)
+      .then(function (rows) {
+        feedRows = rows || [];
+        feedLoaded = true;
+        renderFeed();
+      })
+      .catch(function (err) {
+        console.error(err);
+        $('#feedState').textContent = 'โหลดไม่สำเร็จ: ' + err.message;
+      });
+  }
+
+  function renderFeed() {
+    var grid = $('#feed');
+    var state = $('#feedState');
+    grid.textContent = '';
+
+    var visible = feedRows.filter(function (row) {
+      return feedFilter === 'all' || row.kind === feedFilter;
+    });
+
+    if (!feedRows.length) {
+      state.hidden = false;
+      state.textContent = 'ยังไม่มีคำอวยพร เป็นคนแรกเลยไหม';
+      return;
+    }
+    if (!visible.length) {
+      state.hidden = false;
+      state.textContent = 'ยังไม่มีคำอวยพรประเภทนี้';
+      return;
+    }
+    state.hidden = true;
+
+    visible.forEach(function (row) { grid.appendChild(feedCard(row)); });
+  }
+
+  function feedCard(row) {
+    var card = el('article', 'wish');
+
+    var head = el('div', 'wish__head');
+    head.appendChild(el('p', 'wish__name', row.name || '—'));
+    head.appendChild(el('span', 'wish__when', formatWhen(row.createdAt)));
+    card.appendChild(head);
+
+    if (row.message) card.appendChild(el('p', 'wish__message', row.message));
+
+    if (row.media) {
+      var slot = el('div', 'wish__media');
+      card.appendChild(slot);
+      if (row.kind === 'video') feedVideo(slot, row.media);
+      else feedPhoto(slot, row.media);
+    }
+
+    return card;
+  }
+
+  function feedPhoto(slot, ref) {
+    window.BACKEND.mediaUrl(ref).then(function (url) {
+      var img = document.createElement('img');
+      img.src = url;
+      img.alt = 'การ์ดอวยพร';
+      img.loading = 'lazy';
+      slot.appendChild(img);
+    }, function () { slot.remove(); });
+  }
+
+  function feedVideo(slot, ref) {
+    var button = el('button', 'btn btn--ghost', 'เล่นคลิป');
+    button.type = 'button';
+    button.addEventListener('click', function () {
+      button.disabled = true;
+      window.BACKEND.mediaUrl(ref).then(function (url) {
+        slot.textContent = '';
+        var video = document.createElement('video');
+        video.src = url;
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        var poster = window.BACKEND.mediaPoster(ref);
+        if (poster) video.poster = poster;
+        slot.appendChild(video);
+      }, function () {
+        button.disabled = false;
+        toast('เปิดคลิปไม่ได้');
+      });
+    });
+    slot.appendChild(button);
+  }
+
+  window.addEventListener('pagehide', function () { stopCamera(); stopBooth(); });
 })();

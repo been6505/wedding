@@ -44,20 +44,71 @@
     </form>
   </section>
 
-  <!-- ---------- ขั้นที่ 2: อวยพร ---------- -->
-  <section class="card" id="stepWish" hidden>
+  <!-- ---------- ขั้นที่ 2: เมนูหน้างาน ---------- -->
+  <section class="card" id="stepHub" hidden>
     <p class="welcome" id="welcome"></p>
     <h2 class="title title--sm">ร่วมอวยพรบ่าวสาว</h2>
-    <p class="lead">เลือกวิธีที่ท่านถนัด</p>
+    <p class="lead">เลือกสิ่งที่อยากทำได้เลย ทำกี่อย่างก็ได้</p>
 
-    <div class="tabs" role="tablist">
-      <button class="tab is-active" type="button" data-mode="text" role="tab" aria-selected="true">ข้อความ</button>
-      <button class="tab" type="button" data-mode="photo" role="tab" aria-selected="false">การ์ดรูป</button>
-      <button class="tab" type="button" data-mode="video" role="tab" aria-selected="false">คลิปวิดีโอ</button>
+    <div class="menu" id="menu">
+      <button class="menu__item" type="button" data-go="text">
+        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>
+        </svg>
+        <span class="menu__label">เขียนอวยพร</span>
+        <span class="menu__sub">พิมพ์คำอวยพรถึงบ่าวสาว</span>
+      </button>
+
+      <button class="menu__item" type="button" data-go="photo" data-needs-media>
+        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 8h4l1.5-2h7L17 8h4v11H3z"/><circle cx="12" cy="13" r="3.4"/>
+        </svg>
+        <span class="menu__label">ถ่ายภาพอวยพร</span>
+        <span class="menu__sub">ทำเป็นการ์ดรูปพร้อมข้อความ</span>
+      </button>
+
+      <button class="menu__item" type="button" data-go="video" data-needs-media>
+        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 6h12v12H3z"/><path d="M15 10l6-3v10l-6-3z"/>
+        </svg>
+        <span class="menu__label">ถ่ายวิดีโออวยพร</span>
+        <span class="menu__sub">อัดคลิปสั้นไม่เกิน 30 วินาที</span>
+      </button>
+
+      <button class="menu__item" type="button" data-go="booth" data-needs-media>
+        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h6"/>
+        </svg>
+        <span class="menu__label">Photobooth</span>
+        <span class="menu__sub">ถ่าย 3 ช็อต ได้รูปแถบเก็บไว้</span>
+      </button>
+
+      <button class="menu__item menu__item--wide" type="button" data-go="feed">
+        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/>
+        </svg>
+        <span class="menu__label">Feed อวยพร</span>
+        <span class="menu__sub">ดูคำอวยพรของแขกท่านอื่น</span>
+      </button>
     </div>
 
+    <p class="hint" id="mediaOff" hidden>
+      เมนูที่ต้องใช้กล้องยังปิดอยู่ เพราะเจ้าภาพยังไม่ได้ตั้งค่าที่เก็บไฟล์
+    </p>
+
+    <button class="skip" type="button" id="skipWish">ไว้ทีหลัง</button>
+  </section>
+
+  <!-- ---------- ขั้นที่ 3: แต่ละกิจกรรม ---------- -->
+  <section class="card" id="stepDo" hidden>
+    <button class="back" type="button" id="backHub" aria-label="กลับไปหน้าเมนู">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      <span>เมนู</span>
+    </button>
+    <h2 class="title title--sm" id="doTitle">—</h2>
+
     <!-- ข้อความ -->
-    <div class="pane is-active" data-pane="text">
+    <div class="pane" data-pane="text">
       <label class="field">
         <span class="field__label">คำอวยพร</span>
         <textarea class="field__input field__input--area" id="wishText" rows="5"
@@ -114,7 +165,49 @@
       </p>
     </div>
 
-    <button class="skip" type="button" id="skipWish">ไว้ทีหลัง</button>
+    <!-- Photobooth -->
+    <div class="pane" data-pane="booth">
+      <p class="hint">กดเริ่ม แล้วยิ้มรับกล้อง ระบบจะนับถอยหลังถ่ายให้ 3 ช็อตติดกัน</p>
+
+      <div class="video-box video-box--booth">
+        <video id="boothLive" playsinline muted hidden></video>
+        <p class="video-empty" id="boothEmpty">กด “เปิดกล้อง” เพื่อเริ่ม</p>
+        <span class="booth__count" id="boothCount" hidden>3</span>
+        <span class="booth__flash" id="boothFlash"></span>
+        <span class="booth__shot" id="boothShot" hidden>1 / 3</span>
+      </div>
+
+      <div class="preview" id="boothPreview" hidden>
+        <canvas id="boothCanvas"></canvas>
+      </div>
+
+      <div class="video-actions">
+        <button class="btn btn--ghost" type="button" id="boothStart">เปิดกล้อง</button>
+        <button class="btn btn--solid" type="button" id="boothShoot" hidden>เริ่มถ่าย</button>
+        <button class="btn btn--ghost" type="button" id="boothRedo" hidden>ถ่ายใหม่</button>
+      </div>
+
+      <div class="booth__done" id="boothDone" hidden>
+        <a class="btn btn--ghost" id="boothSave" download="photobooth.jpg" href="#">บันทึกลงเครื่อง</a>
+        <button class="btn btn--solid" type="button" id="boothSend">ส่งให้บ่าวสาว</button>
+      </div>
+      <p class="hint" id="boothUnsupported" hidden>
+        เบราว์เซอร์นี้เปิดกล้องไม่ได้ ลองใช้ Chrome หรือ Safari รุ่นใหม่
+      </p>
+    </div>
+
+    <!-- Feed -->
+    <div class="pane" data-pane="feed">
+      <div class="feed__bar">
+        <button class="chip is-active" type="button" data-feed="all">ทั้งหมด</button>
+        <button class="chip" type="button" data-feed="text">ข้อความ</button>
+        <button class="chip" type="button" data-feed="photo">รูป</button>
+        <button class="chip" type="button" data-feed="video">คลิป</button>
+        <button class="chip chip--ghost" type="button" id="feedRefresh">รีเฟรช</button>
+      </div>
+      <p class="hint" id="feedState">กำลังโหลด...</p>
+      <div class="feed" id="feed"></div>
+    </div>
   </section>
 
   <!-- ---------- ขั้นที่ 3: เสร็จแล้ว ---------- -->

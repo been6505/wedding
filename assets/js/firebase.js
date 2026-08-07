@@ -152,6 +152,30 @@ window.BACKEND_FIREBASE = (function () {
     });
   }
 
+
+  // อ่านแบบไม่ต้องล็อกอิน ใช้กับ Feed อวยพรที่กฎเปิดให้อ่านสาธารณะ
+  function listPublic(collection, limit) {
+    if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Firebase'));
+    return call(docsUrl + ':runQuery?key=' + encodeURIComponent(apiKey), {
+      method: 'POST',
+      body: {
+        structuredQuery: {
+          from: [{ collectionId: collection }],
+          orderBy: [{ field: { fieldPath: 'created_at' }, direction: 'DESCENDING' }],
+          limit: limit || 200,
+        },
+      },
+    }).then(function (rows) {
+      return (rows || [])
+        .filter(function (row) { return row && row.document; })
+        .map(function (row) {
+          var data = fromFields(row.document.fields || {});
+          data.id = docId(row.document.name);
+          return data;
+        });
+    });
+  }
+
   function deleteDoc(collection, id) {
     return authed(docsUrl + '/' + collection + '/' + encodeURIComponent(id) +
                   '?key=' + encodeURIComponent(apiKey), { method: 'DELETE' });
@@ -269,6 +293,18 @@ window.BACKEND_FIREBASE = (function () {
 
     listWishes: function () {
       return listDocs('wishes').then(function (rows) {
+        return rows.map(function (r) {
+          return {
+            id: r.id, name: r.name, kind: r.kind,
+            message: r.message || '', media: r.media || null, createdAt: r.created_at,
+          };
+        });
+      });
+    },
+
+    // Feed สาธารณะ — คืนเฉพาะฟิลด์ที่ต้องใช้แสดงผล
+    listPublicWishes: function (limit) {
+      return listPublic('wishes', limit).then(function (rows) {
         return rows.map(function (r) {
           return {
             id: r.id, name: r.name, kind: r.kind,

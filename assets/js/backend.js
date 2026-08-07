@@ -64,6 +64,10 @@ window.BACKEND = (function () {
   function via(method) {
     return function () {
       if (!db || !db.configured()) return guard();
+      // ผู้ให้บริการบางเจ้าไม่มีความสามารถนี้ ตอบเป็น error ที่อ่านรู้เรื่องดีกว่าพังทั้งหน้า
+      if (typeof db[method] !== 'function') {
+        return Promise.reject(new Error('ผู้ให้บริการ "' + choice + '" ยังไม่รองรับ ' + method));
+      }
       return db[method].apply(db, arguments);
     };
   }
@@ -91,6 +95,7 @@ window.BACKEND = (function () {
     listRsvps: via('listRsvps'),
     listCheckins: via('listCheckins'),
     listWishes: via('listWishes'),
+    listPublicWishes: via('listPublicWishes'),
 
     deleteRsvp: via('deleteRsvp'),
     deleteCheckin: via('deleteCheckin'),
