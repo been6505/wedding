@@ -87,8 +87,11 @@ img { max-width: 100%; display: block; }
   width: min(100%, 380px);
   border: 1px solid rgba(162, 25, 37, .38);
   border-radius: 50% 50% 4px 4px / 30% 30% 4px 4px;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.2rem, 4vh, 2rem);
 }
 /* ---------- แหวนคู่ที่เป็นกุญแจของการ์ด ---------- */
 .lock {
@@ -161,7 +164,7 @@ img { max-width: 100%; display: block; }
 }
 
 .cover__names {
-  margin: 2rem 0 0;
+  margin: 0;
   font-family: var(--latin);
   font-size: clamp(.9rem, 3.4vw, 1.05rem);
   letter-spacing: .42em;
@@ -169,6 +172,16 @@ img { max-width: 100%; display: block; }
   color: var(--gold-dim);
 }
 .cover__names i { font-style: normal; margin: 0 .6em; }
+
+.cover__hint {
+  margin: 1.6rem 0 0;
+  font-family: var(--th-body);
+  font-size: .84rem;
+  letter-spacing: .1em;
+  color: var(--gold-ring-deep);
+  transition: opacity .3s ease;
+}
+.cover.is-unlocked .cover__hint { opacity: 0; }
 
 /* ================= ลายเส้นประดับ ================= */
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
