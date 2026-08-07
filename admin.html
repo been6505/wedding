@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายชื่อผู้ตอบรับ</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#3D0F1C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;500;700&family=Noto+Sans+Thai:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<!-- ---------- ยังไม่ได้ตั้งค่า Supabase ---------- -->
+<section class="gate" id="setupNotice" hidden>
+  <div class="gate__box">
+    <h1 class="gate__title">ยังไม่ได้ตั้งค่า</h1>
+    <p class="gate__text">
+      หน้านี้ต้องเชื่อมกับ Supabase ก่อนถึงจะใช้งานได้<br>
+      กรอก <code>supabase.url</code> และ <code>supabase.anonKey</code>
+      ใน <code>assets/js/config.js</code> แล้วดูขั้นตอนทั้งหมดได้ใน README
+    </p>
+  </div>
+</section>
+
+<!-- ---------- เข้าสู่ระบบ ---------- -->
+<section class="gate" id="login" hidden>
+  <form class="gate__box" id="loginForm">
+    <h1 class="gate__title">รายชื่อผู้ตอบรับ</h1>
+    <p class="gate__text">สำหรับเจ้าภาพเท่านั้น</p>
+
+    <label class="field">
+      <span class="field__label">อีเมล</span>
+      <input class="field__input" type="email" id="loginEmail" autocomplete="username" required>
+    </label>
+
+    <label class="field">
+      <span class="field__label">รหัสผ่าน</span>
+      <input class="field__input" type="password" id="loginPassword" autocomplete="current-password" required>
+    </label>
+
+    <button class="btn btn--solid" type="submit" id="loginSubmit">เข้าสู่ระบบ</button>
+    <p class="gate__error" id="loginError" hidden></p>
+  </form>
+</section>
+
+<!-- ---------- แดชบอร์ด ---------- -->
+<main class="dash" id="dash" hidden>
+
+  <header class="dash__head">
+    <div>
+      <h1 class="dash__title">รายชื่อผู้ตอบรับ</h1>
+      <p class="dash__sub" id="dashUser"></p>
+    </div>
+    <div class="dash__tools">
+      <button class="btn" type="button" id="refreshBtn">รีเฟรช</button>
+      <button class="btn" type="button" id="exportBtn">ดาวน์โหลด CSV</button>
+      <button class="btn" type="button" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <ul class="stats">
+    <li class="stat">
+      <strong id="statGuests">0</strong>
+      <span>รวมจำนวนแขก</span>
+    </li>
+    <li class="stat">
+      <strong id="statYes">0</strong>
+      <span>ตอบว่ามาร่วมงาน</span>
+    </li>
+    <li class="stat">
+      <strong id="statNo">0</strong>
+      <span>ไม่สะดวก</span>
+    </li>
+    <li class="stat">
+      <strong id="statTotal">0</strong>
+      <span>คำตอบทั้งหมด</span>
+    </li>
+  </ul>
+
+  <div class="filters">
+    <input class="field__input" type="search" id="search" placeholder="ค้นหาชื่อ...">
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" type="button" data-filter="all" role="tab" aria-selected="true">ทั้งหมด</button>
+      <button class="tab" type="button" data-filter="yes" role="tab" aria-selected="false">มาร่วมงาน</button>
+      <button class="tab" type="button" data-filter="no" role="tab" aria-selected="false">ไม่สะดวก</button>
+    </div>
+  </div>
+
+  <p class="state" id="state">กำลังโหลด...</p>
+
+  <div class="table-wrap">
+    <table class="table" id="table" hidden>
+      <thead>
+        <tr>
+          <th scope="col">ชื่อ</th>
+          <th scope="col">สถานะ</th>
+          <th scope="col" class="num">จำนวน</th>
+          <th scope="col">ตอบเมื่อ</th>
+          <th scope="col"><span class="sr-only">ลบ</span></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</main>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/supabase.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

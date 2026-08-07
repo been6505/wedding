@@ -20,6 +20,10 @@
 
 * { box-sizing: border-box; }
 
+/* คลาสที่กำหนด display เอง (.btn, .countdown ฯลฯ) มี specificity สูงกว่า [hidden]
+   ของเบราว์เซอร์ ทำให้ element ที่ JS สั่งซ่อนยังโผล่อยู่ — บังคับทับไว้ตรงนี้ */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 body {
@@ -460,6 +464,15 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   font-size: .88rem;
   color: rgba(244, 236, 224, .55);
 }
+
+.form__thanks {
+  margin: 0;
+  font-family: var(--th-display);
+  font-size: 1.25rem;
+  color: var(--cream);
+}
+
+#rsvpSubmit[disabled] { opacity: .6; cursor: default; }
 
 /* ================= ร่วมแสดงความยินดี ================= */
 .gift__note { margin: 0 auto 1.8rem; max-width: 34ch; color: rgba(244, 236, 224, .7); }

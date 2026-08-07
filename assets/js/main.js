@@ -213,6 +213,13 @@
       });
     });
 
+    // ต่อ Supabase ได้ = ส่งถึงเจ้าภาพโดยตรง / ไม่ได้ตั้งค่า = คัดลอกไปวางในไลน์แทน
+    var online = !!(window.SB && window.SB.configured());
+    var note = $('.form__note', form);
+    if (note && !online && rsvp.noteFallback) note.textContent = rsvp.noteFallback;
+
+    var submitButton = $('#rsvpSubmit');
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
 
@@ -224,19 +231,41 @@
         return;
       }
 
-      var lines = [
-        'ตอบรับคำเชิญงานวะลีมะฮฺ ' + (get('couple.groom.th') || '') + ' & ' + (get('couple.bride.th') || ''),
-        'ชื่อ: ' + name,
-        'สถานะ: ' + (attending ? 'มาร่วมงาน' : 'ไม่สะดวก'),
-      ];
-      if (attending) lines.push('จำนวน: ' + select.value + ' ท่าน');
+      var guests = attending ? parseInt(select.value, 10) || 1 : 0;
 
-      copy(lines.join('\n')).then(function () {
-        toast('คัดลอกข้อความแล้ว วางส่งในไลน์ได้เลย');
-        if (rsvp.lineUrl) setTimeout(function () { window.open(rsvp.lineUrl, '_blank', 'noopener'); }, 700);
-      }, function () {
-        toast('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง');
-      });
+      if (!online) {
+        var lines = [
+          'ตอบรับคำเชิญงานวะลีมะฮฺ ' + (get('couple.groom.th') || '') + ' & ' + (get('couple.bride.th') || ''),
+          'ชื่อ: ' + name,
+          'สถานะ: ' + (attending ? 'มาร่วมงาน' : 'ไม่สะดวก'),
+        ];
+        if (attending) lines.push('จำนวน: ' + guests + ' ท่าน');
+
+        copy(lines.join('\n')).then(function () {
+          toast('คัดลอกข้อความแล้ว วางส่งในไลน์ได้เลย');
+          if (rsvp.lineUrl) setTimeout(function () { window.open(rsvp.lineUrl, '_blank', 'noopener'); }, 700);
+        }, function () {
+          toast('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง');
+        });
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'กำลังส่ง...';
+
+      window.SB.submitRsvp({ name: name, attending: attending, guests: guests })
+        .then(function () {
+          form.hidden = true;
+          var thanks = el('p', 'form__thanks', rsvp.thanks || 'ขอบคุณที่ตอบรับ');
+          form.parentNode.appendChild(thanks);
+          toast('ส่งคำตอบรับเรียบร้อยแล้ว');
+        })
+        .catch(function (err) {
+          console.error(err);
+          submitButton.disabled = false;
+          submitButton.textContent = 'ส่งคำตอบรับ';
+          toast('ส่งไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');
+        });
     });
 
     section.hidden = false;

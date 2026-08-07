@@ -1,0 +1,280 @@
+:root {
+  --wine-900: #2a0912;
+  --wine-800: #3d0f1c;
+  --wine:     #55162b;
+  --gold:      #c9a063;
+  --gold-soft: #e0c081;
+  --gold-dim:  #a1804d;
+  --cream:     #f4ece0;
+  --line: rgba(201, 160, 99, .22);
+
+  --th-display: 'Charm', Georgia, serif;
+  --th-body: 'Noto Sans Thai', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+/* .gate ตั้ง display: grid ซึ่ง specificity สูงกว่า [hidden] ของเบราว์เซอร์
+   ถ้าไม่บังคับทับ หน้าเข้าสู่ระบบกับแดชบอร์ดจะโผล่พร้อมกันทั้งคู่ */
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  font-family: var(--th-body);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--cream);
+  background: radial-gradient(120% 60% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
+  background-attachment: fixed;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- ปุ่ม / ช่องกรอก ---------- */
+.btn {
+  padding: .55rem 1.3rem;
+  border: 1px solid rgba(201, 160, 99, .5);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.btn:hover { background: rgba(201, 160, 99, .16); border-color: var(--gold); }
+.btn--solid {
+  width: 100%;
+  margin-top: .6rem;
+  padding: .7rem 1.3rem;
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--wine-900);
+}
+.btn--solid:hover { background: var(--gold-soft); border-color: var(--gold-soft); }
+.btn[disabled] { opacity: .6; cursor: default; }
+
+.field { display: block; margin-bottom: 1.2rem; }
+.field__label {
+  display: block;
+  margin-bottom: .35rem;
+  font-size: .8rem;
+  letter-spacing: .2em;
+  color: var(--gold-dim);
+}
+.field__input {
+  width: 100%;
+  padding: .55rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, .18);
+  color: var(--cream);
+  font: inherit;
+  font-size: 1rem;
+}
+.field__input:focus { outline: none; border-color: var(--gold); }
+.field__input::placeholder { color: rgba(244, 236, 224, .35); }
+
+/* ---------- หน้าเข้าสู่ระบบ / แจ้งเตือน ---------- */
+.gate {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+.gate__box {
+  width: min(100%, 380px);
+  padding: 2.5rem 2rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .22);
+}
+.gate__title {
+  margin: 0 0 .3rem;
+  font-family: var(--th-display);
+  font-weight: 500;
+  font-size: 1.9rem;
+  text-align: center;
+}
+.gate__text {
+  margin: 0 0 2rem;
+  text-align: center;
+  font-size: .92rem;
+  color: rgba(244, 236, 224, .6);
+}
+.gate__text code {
+  font-size: .88em;
+  color: var(--gold-soft);
+  word-break: break-all;
+}
+.gate__error {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: .9rem;
+  color: #f0a3a3;
+}
+
+/* ---------- แดชบอร์ด ---------- */
+.dash {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 4vw, 2rem) 4rem;
+}
+
+.dash__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--line);
+}
+.dash__title {
+  margin: 0;
+  font-family: var(--th-display);
+  font-weight: 500;
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+}
+.dash__sub { margin: 0; font-size: .85rem; color: var(--gold-dim); }
+.dash__tools { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+.stats {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: .7rem;
+  margin: 1.8rem 0;
+  padding: 0;
+}
+@media (min-width: 640px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+
+.stat {
+  padding: 1.1rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  text-align: center;
+  background: rgba(0, 0, 0, .16);
+}
+.stat strong {
+  display: block;
+  font-family: var(--th-display);
+  font-weight: 700;
+  font-size: 2.1rem;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+.stat span { font-size: .8rem; color: var(--gold-dim); }
+.stat:first-child strong { color: var(--gold-soft); }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.filters .field__input { flex: 1 1 220px; }
+
+.tabs { display: flex; gap: .4rem; }
+.tab {
+  padding: .45rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(244, 236, 224, .7);
+  font: inherit;
+  font-size: .88rem;
+  cursor: pointer;
+}
+.tab.is-active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--wine-900);
+}
+
+.state { margin: 2.5rem 0; text-align: center; color: rgba(244, 236, 224, .55); }
+.state:empty { display: none; }
+
+.table-wrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+  min-width: 520px;
+}
+.table th, .table td {
+  padding: .8rem .7rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.table th {
+  font-weight: 400;
+  font-size: .78rem;
+  letter-spacing: .16em;
+  color: var(--gold-dim);
+  white-space: nowrap;
+}
+.table .num, .table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table tbody tr:hover { background: rgba(201, 160, 99, .06); }
+
+.name { font-size: 1.02rem; }
+
+.pill {
+  display: inline-block;
+  padding: .15rem .8rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  white-space: nowrap;
+}
+.pill--yes { background: rgba(201, 160, 99, .2); color: var(--gold-soft); }
+.pill--no  { background: rgba(255, 255, 255, .07); color: rgba(244, 236, 224, .55); }
+
+.when { font-size: .85rem; color: rgba(244, 236, 224, .5); white-space: nowrap; }
+
+.del {
+  border: 0;
+  background: transparent;
+  color: rgba(244, 236, 224, .35);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+}
+.del:hover { color: #f0a3a3; background: rgba(240, 163, 163, .1); }
+
+/* ---------- toast ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.6rem;
+  transform: translate(-50%, 1.4rem);
+  padding: .6rem 1.5rem;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--wine-900);
+  font-size: .9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  max-width: calc(100vw - 2rem);
+}
+.toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
