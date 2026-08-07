@@ -86,8 +86,8 @@ window.WEDDING_CONFIG = {
    * หาได้จาก Project settings > General > Your apps > Web app > SDK setup
    */
   firebase: {
-    projectId: '',  // เช่น 'wedding-mubeen-fahada'
-    apiKey: '',     // เช่น 'AIzaSy...'
+    projectId: 'myweddingday151169',
+    apiKey: 'AIzaSyDSXEcL_2bL9W7cAovF148dEYNyQzaZuJw',
   },
 
   /* ---------- Cloudinary ----------
