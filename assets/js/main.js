@@ -55,30 +55,25 @@
     var lock = $('#coverLock');
     var opening = false;
 
-    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนกับประตูไปเลย
+    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนคลายไปเลย
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var UNLOCK_MS = calm ? 0 : 700;   // แหวนคลายออกจากกัน
-    var DOOR_MS   = calm ? 0 : 1150;  // บานประตูหมุนเปิด
+    var UNLOCK_MS = calm ? 0 : 700;
 
-    // ลำดับ: แหวนคลาย -> เอาการ์ดมาวางไว้หลังประตู -> ประตูเปิดออก -> เก็บซองทิ้ง
-    function openDoors() {
-      card.hidden = false;              // ต้องโผล่ก่อน ไม่งั้นประตูเปิดออกมาเจอที่ว่าง
+    function reveal() {
       cover.classList.add('is-open');
+      card.hidden = false;
       requestAnimationFrame(revealFirst);
       if (cfg.options && cfg.options.backgroundMusic) tryPlayMusic();
-      setTimeout(function () {
-        cover.classList.add('is-gone');
-        setTimeout(function () { cover.remove(); }, 500);
-      }, DOOR_MS);
+      setTimeout(function () { cover.remove(); }, 1000);
     }
 
-    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วประตูค่อยเปิด
+    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วค่อยเปิดการ์ด
     function open() {
       if (opening) return;
       opening = true;
       cover.classList.add('is-unlocked');
       if (lock) lock.disabled = true;
-      setTimeout(openDoors, UNLOCK_MS);
+      setTimeout(reveal, UNLOCK_MS);
     }
 
     cover.addEventListener('click', open);
