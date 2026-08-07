@@ -52,7 +52,14 @@
     var card = $('#card');
     if (!cover || !card) return;
 
-    function open() {
+    var lock = $('#coverLock');
+    var opening = false;
+
+    // ผู้ที่ตั้งค่าเครื่องให้ลดการเคลื่อนไหว ข้ามจังหวะแหวนคลายไปเลย
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var UNLOCK_MS = calm ? 0 : 700;
+
+    function reveal() {
       cover.classList.add('is-open');
       card.hidden = false;
       requestAnimationFrame(revealFirst);
@@ -60,13 +67,28 @@
       setTimeout(function () { cover.remove(); }, 1000);
     }
 
-    cover.tabIndex = 0;
-    cover.setAttribute('role', 'button');
-    cover.setAttribute('aria-label', (cfg.coverHint || 'เปิดการ์ด'));
+    // แตะที่ไหนบนซองก็ได้ แต่แหวนจะคลายออกจากกันก่อนเสมอ แล้วค่อยเปิดการ์ด
+    function open() {
+      if (opening) return;
+      opening = true;
+      cover.classList.add('is-unlocked');
+      if (lock) lock.disabled = true;
+      setTimeout(reveal, UNLOCK_MS);
+    }
+
     cover.addEventListener('click', open);
-    cover.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
-    });
+
+    if (lock) {
+      // ปุ่มแหวนจัดการคีย์บอร์ดเองตามปกติของ <button> — กันไม่ให้ซองนับคลิกซ้ำ
+      lock.addEventListener('click', function (e) { e.stopPropagation(); open(); });
+    } else {
+      cover.tabIndex = 0;
+      cover.setAttribute('role', 'button');
+      cover.setAttribute('aria-label', (cfg.coverHint || 'เปิดการ์ด'));
+      cover.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+      });
+    }
   }
 
   /* ---------- 3. กำหนดการ ---------- */

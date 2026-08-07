@@ -31,15 +31,38 @@
 <div class="cover" id="cover">
   <div class="cover__panel">
     <p class="cover__word" dir="rtl" data-bind="coverWord">&nbsp;</p>
-    <div class="cover__arch" aria-hidden="true">
-      <span class="cover__ring"></span>
+    <div class="cover__arch">
+      <!-- แหวนสองวงคล้องกันเป็นกุญแจล็อคการ์ดไว้ แตะแล้วคลายออกจากกัน
+           วงซ้ายวาดทับวงขวาตรงจุดตัดด้านบน (.lock__link) แหวนจึงดูสอดกันจริง -->
+      <button class="lock" id="coverLock" type="button"
+              aria-label="แตะเพื่อปลดล็อคและเปิดการ์ด">
+        <svg class="lock__art" viewBox="0 0 220 150" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="goldRing" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#f2dcae"/>
+              <stop offset="45%"  stop-color="#c9a063"/>
+              <stop offset="100%" stop-color="#8a6a34"/>
+            </linearGradient>
+          </defs>
+
+          <g class="lock__glow">
+            <circle cx="85"  cy="75" r="42"/>
+            <circle cx="135" cy="75" r="42"/>
+          </g>
+
+          <circle class="lock__ring lock__ring--l" cx="85"  cy="75" r="42"/>
+          <circle class="lock__ring lock__ring--r" cx="135" cy="75" r="42"/>
+          <!-- ชิ้นส่วนสั้น ๆ ของวงซ้าย วาดทับวงขวาให้เกิดการสอดคล้อง -->
+          <path class="lock__link" d="M 98.7 35.3 A 42 42 0 0 1 119 50.3"/>
+        </svg>
+        <span class="lock__hint" data-bind="coverHint">&nbsp;</span>
+      </button>
     </div>
     <p class="cover__names">
       <span data-bind="couple.groom.en"></span>
       <i>·</i>
       <span data-bind="couple.bride.en"></span>
     </p>
-    <p class="cover__hint" data-bind="coverHint">&nbsp;</p>
   </div>
 </div>
 

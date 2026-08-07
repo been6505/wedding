@@ -11,6 +11,9 @@
   --cream:     #241d1c;  /* สีตัวอักษรหลัก */
   --cream-dim: #6d5f5c;
   --paper:     #f1e9e6;  /* พื้นหลังนอกการ์ด */
+  --gold-ring:      #c9a063;  /* ใช้เฉพาะแหวนคู่บนซองจดหมาย */
+  --gold-ring-soft: #f2dcae;
+  --gold-ring-deep: #8a6a34;
 
   --th-display: 'Sriracha', 'Charm', cursive;
   --th-body: 'Mali', 'Noto Sans Thai', system-ui, sans-serif;
@@ -87,28 +90,74 @@ img { max-width: 100%; display: block; }
   display: grid;
   place-items: center;
 }
-.cover__ring {
-  width: 108px;
-  height: 108px;
-  border-radius: 50%;
-  border: 1px dashed rgba(162, 25, 37, .35);
-  display: block;
-  position: relative;
-  animation: pulse 3.4s ease-in-out infinite;
+/* ---------- แหวนคู่ที่เป็นกุญแจของการ์ด ---------- */
+.lock {
+  display: grid;
+  justify-items: center;
+  gap: .9rem;
+  padding: .5rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.cover__ring::before,
-.cover__ring::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid var(--gold-dim);
+.lock:focus-visible {
+  outline: 2px solid var(--gold-ring);
+  outline-offset: 8px;
+  border-radius: 12px;
 }
-.cover__ring::before { inset: 14px; }
-.cover__ring::after  { inset: 22px; border-color: rgba(162, 25, 37, .55); }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: .85; }
-  50%      { transform: scale(1.06); opacity: 1; }
+.lock__art { width: min(74vw, 250px); height: auto; overflow: visible; }
+
+.lock__ring,
+.lock__link {
+  fill: none;
+  stroke: url(#goldRing);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+  /* หมุนรอบตัวเอง ไม่ใช่รอบมุมซ้ายบนของ svg */
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform .75s cubic-bezier(.34, 1.32, .5, 1), opacity .4s ease;
+}
+
+/* แสงเรือง ๆ หลังแหวน เต้นช้า ๆ บอกว่าแตะได้ */
+.lock__glow circle {
+  fill: none;
+  stroke: var(--gold-ring-soft);
+  stroke-width: 12;
+  opacity: .28;
+  filter: blur(7px);
+  animation: lockBreathe 3.2s ease-in-out infinite;
+}
+@keyframes lockBreathe {
+  0%, 100% { opacity: .16; }
+  50%      { opacity: .42; }
+}
+
+.lock__hint {
+  font-family: var(--th-body);
+  font-size: .84rem;
+  letter-spacing: .1em;
+  color: var(--gold-ring-deep);
+  transition: opacity .3s ease;
+}
+
+@media (hover: hover) {
+  .lock:hover .lock__ring--l { transform: translateX(-3px); }
+  .lock:hover .lock__ring--r { transform: translateX(3px); }
+}
+
+/* ---------- ตอนปลดล็อค: แหวนคลายออกจากกันแล้วจางหาย ---------- */
+.cover.is-unlocked .lock__link { opacity: 0; transition-duration: .18s; }
+.cover.is-unlocked .lock__ring--l { transform: translateX(-38px) rotate(-24deg); }
+.cover.is-unlocked .lock__ring--r { transform: translateX(38px) rotate(24deg); }
+.cover.is-unlocked .lock__glow circle { opacity: .6; animation: none; transition: opacity .3s; }
+.cover.is-unlocked .lock__hint { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lock__glow circle { animation: none; }
+  .lock__ring, .lock__link { transition: none; }
 }
 
 .cover__names {
@@ -120,18 +169,6 @@ img { max-width: 100%; display: block; }
   color: var(--gold-dim);
 }
 .cover__names i { font-style: normal; margin: 0 .6em; }
-
-.cover__hint {
-  margin: 1.1rem 0 0;
-  font-family: var(--th-display);
-  font-size: 1.15rem;
-  color: rgba(36, 29, 28, .55);
-  animation: breathe 2.6s ease-in-out infinite;
-}
-@keyframes breathe {
-  0%, 100% { opacity: .5; }
-  50%      { opacity: .95; }
-}
 
 /* ================= กระดาษ + แผ่นการ์ด ================= */
 .sheet {
