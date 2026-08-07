@@ -1,20 +1,21 @@
-/* ========== พื้นฐาน ========== */
+/* ================= พื้นฐาน ================= */
 :root {
-  --sage: #8a9a7b;
-  --sage-dark: #5f6e52;
-  --sage-light: #c8d5bb;
-  --cream: #f7f3ec;
-  --paper: #fffdf9;
-  --sand: #d9c7a7;
-  --clay: #b08968;
-  --ink: #3a3733;
-  --ink-soft: #6d675f;
-  --radius: 14px;
-  --shadow: 0 18px 44px rgba(58, 55, 51, .1);
-  --serif: 'Noto Serif Thai', Georgia, serif;
-  --script: 'Charm', 'Cormorant Garamond', Georgia, serif;
+  --wine-900: #2a0912;
+  --wine-800: #3d0f1c;
+  --wine:     #55162b;
+  --wine-600: #6b1d36;
+  --gold:      #c9a063;
+  --gold-soft: #e0c081;
+  --gold-dim:  #8f6f42;
+  --cream:     #f4ece0;
+  --cream-dim: #cbbba7;
+  --paper:     #ece3d6;
+
+  --th-display: 'Charm', Georgia, serif;
+  --th-body: 'Noto Sans Thai', system-ui, sans-serif;
+  --ar-display: 'Aref Ruqaa', 'Amiri', serif;
+  --ar-body: 'Amiri', serif;
   --latin: 'Cormorant Garamond', Georgia, serif;
-  --arabic: 'Noto Naskh Arabic', serif;
 }
 
 * { box-sizing: border-box; }
@@ -24,477 +25,513 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   overflow-x: hidden;
-  font-family: var(--serif);
+  font-family: var(--th-body);
   font-weight: 300;
-  color: var(--ink);
-  background: var(--cream);
-  line-height: 1.85;
+  line-height: 1.9;
+  color: var(--cream);
+  background: var(--paper);
   -webkit-font-smoothing: antialiased;
 }
 
 img { max-width: 100%; display: block; }
 
-/* ========== ซองจดหมาย ========== */
-.envelope {
+/* ================= ซองจดหมาย ================= */
+.cover {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 60;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 50% 40%, #fdfbf7, var(--sage-light));
+  padding: 1rem;
+  background: var(--wine-900);
   cursor: pointer;
-  transition: opacity .8s ease, visibility .8s;
+  transition: opacity .9s ease, visibility .9s;
 }
-.envelope.is-open { opacity: 0; visibility: hidden; }
+.cover.is-open { opacity: 0; visibility: hidden; }
 
-.envelope__inner { text-align: center; animation: floaty 3.5s ease-in-out infinite; }
+.cover__panel {
+  position: relative;
+  width: min(100%, 560px);
+  min-height: min(88svh, 860px);
+  padding: 3rem 1.5rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 18px;
+  text-align: center;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.22) 0 49.4%, rgba(255,255,255,.05) 49.8% 50.2%, rgba(0,0,0,.1) 50.6%),
+    radial-gradient(120% 80% at 50% 0%, var(--wine) 0%, var(--wine-800) 55%, var(--wine-900) 100%);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, .5);
+}
 
-.envelope__seal {
+.cover__word {
+  font-family: var(--ar-display);
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+  color: var(--gold);
+  margin: 0 0 1.6rem;
+  line-height: 1.6;
+}
+
+.cover__arch {
+  position: relative;
+  flex: 1;
+  width: min(100%, 380px);
+  border: 1px solid rgba(201, 160, 99, .38);
+  border-radius: 50% 50% 4px 4px / 30% 30% 4px 4px;
+  display: grid;
+  place-items: center;
+}
+.cover__ring {
   width: 108px;
   height: 108px;
-  fill: none;
-  stroke: var(--sage-dark);
-  stroke-width: 1.6;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 160, 99, .35);
+  display: block;
+  position: relative;
+  animation: pulse 3.4s ease-in-out infinite;
 }
-.envelope__seal path { fill: var(--sage-dark); opacity: .85; stroke: none; }
+.cover__ring::before,
+.cover__ring::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--gold-dim);
+}
+.cover__ring::before { inset: 14px; }
+.cover__ring::after  { inset: 22px; border-color: rgba(201, 160, 99, .55); }
 
-.envelope__hint {
-  margin-top: 1.2rem;
-  letter-spacing: .22em;
-  font-size: .85rem;
-  color: var(--sage-dark);
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50%      { transform: scale(1.06); opacity: 1; }
 }
 
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-10px); }
+.cover__names {
+  margin: 2rem 0 0;
+  font-family: var(--latin);
+  font-size: clamp(.9rem, 3.4vw, 1.05rem);
+  letter-spacing: .42em;
+  text-indent: .42em;
+  color: var(--gold-dim);
+}
+.cover__names i { font-style: normal; margin: 0 .6em; }
+
+.cover__hint {
+  margin: 1.1rem 0 0;
+  font-family: var(--th-display);
+  font-size: 1.15rem;
+  color: rgba(244, 236, 224, .55);
+  animation: breathe 2.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { opacity: .5; }
+  50%      { opacity: .95; }
 }
 
-/* ========== การ์ด ========== */
-.card {
-  max-width: 720px;
+/* ================= กระดาษ + แผ่นการ์ด ================= */
+.sheet {
+  max-width: 620px;
   margin: 0 auto;
+  padding: clamp(.6rem, 2.5vw, 1.4rem);
   background: var(--paper);
-  box-shadow: var(--shadow);
+  min-height: 100svh;
+}
+
+.panel {
+  position: relative;
+  padding: clamp(2.5rem, 8vw, 4rem) clamp(1.1rem, 5vw, 2.6rem) clamp(3rem, 9vw, 4rem);
+  border-radius: 50% 50% 14px 14px / 16% 16% 14px 14px;
+  background:
+    radial-gradient(120% 55% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
+  box-shadow: 0 22px 60px rgba(42, 9, 18, .38);
   overflow: hidden;
 }
-
-/* ========== ปก ========== */
-.hero {
-  position: relative;
-  min-height: 100svh;
-  display: grid;
-  place-items: center;
-  padding: 3rem 1.5rem 5rem;
-  background:
-    linear-gradient(180deg, rgba(255,253,249,.2), rgba(255,253,249,.92)),
-    radial-gradient(circle at 20% 15%, var(--sage-light), transparent 55%),
-    radial-gradient(circle at 82% 78%, var(--sand), transparent 55%),
-    var(--paper);
-  text-align: center;
-}
-
-.hero__frame {
-  border: 1px solid rgba(138, 154, 123, .45);
-  padding: clamp(2rem, 7vw, 3.5rem) clamp(1.25rem, 5vw, 2.5rem);
-  position: relative;
-  max-width: 100%;
-}
-.hero__frame::before,
-.hero__frame::after {
+/* เส้นทองซ้อนตามรูปโค้ง */
+.panel::before {
   content: '';
   position: absolute;
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--sage);
+  inset: 12px;
+  border: 1px solid rgba(201, 160, 99, .3);
+  border-radius: 50% 50% 8px 8px / 15% 15% 8px 8px;
+  pointer-events: none;
 }
-.hero__frame::before { top: -6px; left: -6px; border-width: 1px 0 0 1px; }
-.hero__frame::after  { bottom: -6px; right: -6px; border-width: 0 1px 1px 0; }
 
+.block {
+  position: relative;
+  text-align: center;
+  padding: clamp(1.8rem, 6vw, 2.6rem) 0;
+}
+.block--open { padding-top: clamp(1rem, 4vw, 1.6rem); }
+.block + .block { border-top: 1px solid rgba(201, 160, 99, .16); }
+
+.label {
+  margin: 0 0 1.2rem;
+  font-size: .82rem;
+  font-weight: 300;
+  letter-spacing: .42em;
+  text-indent: .42em;
+  color: var(--gold-dim);
+}
+
+/* ================= เปิดการ์ด ================= */
 .bismillah {
-  font-family: var(--arabic);
-  font-size: 1.5rem;
-  color: var(--sage-dark);
   margin: 0 0 1.5rem;
-  direction: rtl;
+  font-family: var(--ar-body);
+  font-size: clamp(1.1rem, 4.4vw, 1.35rem);
+  line-height: 2;
+  color: var(--gold);
 }
 
-.hero__eyebrow {
-  margin: 0 0 1rem;
-  letter-spacing: .4em;
-  text-indent: .4em;
-  font-size: .78rem;
-  color: var(--ink-soft);
-}
-
-.hero__names {
-  font-family: var(--script);
-  font-weight: 500;
-  font-size: clamp(2rem, 8.5vw, 3.8rem);
-  line-height: 1.3;
-  margin: 0;
-  color: var(--sage-dark);
-  overflow-wrap: anywhere;
-}
-.hero__amp {
-  display: block;
-  font-family: var(--latin);
-  font-size: .55em;
-  color: var(--clay);
-}
-
-.hero__date {
-  margin: 1.6rem 0 0;
-  font-size: 1.05rem;
-  color: var(--ink-soft);
-}
-.hero__date--en {
-  margin-top: .1rem;
-  font-family: var(--latin);
-  font-size: .95rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-}
-
-.hero__scroll {
-  position: absolute;
-  bottom: 2.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 52px;
-  background: linear-gradient(var(--sage), transparent);
-}
-.hero__scroll span {
-  position: absolute;
-  top: 0;
-  left: -3px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--sage);
-  animation: drop 2s ease-in-out infinite;
-}
-@keyframes drop {
-  0%   { top: 0; opacity: 1; }
-  80%  { top: 44px; opacity: 0; }
-  100% { top: 0; opacity: 0; }
-}
-
-/* ========== ส่วนเนื้อหา ========== */
-.section {
-  padding: clamp(3rem, 9vw, 4.5rem) clamp(1.25rem, 6vw, 3rem);
-  text-align: center;
-  border-bottom: 1px solid rgba(138, 154, 123, .16);
-}
-.section:last-of-type { border-bottom: 0; }
-
-.section__title {
-  font-family: var(--script);
-  font-weight: 500;
-  font-size: clamp(1.9rem, 6vw, 2.5rem);
-  color: var(--sage-dark);
-  margin: 0 0 2rem;
-}
-.section__title::after {
-  content: '';
-  display: block;
-  width: 46px;
-  height: 1px;
-  margin: .9rem auto 0;
-  background: var(--clay);
-}
-
-.ornament {
-  width: 120px;
-  height: 26px;
-  margin: 0 auto 2rem;
-  background: no-repeat center/contain
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 26'%3E%3Cg fill='none' stroke='%238a9a7b' stroke-width='1.2'%3E%3Cpath d='M2 13h34M84 13h34'/%3E%3Cpath d='M60 4c6 5 9 7 9 9a9 9 0 0 1-18 0c0-2 3-4 9-9z'/%3E%3Cpath d='M44 13c3-4 6-4 8 0-2 4-5 4-8 0zM76 13c-3-4-6-4-8 0 2 4 5 4 8 0z'/%3E%3C/g%3E%3C/svg%3E");
-}
-.ornament--flip { transform: rotate(180deg); margin: 0 auto 1.5rem; }
-
-/* ---- คำเชิญ ---- */
-.invite__lead {
-  max-width: 34ch;
-  margin: 0 auto 2.5rem;
-  color: var(--ink-soft);
-}
-
-.invite__people {
-  display: grid;
-  gap: 1.5rem;
-  align-items: center;
-}
-@media (min-width: 620px) {
-  .invite__people { grid-template-columns: 1fr auto 1fr; gap: 2rem; }
-}
-
-.person__role {
-  margin: 0 0 .4rem;
-  font-size: .74rem;
-  letter-spacing: .3em;
-  text-indent: .3em;
-  color: var(--clay);
-}
-.person__name {
-  margin: 0;
-  font-size: 1.28rem;
-  font-weight: 500;
-  color: var(--sage-dark);
-}
-.person__parents {
-  margin: .5rem 0 0;
+.invite-line {
+  margin: 0 0 2.4rem;
   font-size: .88rem;
-  color: var(--ink-soft);
+  letter-spacing: .26em;
+  text-indent: .26em;
+  color: var(--cream-dim);
 }
-.person__divider {
+
+.names-ar {
+  margin: 0;
+  font-family: var(--ar-display);
+  font-weight: 400;
+  font-size: clamp(2.8rem, 13vw, 4.6rem);
+  line-height: 1.7;
+  color: var(--cream);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 .28em;
+}
+.names-ar span {
+  background: linear-gradient(170deg, #fff6e6 8%, var(--gold-soft) 52%, var(--gold-dim) 96%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.names-ar .amp {
   font-family: var(--latin);
-  font-size: 2rem;
-  color: var(--clay);
+  font-style: normal;
+  font-size: .34em;
+  color: var(--gold);
 }
 
-.quote {
-  margin: 3rem auto 0;
-  max-width: 38ch;
-  font-style: italic;
-  color: var(--ink-soft);
-  position: relative;
+.names-th {
+  margin: .6rem 0 0;
+  font-family: var(--th-display);
+  font-size: clamp(1.5rem, 6.4vw, 2rem);
+  color: var(--cream);
 }
-.quote p { margin: 0; }
-.quote cite { display: block; margin-top: .8rem; font-size: .85rem; font-style: normal; }
-.quote cite:not(:empty)::before { content: '— '; }
+.names-th .amp { font-family: var(--latin); font-style: normal; color: var(--gold); margin: 0 .2em; }
 
-/* ---- นับถอยหลัง ---- */
+.verse { margin-top: 2.6rem; }
+.verse__ar {
+  margin: 0;
+  font-family: var(--ar-body);
+  font-size: clamp(1.05rem, 4.2vw, 1.28rem);
+  line-height: 2.35;
+  color: var(--cream);
+}
+.verse__th {
+  margin: 1.5rem auto 0;
+  max-width: 34ch;
+  font-family: var(--th-display);
+  font-size: 1.06rem;
+  line-height: 1.95;
+  color: rgba(244, 236, 224, .88);
+}
+.verse__ref {
+  margin: 1rem 0 0;
+  font-size: .78rem;
+  letter-spacing: .34em;
+  text-indent: .34em;
+  color: var(--gold-dim);
+}
+
+/* ================= วันที่ ================= */
+.date__weekday {
+  margin: 0;
+  font-family: var(--th-display);
+  font-size: 1.55rem;
+  color: var(--cream);
+}
+.date__day {
+  margin: .1rem 0;
+  font-family: var(--th-display);
+  font-weight: 700;
+  font-size: clamp(3.4rem, 15vw, 4.6rem);
+  line-height: 1.1;
+  color: var(--cream);
+}
+.date__month {
+  margin: 0;
+  font-family: var(--th-display);
+  font-size: 1.6rem;
+  color: var(--cream);
+}
+.date__hijri {
+  margin: .9rem 0 0;
+  font-family: var(--ar-body);
+  font-size: 1.05rem;
+  color: var(--gold-dim);
+}
+
+/* ================= กำหนดการ ================= */
+.agenda {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.agenda li { padding: .3rem 0 1.4rem; }
+.agenda li + li {
+  border-top: 1px solid rgba(201, 160, 99, .16);
+  padding-top: 1.4rem;
+}
+.agenda__time {
+  display: block;
+  font-size: 1rem;
+  letter-spacing: .06em;
+  color: var(--gold-dim);
+  font-variant-numeric: tabular-nums;
+}
+.agenda__title {
+  margin: .3rem 0 .2rem;
+  font-family: var(--th-display);
+  font-size: 1.45rem;
+  color: var(--cream);
+}
+.agenda__note {
+  margin: 0;
+  font-size: .95rem;
+  color: rgba(244, 236, 224, .6);
+}
+
+/* ================= สถานที่ ================= */
+.venue__name {
+  margin: 0 0 .7rem;
+  font-family: var(--th-display);
+  font-size: clamp(1.5rem, 6vw, 1.9rem);
+  color: var(--cream);
+}
+.venue__address p {
+  margin: 0;
+  font-size: .98rem;
+  color: rgba(244, 236, 224, .68);
+}
+
+.venue__map { margin: 1.6rem 0 0; border-radius: 10px; overflow: hidden; }
+.venue__map:empty { display: none; }
+.venue__map iframe { display: block; width: 100%; height: 280px; border: 0; filter: saturate(.85) contrast(.95); }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .8rem;
+  margin-top: 1.8rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: .72rem 1.9rem;
+  border: 1px solid rgba(201, 160, 99, .55);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .25s, color .25s, border-color .25s;
+}
+.btn:hover { background: rgba(201, 160, 99, .16); border-color: var(--gold); }
+.btn--solid {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--wine-900);
+  padding: .78rem 2.4rem;
+}
+.btn--solid:hover { background: var(--gold-soft); border-color: var(--gold-soft); }
+
+/* ================= นับถอยหลัง ================= */
 .countdown {
   list-style: none;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: .5rem;
-  max-width: 420px;
-  margin: 0 auto 2rem;
+  gap: .4rem;
+  margin: 0;
   padding: 0;
 }
-.countdown li {
-  min-width: 0;
-  background: var(--cream);
-  border: 1px solid rgba(138, 154, 123, .28);
-  border-radius: var(--radius);
-  padding: .9rem .2rem;
-}
+.countdown li { min-width: 0; }
 .countdown strong {
   display: block;
-  font-size: clamp(1.4rem, 6vw, 1.9rem);
-  font-weight: 500;
-  color: var(--sage-dark);
+  font-family: var(--th-display);
+  font-weight: 700;
+  font-style: italic;
+  font-size: clamp(1.7rem, 8vw, 2.4rem);
+  line-height: 1.3;
+  color: var(--cream);
   font-variant-numeric: tabular-nums;
 }
-.countdown span { font-size: .74rem; color: var(--ink-soft); }
-.countdown__done { color: var(--sage-dark); font-size: 1.05rem; }
-
-/* ---- ปุ่ม ---- */
-.btn {
-  display: inline-block;
-  padding: .72rem 1.9rem;
-  border: 1px solid var(--sage-dark);
-  border-radius: 999px;
-  background: var(--sage-dark);
-  color: #fff;
-  text-decoration: none;
-  font-size: .92rem;
-  letter-spacing: .06em;
-  transition: background .25s, color .25s, transform .15s;
+.countdown span {
+  font-size: .78rem;
+  letter-spacing: .24em;
+  text-indent: .24em;
+  color: var(--gold-dim);
 }
-.btn:hover { background: var(--sage); border-color: var(--sage); }
-.btn:active { transform: scale(.98); }
-.btn--ghost { background: transparent; color: var(--sage-dark); }
-.btn--ghost:hover { background: var(--sage-dark); color: #fff; }
-
-/* ---- กำหนดการ ---- */
-.timeline {
-  list-style: none;
-  margin: 0 auto;
-  padding: 0;
-  max-width: 420px;
-  text-align: left;
-  position: relative;
-}
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 4.4rem;
-  top: .6rem;
-  bottom: .6rem;
-  width: 1px;
-  background: rgba(138, 154, 123, .4);
-}
-.timeline li {
-  display: grid;
-  grid-template-columns: 3.6rem 1fr;
-  gap: 1.6rem;
-  padding: .85rem 0;
-  position: relative;
-}
-.timeline li::before {
-  content: '';
-  position: absolute;
-  left: calc(4.4rem - 4px);
-  top: 1.55rem;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--paper);
-  border: 1px solid var(--sage);
-}
-.timeline__time {
-  font-variant-numeric: tabular-nums;
-  color: var(--clay);
-  font-size: .95rem;
-  text-align: right;
-}
-.timeline__title { margin: 0; font-weight: 500; color: var(--sage-dark); }
-.timeline__note { margin: .15rem 0 0; font-size: .85rem; color: var(--ink-soft); }
-
-/* ---- สถานที่ ---- */
-.venue__name {
+.countdown__done {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: var(--sage-dark);
-}
-.venue__address {
-  margin: .5rem auto 1.8rem;
-  max-width: 36ch;
-  font-size: .92rem;
-  color: var(--ink-soft);
-}
-.venue__map {
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 1.8rem;
-  border: 1px solid rgba(138, 154, 123, .28);
-}
-.venue__map:empty { display: none; }
-.venue__map iframe { display: block; width: 100%; height: 300px; border: 0; }
-
-/* ---- การแต่งกาย ---- */
-.dress__note { margin: 0 auto 1.8rem; max-width: 32ch; color: var(--ink-soft); }
-.palette {
-  list-style: none;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: .8rem;
-  padding: 0;
-  margin: 0;
-}
-.palette li {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07);
+  font-family: var(--th-display);
+  font-size: 1.15rem;
+  color: var(--cream);
 }
 
-/* ---- แกลเลอรี ---- */
+/* ================= แกลเลอรี ================= */
 .gallery {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: .6rem;
+  gap: .5rem;
 }
-@media (min-width: 620px) {
-  .gallery { grid-template-columns: repeat(3, 1fr); }
-}
+@media (min-width: 560px) { .gallery { grid-template-columns: repeat(3, 1fr); } }
 .gallery figure {
   margin: 0;
   aspect-ratio: 3 / 4;
-  border-radius: 10px;
   overflow: hidden;
-  background: var(--sage-light);
+  border-radius: 6px;
+  background: rgba(201, 160, 99, .12);
 }
-.gallery img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform .6s ease;
-}
+.gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
 .gallery figure:hover img { transform: scale(1.06); }
-.gallery figure.is-missing {
-  display: grid;
-  place-items: center;
-  color: var(--sage-dark);
-  font-size: .78rem;
-  letter-spacing: .1em;
+
+/* ================= ตอบรับคำเชิญ ================= */
+.form { max-width: 380px; margin: 0 auto; text-align: left; }
+
+.field { margin-bottom: 1.6rem; }
+.field__label {
+  display: block;
+  margin-bottom: .5rem;
+  font-size: .82rem;
+  letter-spacing: .22em;
+  color: var(--gold-dim);
 }
 
-/* ---- RSVP / ของขวัญ ---- */
-.rsvp__deadline { margin: 0 0 1.6rem; color: var(--ink-soft); font-size: .92rem; }
-.rsvp__actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
+.field__input {
+  width: 100%;
+  padding: .55rem .1rem;
+  border: 0;
+  border-bottom: 1px solid rgba(201, 160, 99, .35);
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 1.1rem;
+  border-radius: 0;
+}
+.field__input::placeholder { color: rgba(244, 236, 224, .32); }
+.field__input:focus {
+  outline: none;
+  border-bottom-color: var(--gold);
+}
+select.field__input { appearance: none; cursor: pointer; }
+select.field__input option { background: var(--wine-800); color: var(--cream); }
 
-.gift__note { margin: 0 auto 2rem; max-width: 36ch; color: var(--ink-soft); font-size: .95rem; }
-.accounts { display: grid; gap: 1rem; max-width: 380px; margin: 0 auto; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+.choice__btn {
+  padding: .72rem .4rem;
+  border: 1px solid rgba(201, 160, 99, .4);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cream);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.choice__btn.is-active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--wine-900);
+}
+
+#rsvpSubmit { display: block; margin: 0 auto; }
+
+.form__note {
+  margin: 1.1rem 0 0;
+  text-align: center;
+  font-size: .88rem;
+  color: rgba(244, 236, 224, .55);
+}
+
+/* ================= ร่วมแสดงความยินดี ================= */
+.gift__note { margin: 0 auto 1.8rem; max-width: 34ch; color: rgba(244, 236, 224, .7); }
+.accounts { display: grid; gap: 1rem; max-width: 340px; margin: 0 auto; }
 .account {
-  border: 1px solid rgba(138, 154, 123, .3);
-  border-radius: var(--radius);
-  padding: 1.2rem;
-  background: var(--cream);
+  padding: 1.3rem 1rem;
+  border: 1px solid rgba(201, 160, 99, .28);
+  border-radius: 6px;
 }
-.account__bank { margin: 0; font-size: .85rem; color: var(--clay); letter-spacing: .1em; }
+.account__qr { width: 150px; margin: 0 auto 1rem; border-radius: 6px; }
+.account__bank { margin: 0; font-size: .82rem; letter-spacing: .2em; color: var(--gold-dim); }
 .account__number {
-  margin: .35rem 0;
-  font-size: 1.22rem;
-  font-weight: 500;
-  color: var(--sage-dark);
+  margin: .3rem 0;
+  font-size: 1.28rem;
+  color: var(--cream);
   font-variant-numeric: tabular-nums;
 }
-.account__name { margin: 0 0 .9rem; font-size: .88rem; color: var(--ink-soft); }
-.account__qr { width: 150px; margin: 0 auto 1rem; border-radius: 8px; }
-.account__copy {
-  border: 1px solid var(--sage);
-  background: transparent;
-  color: var(--sage-dark);
-  border-radius: 999px;
-  padding: .38rem 1.2rem;
-  font: inherit;
-  font-size: .82rem;
-  cursor: pointer;
-}
-.account__copy:hover { background: var(--sage); color: #fff; }
+.account__name { margin: 0 0 1rem; font-size: .9rem; color: rgba(244, 236, 224, .6); }
 
-/* ---- ท้ายการ์ด ---- */
-.footer {
-  padding: 3.5rem 1.5rem 4rem;
-  text-align: center;
-  background: linear-gradient(180deg, var(--paper), var(--cream));
+/* ================= ดุอาอ์ ================= */
+.rule {
+  width: 130px;
+  height: 1px;
+  margin: 0 auto 2.4rem;
+  background: linear-gradient(90deg, transparent, rgba(201, 160, 99, .6), transparent);
 }
-.footer__thanks { margin: 0 auto; max-width: 30ch; color: var(--ink-soft); font-size: .95rem; }
-.footer__names {
-  font-family: var(--script);
-  font-size: clamp(1.5rem, 6vw, 2rem);
-  font-weight: 500;
-  color: var(--sage-dark);
-  margin: 1rem 0 0;
-  overflow-wrap: anywhere;
+.dua__ar {
+  margin: 0;
+  font-family: var(--ar-body);
+  font-size: clamp(1.05rem, 4.2vw, 1.25rem);
+  line-height: 2.4;
+  color: var(--gold);
+}
+.dua__th {
+  margin: 1.4rem auto 0;
+  max-width: 32ch;
+  font-family: var(--th-display);
+  font-size: 1.06rem;
+  color: rgba(244, 236, 224, .88);
+}
+.closing__lead {
+  margin: 2.6rem 0 .2rem;
+  font-family: var(--th-display);
+  font-size: 1.2rem;
+  color: rgba(244, 236, 224, .7);
+}
+.closing__host {
+  margin: 0;
+  font-family: var(--th-display);
+  font-size: 1.28rem;
+  color: var(--cream);
 }
 
-/* ---- toast ---- */
+/* ================= toast / เพลง ================= */
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 2rem;
-  transform: translate(-50%, 1.5rem);
-  background: var(--ink);
-  color: #fff;
-  padding: .6rem 1.4rem;
+  bottom: 1.6rem;
+  transform: translate(-50%, 1.4rem);
+  padding: .6rem 1.5rem;
   border-radius: 999px;
-  font-size: .85rem;
+  background: var(--gold);
+  color: var(--wine-900);
+  font-size: .9rem;
   opacity: 0;
   pointer-events: none;
   transition: opacity .3s, transform .3s;
-  z-index: 60;
+  z-index: 70;
+  max-width: calc(100vw - 2rem);
 }
 .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
-/* ---- ปุ่มเพลง ---- */
 .music-toggle {
   position: fixed;
   right: 1rem;
@@ -502,20 +539,19 @@ img { max-width: 100%; display: block; }
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  border: 1px solid var(--sage);
-  background: var(--paper);
-  color: var(--sage-dark);
+  border: 1px solid rgba(201, 160, 99, .5);
+  background: var(--wine-800);
+  color: var(--gold);
   font-size: 1.1rem;
   cursor: pointer;
-  z-index: 55;
-  box-shadow: 0 6px 18px rgba(58, 55, 51, .14);
+  z-index: 65;
 }
-.music-toggle.is-playing { background: var(--sage-dark); color: #fff; }
+.music-toggle.is-playing { background: var(--gold); color: var(--wine-900); }
 
-/* ---- เอฟเฟกต์ตอนเลื่อน ---- */
+/* ================= เอฟเฟกต์ ================= */
 .reveal {
   opacity: 0;
-  transform: translateY(26px);
+  transform: translateY(22px);
   transition: opacity .9s ease, transform .9s ease;
 }
 .reveal.is-visible { opacity: 1; transform: none; }
@@ -526,11 +562,11 @@ img { max-width: 100%; display: block; }
   html { scroll-behavior: auto; }
 }
 
-/* ---- พิมพ์ออกกระดาษ ---- */
+/* ================= พิมพ์ ================= */
 @media print {
-  .envelope, .hero__scroll, .music-toggle, .toast, .btn, .account__copy { display: none !important; }
-  body { background: #fff; }
-  .card { box-shadow: none; max-width: none; }
+  .cover, .music-toggle, .toast, .actions, .form, .venue__map { display: none !important; }
+  body, .sheet { background: #fff; }
+  .panel { box-shadow: none; }
   .reveal { opacity: 1; transform: none; }
-  .section { page-break-inside: avoid; }
+  .block { break-inside: avoid; }
 }

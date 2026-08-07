@@ -10,14 +10,10 @@
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
-  /* ---------- helper: อ่านค่าจาก path เช่น "groom.nickname" ---------- */
   function get(path) {
-    var scope = cfg;
-    // ย่อ groom/bride ให้เขียนสั้นใน HTML ได้
-    if (path.indexOf('groom.') === 0 || path.indexOf('bride.') === 0) scope = cfg.couple;
     return path.split('.').reduce(function (acc, key) {
       return acc == null ? undefined : acc[key];
-    }, scope);
+    }, cfg);
   }
 
   function el(tag, className, text) {
@@ -27,69 +23,119 @@
     return node;
   }
 
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+
   function toast(message) {
     var box = $('#toast');
     if (!box) return;
     box.textContent = message;
     box.classList.add('is-visible');
     clearTimeout(toast._t);
-    toast._t = setTimeout(function () { box.classList.remove('is-visible'); }, 2200);
+    toast._t = setTimeout(function () { box.classList.remove('is-visible'); }, 2600);
   }
 
-  /* ---------- 1. เติมข้อความทั้งหมดจาก config ---------- */
+  /* ---------- 1. เติมข้อความจาก config ---------- */
   function bindText() {
     $$('[data-bind]').forEach(function (node) {
       var value = get(node.getAttribute('data-bind'));
-      if (typeof value === 'string' && value.trim() !== '') {
-        node.textContent = value;
-      } else if (node.dataset.bind !== 'bismillah') {
-        node.textContent = '';
-      }
+      node.textContent = (typeof value === 'string') ? value : '';
     });
 
-    if (cfg.options && cfg.options.showBismillah) {
-      var b = $('[data-bind="bismillah"]');
-      if (b) { b.textContent = cfg.options.bismillahText || ''; b.hidden = false; }
-    }
-
-    document.title = [get('groom.nickname'), get('bride.nickname')].filter(Boolean).join(' & ') || 'การ์ดงานแต่ง';
+    var groom = get('couple.groom.th') || '';
+    var bride = get('couple.bride.th') || '';
+    if (groom && bride) document.title = 'วะลีมะฮฺ ' + groom + ' & ' + bride;
   }
 
   /* ---------- 2. ซองจดหมาย ---------- */
-  function initEnvelope() {
-    var envelope = $('#envelope');
+  function initCover() {
+    var cover = $('#cover');
     var card = $('#card');
-    if (!envelope || !card) return;
+    if (!cover || !card) return;
 
     function open() {
-      envelope.classList.add('is-open');
+      cover.classList.add('is-open');
       card.hidden = false;
-      // ให้ reveal ทำงานหลังการ์ดปรากฏ
-      requestAnimationFrame(revealCheck);
+      requestAnimationFrame(revealFirst);
       if (cfg.options && cfg.options.backgroundMusic) tryPlayMusic();
-      setTimeout(function () { envelope.remove(); }, 900);
+      setTimeout(function () { cover.remove(); }, 1000);
     }
 
-    envelope.addEventListener('click', open);
-    envelope.addEventListener('keydown', function (e) {
+    cover.tabIndex = 0;
+    cover.setAttribute('role', 'button');
+    cover.setAttribute('aria-label', (cfg.coverHint || 'เปิดการ์ด'));
+    cover.addEventListener('click', open);
+    cover.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
     });
-    envelope.tabIndex = 0;
-    envelope.setAttribute('role', 'button');
-    envelope.setAttribute('aria-label', 'แตะเพื่อเปิดการ์ด');
   }
 
-  /* ---------- 3. นับถอยหลัง + เพิ่มลงปฏิทิน ---------- */
+  /* ---------- 3. กำหนดการ ---------- */
+  function initAgenda() {
+    var list = $('#agenda');
+    if (!list) return;
+    var items = cfg.schedule || [];
+    if (!items.length) { list.closest('.block').hidden = true; return; }
+
+    items.forEach(function (item) {
+      var li = el('li');
+      li.appendChild(el('span', 'agenda__time', item.time || ''));
+      li.appendChild(el('p', 'agenda__title', item.title || ''));
+      if (item.note) li.appendChild(el('p', 'agenda__note', item.note));
+      list.appendChild(li);
+    });
+  }
+
+  /* ---------- 4. สถานที่ + ปุ่ม ---------- */
+  function initVenue() {
+    var venue = cfg.venue || {};
+
+    var address = $('#venueAddress');
+    if (address) (venue.addressLines || []).forEach(function (line) {
+      address.appendChild(el('p', null, line));
+    });
+
+    var mapLink = $('#mapLink');
+    if (mapLink) {
+      if (venue.mapUrl) mapLink.href = venue.mapUrl;
+      else mapLink.hidden = true;
+    }
+
+    var box = $('#venueMap');
+    if (box && venue.mapEmbedUrl) {
+      var frame = document.createElement('iframe');
+      frame.src = venue.mapEmbedUrl;
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer-when-downgrade';
+      frame.allowFullscreen = true;
+      frame.title = 'แผนที่' + (venue.name ? ' ' + venue.name : '');
+      box.appendChild(frame);
+    }
+
+    var calLink = $('#calendarLink');
+    var start = new Date(cfg.startsAt);
+    if (calLink && !isNaN(start)) {
+      var end = cfg.endsAt ? new Date(cfg.endsAt) : new Date(start.getTime() + 5 * 3600 * 1000);
+      var stamp = function (d) { return d.toISOString().replace(/[-:]|\.\d{3}/g, ''); };
+      var title = 'วะลีมะฮฺ ' + (get('couple.groom.th') || '') + ' & ' + (get('couple.bride.th') || '');
+      calLink.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=' + encodeURIComponent(title.trim())
+        + '&dates=' + stamp(start) + '/' + stamp(end)
+        + '&details=' + encodeURIComponent([venue.name, venue.mapUrl].filter(Boolean).join('\n'))
+        + '&location=' + encodeURIComponent([venue.name].concat(venue.addressLines || []).filter(Boolean).join(' '));
+    } else if (calLink) {
+      calLink.hidden = true;
+    }
+  }
+
+  /* ---------- 5. นับถอยหลัง ---------- */
   function initCountdown() {
     var target = new Date(cfg.startsAt);
     if (isNaN(target)) return;
 
-    var fields = {
-      days: $('[data-count="days"]'),
-      hours: $('[data-count="hours"]'),
-      minutes: $('[data-count="minutes"]'),
-      seconds: $('[data-count="seconds"]'),
-    };
+    var days = $('[data-count="days"]');
+    var hours = $('[data-count="hours"]');
+    var minutes = $('[data-count="minutes"]');
+    var seconds = $('[data-count="seconds"]');
     var list = $('#countdown');
     var done = $('#countdownDone');
 
@@ -102,92 +148,24 @@
         return;
       }
       var s = Math.floor(diff / 1000);
-      if (fields.days) fields.days.textContent = Math.floor(s / 86400);
-      if (fields.hours) fields.hours.textContent = Math.floor(s % 86400 / 3600);
-      if (fields.minutes) fields.minutes.textContent = Math.floor(s % 3600 / 60);
-      if (fields.seconds) fields.seconds.textContent = s % 60;
+      if (days) days.textContent = Math.floor(s / 86400);
+      if (hours) hours.textContent = pad(Math.floor(s % 86400 / 3600));
+      if (minutes) minutes.textContent = pad(Math.floor(s % 3600 / 60));
+      if (seconds) seconds.textContent = pad(s % 60);
     }
 
     tick();
     var timer = setInterval(tick, 1000);
-
-    var link = $('#addToCalendar');
-    if (link) {
-      var end = cfg.endsAt ? new Date(cfg.endsAt) : new Date(target.getTime() + 4 * 3600 * 1000);
-      var stamp = function (d) { return d.toISOString().replace(/[-:]|\.\d{3}/g, ''); };
-      var title = 'งานมงคลสมรส ' + [get('groom.nickname'), get('bride.nickname')].filter(Boolean).join(' & ');
-      var details = [cfg.venue && cfg.venue.name, cfg.venue && cfg.venue.mapUrl].filter(Boolean).join('\n');
-      link.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
-        + '&text=' + encodeURIComponent(title)
-        + '&dates=' + stamp(target) + '/' + stamp(end)
-        + '&details=' + encodeURIComponent(details)
-        + '&location=' + encodeURIComponent((cfg.venue && cfg.venue.address) || '');
-      link.target = '_blank';
-      link.rel = 'noopener';
-    }
   }
 
-  /* ---------- 4. กำหนดการ ---------- */
-  function initSchedule() {
-    var list = $('#timeline');
-    if (!list) return;
-    var items = cfg.schedule || [];
-    if (!items.length) { list.closest('.section').hidden = true; return; }
-
-    items.forEach(function (item) {
-      var li = el('li');
-      li.appendChild(el('span', 'timeline__time', item.time || ''));
-      var body = el('div');
-      body.appendChild(el('p', 'timeline__title', item.title || ''));
-      if (item.note) body.appendChild(el('p', 'timeline__note', item.note));
-      li.appendChild(body);
-      list.appendChild(li);
-    });
-  }
-
-  /* ---------- 5. สถานที่ ---------- */
-  function initVenue() {
-    var venue = cfg.venue || {};
-
-    var link = $('#mapLink');
-    if (link) {
-      if (venue.mapUrl) { link.href = venue.mapUrl; }
-      else { link.hidden = true; }
-    }
-
-    var box = $('#venueMap');
-    if (box && venue.mapEmbedUrl) {
-      var frame = document.createElement('iframe');
-      frame.src = venue.mapEmbedUrl;
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-      frame.title = 'แผนที่' + (venue.name ? ' ' + venue.name : '');
-      frame.allowFullscreen = true;
-      box.appendChild(frame);
-    }
-  }
-
-  /* ---------- 6. โทนสีการแต่งกาย ---------- */
-  function initPalette() {
-    var list = $('#palette');
-    if (!list) return;
-    var colors = (cfg.dressCode && cfg.dressCode.palette) || [];
-    if (!colors.length) { list.hidden = true; return; }
-
-    colors.forEach(function (color) {
-      var li = el('li');
-      li.style.background = color;
-      li.title = color;
-      list.appendChild(li);
-    });
-  }
-
-  /* ---------- 7. แกลเลอรี ---------- */
+  /* ---------- 6. แกลเลอรี ---------- */
   function initGallery() {
+    var section = $('#gallery');
     var grid = $('#galleryGrid');
-    if (!grid) return;
-    var photos = cfg.gallery || [];
-    if (!photos.length) { grid.closest('.section').hidden = true; return; }
+    if (!section || !grid) return;
+
+    var photos = (cfg.gallery || []).filter(Boolean);
+    if (!photos.length) return;
 
     photos.forEach(function (src, i) {
       var figure = el('figure');
@@ -196,40 +174,91 @@
       img.alt = 'ภาพคู่บ่าวสาว ' + (i + 1);
       img.loading = 'lazy';
       img.decoding = 'async';
-      // ยังไม่มีไฟล์รูป → แสดงกรอบว่างแทนไอคอนรูปเสีย
-      img.addEventListener('error', function () {
-        figure.classList.add('is-missing');
-        figure.textContent = 'รอรูปภาพ';
-      });
+      img.addEventListener('error', function () { figure.remove(); });
       figure.appendChild(img);
       grid.appendChild(figure);
     });
-  }
 
-  /* ---------- 8. RSVP ---------- */
-  function initRsvp() {
-    var section = $('#rsvp');
-    var actions = $('#rsvpActions');
-    var rsvp = cfg.rsvp || {};
-    if (!section || !actions || !rsvp.enabled) return;
-
-    var links = [];
-    if (rsvp.formUrl) links.push({ href: rsvp.formUrl, label: 'กรอกแบบฟอร์มตอบรับ', external: true });
-    if (rsvp.lineUrl) links.push({ href: rsvp.lineUrl, label: 'ตอบรับทาง LINE', external: true });
-    if (rsvp.phone) links.push({ href: 'tel:' + rsvp.phone.replace(/[^\d+]/g, ''), label: 'โทร ' + rsvp.phone });
-
-    if (!links.length) return; // ยังไม่ได้ใส่ช่องทาง → ซ่อนทั้งหมวด
-
-    links.forEach(function (item) {
-      var a = el('a', 'btn', item.label);
-      a.href = item.href;
-      if (item.external) { a.target = '_blank'; a.rel = 'noopener'; }
-      actions.appendChild(a);
-    });
     section.hidden = false;
   }
 
-  /* ---------- 9. ร่วมแสดงความยินดี ---------- */
+  /* ---------- 7. ตอบรับคำเชิญ ---------- */
+  function initRsvp() {
+    var section = $('#rsvp');
+    var form = $('#rsvpForm');
+    var rsvp = cfg.rsvp || {};
+    if (!section || !form || !rsvp.enabled) return;
+
+    var select = $('#rsvpGuests');
+    var max = rsvp.maxGuests || 10;
+    for (var i = 1; i <= max; i++) {
+      var option = document.createElement('option');
+      option.value = String(i);
+      option.textContent = i + ' ท่าน';
+      select.appendChild(option);
+    }
+
+    var attending = true;
+    var guestField = $('#guestField');
+    $$('.choice__btn', form).forEach(function (button) {
+      button.addEventListener('click', function () {
+        $$('.choice__btn', form).forEach(function (other) {
+          other.classList.remove('is-active');
+          other.setAttribute('aria-checked', 'false');
+        });
+        button.classList.add('is-active');
+        button.setAttribute('aria-checked', 'true');
+        attending = button.dataset.attend === 'yes';
+        guestField.hidden = !attending;
+      });
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var nameInput = $('#rsvpName');
+      var name = nameInput.value.trim();
+      if (!name) {
+        toast('กรุณากรอกชื่อผู้ตอบรับ');
+        nameInput.focus();
+        return;
+      }
+
+      var lines = [
+        'ตอบรับคำเชิญงานวะลีมะฮฺ ' + (get('couple.groom.th') || '') + ' & ' + (get('couple.bride.th') || ''),
+        'ชื่อ: ' + name,
+        'สถานะ: ' + (attending ? 'มาร่วมงาน' : 'ไม่สะดวก'),
+      ];
+      if (attending) lines.push('จำนวน: ' + select.value + ' ท่าน');
+
+      copy(lines.join('\n')).then(function () {
+        toast('คัดลอกข้อความแล้ว วางส่งในไลน์ได้เลย');
+        if (rsvp.lineUrl) setTimeout(function () { window.open(rsvp.lineUrl, '_blank', 'noopener'); }, 700);
+      }, function () {
+        toast('คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง');
+      });
+    });
+
+    section.hidden = false;
+  }
+
+  function copy(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var input = document.createElement('textarea');
+      input.value = text;
+      input.setAttribute('readonly', '');
+      input.style.position = 'fixed';
+      input.style.opacity = '0';
+      document.body.appendChild(input);
+      input.select();
+      try { document.execCommand('copy') ? resolve() : reject(); }
+      catch (err) { reject(err); }
+      finally { input.remove(); }
+    });
+  }
+
+  /* ---------- 8. ร่วมแสดงความยินดี ---------- */
   function initGifts() {
     var section = $('#gift');
     var wrap = $('#accounts');
@@ -254,7 +283,7 @@
       card.appendChild(el('p', 'account__number', acc.number));
       card.appendChild(el('p', 'account__name', acc.name || ''));
 
-      var button = el('button', 'account__copy', 'คัดลอกเลขบัญชี');
+      var button = el('button', 'btn', 'คัดลอกเลขบัญชี');
       button.type = 'button';
       button.addEventListener('click', function () {
         copy(acc.number).then(function () { toast('คัดลอกเลขบัญชีแล้ว'); },
@@ -267,24 +296,8 @@
     section.hidden = false;
   }
 
-  function copy(text) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-    return new Promise(function (resolve, reject) {
-      var input = document.createElement('textarea');
-      input.value = text;
-      input.setAttribute('readonly', '');
-      input.style.position = 'fixed';
-      input.style.opacity = '0';
-      document.body.appendChild(input);
-      input.select();
-      try { document.execCommand('copy') ? resolve() : reject(); }
-      catch (err) { reject(err); }
-      finally { input.remove(); }
-    });
-  }
-
-  /* ---------- 10. เอฟเฟกต์ตอนเลื่อน ---------- */
-  var revealCheck = function () {};
+  /* ---------- 9. เอฟเฟกต์ตอนเลื่อน ---------- */
+  var revealFirst = function () {};
   function initReveal() {
     var nodes = $$('.reveal');
     if (!nodes.length) return;
@@ -301,17 +314,15 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
 
     nodes.forEach(function (n) { observer.observe(n); });
-
-    revealCheck = function () {
-      // การ์ดเพิ่งถูกแสดง — บังคับตรวจรอบแรกให้ section บนสุดโผล่ทันที
+    revealFirst = function () {
       nodes.slice(0, 2).forEach(function (n) { n.classList.add('is-visible'); });
     };
   }
 
-  /* ---------- 11. เพลงประกอบ ---------- */
+  /* ---------- 10. เพลงประกอบ ---------- */
   var tryPlayMusic = function () {};
   function initMusic() {
     var opts = cfg.options || {};
@@ -322,7 +333,7 @@
     if (!audio || !button) return;
 
     audio.src = opts.musicSrc;
-    audio.volume = 0.35;
+    audio.volume = 0.3;
     button.hidden = false;
 
     function setState(playing) { button.classList.toggle('is-playing', playing); }
@@ -339,11 +350,10 @@
 
   /* ---------- เริ่มทำงาน ---------- */
   bindText();
-  initEnvelope();
-  initCountdown();
-  initSchedule();
+  initCover();
+  initAgenda();
   initVenue();
-  initPalette();
+  initCountdown();
   initGallery();
   initRsvp();
   initGifts();

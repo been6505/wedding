@@ -3,138 +3,152 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>การ์ดงานแต่ง</title>
-<meta name="description" content="การ์ดเชิญร่วมงานมงคลสมรสออนไลน์">
+<title>วะลีมะฮฺ มุบีน &amp; ฟาฮาดา</title>
+<meta name="description" content="ขอเรียนเชิญร่วมงานวะลีมะตุลอุรุส มุบีน & ฟาฮาดา">
 <meta property="og:type" content="website">
-<meta property="og:title" content="การ์ดงานแต่ง">
-<meta property="og:description" content="ขอเรียนเชิญท่านร่วมเป็นเกียรติในพิธีมงคลสมรส">
+<meta property="og:title" content="วะลีมะฮฺ มุบีน & ฟาฮาดา">
+<meta property="og:description" content="ขอเรียนเชิญร่วมงานวะลีมะตุลอุรุส">
 <meta property="og:image" content="assets/img/og.jpg">
-<meta name="theme-color" content="#8A9A7B">
+<meta name="theme-color" content="#3D0F1C">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Serif+Thai:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Charm:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&family=Noto+Sans+Thai:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<!-- ซองจดหมาย: กดเพื่อเปิดการ์ด -->
-<div class="envelope" id="envelope">
-  <div class="envelope__inner">
-    <svg class="envelope__seal" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="46" />
-      <path d="M50 26c8 10 16 14 16 24a16 16 0 0 1-32 0c0-10 8-14 16-24z" />
-    </svg>
-    <p class="envelope__hint">แตะเพื่อเปิดการ์ด</p>
+<!-- ---------- ซองจดหมาย ---------- -->
+<div class="cover" id="cover">
+  <div class="cover__panel">
+    <p class="cover__word" dir="rtl" data-bind="coverWord">&nbsp;</p>
+    <div class="cover__arch" aria-hidden="true">
+      <span class="cover__ring"></span>
+    </div>
+    <p class="cover__names">
+      <span data-bind="couple.groom.en"></span>
+      <i>·</i>
+      <span data-bind="couple.bride.en"></span>
+    </p>
+    <p class="cover__hint" data-bind="coverHint">&nbsp;</p>
   </div>
 </div>
 
-<main id="card" class="card" hidden>
+<!-- ---------- การ์ด ---------- -->
+<main class="sheet" id="card" hidden>
+ <article class="panel">
 
-  <!-- ปก -->
-  <header class="hero" id="top">
-    <div class="hero__frame">
-      <p class="bismillah" data-bind="bismillah" hidden></p>
-      <p class="hero__eyebrow">งานมงคลสมรส</p>
-      <h1 class="hero__names">
-        <span data-bind="groom.nickname">—</span>
-        <span class="hero__amp">&amp;</span>
-        <span data-bind="bride.nickname">—</span>
-      </h1>
-      <p class="hero__date" data-bind="dateLabelTh">—</p>
-      <p class="hero__date hero__date--en" data-bind="dateLabelEn">—</p>
-    </div>
-    <a class="hero__scroll" href="#invite" aria-label="เลื่อนลง">
-      <span></span>
-    </a>
-  </header>
+  <!-- เปิดการ์ด -->
+  <section class="block block--open">
+    <p class="bismillah" dir="rtl" data-bind="bismillah">&nbsp;</p>
+    <p class="invite-line" data-bind="inviteLine">&nbsp;</p>
 
-  <!-- คำเชิญ -->
-  <section class="section section--invite reveal" id="invite">
-    <div class="ornament" aria-hidden="true"></div>
-    <p class="invite__lead" data-bind="invitationLine">—</p>
-    <div class="invite__people">
-      <div class="person">
-        <p class="person__role">เจ้าบ่าว</p>
-        <p class="person__name" data-bind="groom.fullName">—</p>
-        <p class="person__parents" data-bind="groom.parents">—</p>
-      </div>
-      <div class="person__divider" aria-hidden="true">&amp;</div>
-      <div class="person">
-        <p class="person__role">เจ้าสาว</p>
-        <p class="person__name" data-bind="bride.fullName">—</p>
-        <p class="person__parents" data-bind="bride.parents">—</p>
-      </div>
+    <h1 class="names-ar" dir="rtl">
+      <span data-bind="couple.groom.ar"></span>
+      <i class="amp">&amp;</i>
+      <span data-bind="couple.bride.ar"></span>
+    </h1>
+    <p class="names-th">
+      <span data-bind="couple.groom.th"></span>
+      <i class="amp">&amp;</i>
+      <span data-bind="couple.bride.th"></span>
+    </p>
+
+    <div class="verse">
+      <p class="verse__ar" dir="rtl" data-bind="verse.ar"></p>
+      <p class="verse__th" data-bind="verse.th"></p>
+      <p class="verse__ref" data-bind="verse.ref"></p>
     </div>
-    <blockquote class="quote">
-      <p data-bind="quote.text">—</p>
-      <cite data-bind="quote.author"></cite>
-    </blockquote>
   </section>
 
-  <!-- นับถอยหลัง -->
-  <section class="section section--count reveal">
-    <h2 class="section__title">อีกไม่นาน</h2>
-    <ul class="countdown" id="countdown" aria-live="polite">
-      <li><strong data-count="days">0</strong><span>วัน</span></li>
-      <li><strong data-count="hours">0</strong><span>ชั่วโมง</span></li>
-      <li><strong data-count="minutes">0</strong><span>นาที</span></li>
-      <li><strong data-count="seconds">0</strong><span>วินาที</span></li>
-    </ul>
-    <p class="countdown__done" id="countdownDone" hidden>ถึงวันสำคัญแล้ว ขอบคุณที่มาร่วมงานกับเรา</p>
-    <a class="btn btn--ghost" id="addToCalendar" href="#">เพิ่มลงปฏิทิน</a>
+  <!-- วันที่ -->
+  <section class="block block--date reveal">
+    <p class="date__weekday" data-bind="date.weekdayTh"></p>
+    <p class="date__day" data-bind="date.day"></p>
+    <p class="date__month" data-bind="date.monthYearTh"></p>
+    <p class="date__hijri" dir="rtl" data-bind="date.hijri"></p>
   </section>
 
   <!-- กำหนดการ -->
-  <section class="section section--schedule reveal" id="schedule">
-    <h2 class="section__title">กำหนดการ</h2>
-    <ol class="timeline" id="timeline"></ol>
+  <section class="block block--schedule reveal">
+    <ol class="agenda" id="agenda"></ol>
   </section>
 
   <!-- สถานที่ -->
-  <section class="section section--venue reveal" id="venue">
-    <h2 class="section__title">สถานที่จัดงาน</h2>
-    <p class="venue__name" data-bind="venue.name">—</p>
-    <p class="venue__address" data-bind="venue.address">—</p>
+  <section class="block block--venue reveal">
+    <p class="label">สถานที่</p>
+    <p class="venue__name" data-bind="venue.name"></p>
+    <div class="venue__address" id="venueAddress"></div>
     <div class="venue__map" id="venueMap"></div>
-    <a class="btn" id="mapLink" href="#" target="_blank" rel="noopener">เปิดใน Google Maps</a>
+    <div class="actions">
+      <a class="btn" id="mapLink" href="#" target="_blank" rel="noopener">เปิดแผนที่</a>
+      <a class="btn" id="calendarLink" href="#" target="_blank" rel="noopener">เพิ่มลงปฏิทิน</a>
+    </div>
   </section>
 
-  <!-- การแต่งกาย -->
-  <section class="section section--dress reveal" id="dress">
-    <h2 class="section__title">การแต่งกาย</h2>
-    <p class="dress__note" data-bind="dressCode.note">—</p>
-    <ul class="palette" id="palette"></ul>
+  <!-- นับถอยหลัง -->
+  <section class="block block--count reveal">
+    <p class="label">นับถอยหลัง</p>
+    <ul class="countdown" id="countdown" aria-live="polite">
+      <li><strong data-count="days">0</strong><span>วัน</span></li>
+      <li><strong data-count="hours">00</strong><span>ชม.</span></li>
+      <li><strong data-count="minutes">00</strong><span>นาที</span></li>
+      <li><strong data-count="seconds">00</strong><span>วิ</span></li>
+    </ul>
+    <p class="countdown__done" id="countdownDone" hidden>บารอกัลลอฮุ ลากุมา — ขอบคุณที่มาร่วมงานกับเรา</p>
   </section>
 
-  <!-- แกลเลอรี -->
-  <section class="section section--gallery reveal" id="gallery">
-    <h2 class="section__title">ช่วงเวลาของเรา</h2>
+  <!-- แกลเลอรี (ซ่อนอัตโนมัติถ้าไม่มีรูปใน config) -->
+  <section class="block block--gallery reveal" id="gallery" hidden>
+    <p class="label">ช่วงเวลาของเรา</p>
     <div class="gallery" id="galleryGrid"></div>
   </section>
 
-  <!-- ตอบรับ -->
-  <section class="section section--rsvp reveal" id="rsvp" hidden>
-    <h2 class="section__title">ตอบรับคำเชิญ</h2>
-    <p class="rsvp__deadline" data-bind="rsvp.deadlineLabel">—</p>
-    <div class="rsvp__actions" id="rsvpActions"></div>
+  <!-- ตอบรับคำเชิญ -->
+  <section class="block block--rsvp reveal" id="rsvp" hidden>
+    <p class="label" data-bind="rsvp.title"></p>
+    <form class="form" id="rsvpForm" novalidate>
+      <div class="field">
+        <label class="field__label" for="rsvpName">ชื่อผู้ตอบรับ</label>
+        <input class="field__input" id="rsvpName" name="name" type="text"
+               placeholder="ชื่อ–นามสกุล" autocomplete="name" required>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="attendLabel">จะมาร่วมงานไหม</span>
+        <div class="choice" role="radiogroup" aria-labelledby="attendLabel">
+          <button type="button" class="choice__btn is-active" data-attend="yes" role="radio" aria-checked="true">มาร่วมงาน</button>
+          <button type="button" class="choice__btn" data-attend="no" role="radio" aria-checked="false">ไม่สะดวก</button>
+        </div>
+      </div>
+
+      <div class="field" id="guestField">
+        <label class="field__label" for="rsvpGuests">จำนวนผู้ร่วมงาน</label>
+        <select class="field__input" id="rsvpGuests" name="guests"></select>
+      </div>
+
+      <button class="btn btn--solid" type="submit" id="rsvpSubmit">ส่งคำตอบรับ</button>
+      <p class="form__note" data-bind="rsvp.note"></p>
+    </form>
   </section>
 
-  <!-- ร่วมแสดงความยินดี -->
-  <section class="section section--gift reveal" id="gift" hidden>
-    <h2 class="section__title">ร่วมแสดงความยินดี</h2>
-    <p class="gift__note" data-bind="gifts.note">—</p>
+  <!-- ร่วมแสดงความยินดี (ซ่อนอัตโนมัติถ้าปิดใน config) -->
+  <section class="block block--gift reveal" id="gift" hidden>
+    <p class="label">ร่วมแสดงความยินดี</p>
+    <p class="gift__note" data-bind="gifts.note"></p>
     <div class="accounts" id="accounts"></div>
   </section>
 
-  <footer class="footer">
-    <div class="ornament ornament--flip" aria-hidden="true"></div>
-    <p class="footer__thanks">ขอบพระคุณทุกท่านที่มาร่วมเป็นส่วนหนึ่งในวันสำคัญของเรา</p>
-    <p class="footer__names">
-      <span data-bind="groom.nickname">—</span> &amp; <span data-bind="bride.nickname">—</span>
-    </p>
+  <!-- ดุอาอ์ปิดท้าย -->
+  <footer class="block block--dua reveal">
+    <div class="rule" aria-hidden="true"></div>
+    <p class="dua__ar" dir="rtl" data-bind="dua.ar"></p>
+    <p class="dua__th" data-bind="dua.th"></p>
+    <p class="closing__lead" data-bind="closing.lead"></p>
+    <p class="closing__host" data-bind="closing.host"></p>
   </footer>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ </article>
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </main>
 
 <audio id="bgm" loop preload="none"></audio>
