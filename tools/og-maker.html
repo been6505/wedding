@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Charm:wght@400;500;700&family=Cormorant+Garamond:wght@300;400&family=Noto+Sans+Thai:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Charmonman:wght@400;700&family=Cormorant+Garamond:wght@300;400&family=Mali:wght@200;300;400;500&display=swap" rel="stylesheet">
 <style>
   body {
     margin: 0; padding: 2rem;
@@ -14,7 +14,7 @@
     font-family: 'Noto Sans Thai', system-ui, sans-serif; font-weight: 300;
     text-align: center;
   }
-  h1 { font-family: Charm, Georgia, serif; font-weight: 500; }
+  h1 { font-family: Charmonman, cursive; font-weight: 400; }
   canvas { width: 100%; max-width: 900px; border: 1px solid rgba(201,160,99,.35); border-radius: 8px; }
   a.dl {
     display: inline-block; margin-top: 1.2rem; padding: .6rem 1.4rem;
@@ -75,14 +75,14 @@
 
     // คำเชิญ
     ctx.fillStyle = 'rgba(224,192,129,.85)';
-    ctx.font = '300 27px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.font = '300 27px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(pick('inviteLine', 'ขอเรียนเชิญร่วมงานวะลีมะตุลอุรุส'), W / 2, 216);
 
     // ชื่อคู่บ่าวสาว ภาษาไทย
     var groom = pick('couple.groom.th', '');
     var bride = pick('couple.bride.th', '');
     ctx.fillStyle = '#f4ece0';
-    ctx.font = '500 86px Charm, Georgia, serif';
+    ctx.font = '400 86px Charmonman, Charm, cursive';
     ctx.fillText(groom + '  &  ' + bride, W / 2, 320);
 
     // ชื่อภาษาอาหรับ — วางเรียงขวาไปซ้ายให้ตรงกับที่แสดงบนการ์ด (เจ้าบ่าวอยู่ขวา)
@@ -110,12 +110,12 @@
       date.monthYearTh || '',
     ].filter(Boolean).join(' ');
     ctx.fillStyle = '#f4ece0';
-    ctx.font = '400 34px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.font = '400 34px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(line, W / 2, 496);
 
     // สถานที่
     ctx.fillStyle = 'rgba(244,236,224,.62)';
-    ctx.font = '300 25px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.font = '300 25px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(pick('venue.name', ''), W / 2, 542);
   }
 

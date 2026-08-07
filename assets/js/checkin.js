@@ -249,7 +249,7 @@
   function fitMessage(ctx, text, maxWidth, maxHeight) {
     var sizes = [54, 48, 42, 36, 30];
     for (var i = 0; i < sizes.length; i++) {
-      ctx.font = '500 ' + sizes[i] + 'px Charm, Georgia, serif';
+      ctx.font = '400 ' + sizes[i] + 'px Charmonman, Charm, cursive';
       var lines = wrapLines(ctx, text, maxWidth);
       var lineHeight = Math.round(sizes[i] * 1.42);
       if (lines.length * lineHeight <= maxHeight || i === sizes.length - 1) {
@@ -306,7 +306,7 @@
 
     // ชื่อคู่บ่าวสาวด้านบน
     ctx.fillStyle = '#c9a063';
-    ctx.font = '500 46px Charm, Georgia, serif';
+    ctx.font = '400 46px Charmonman, Charm, cursive';
     ctx.fillText(coupleNames(), CARD_W / 2, 108);
 
     // คำอวยพร จัดขนาดให้พอดีช่องว่างระหว่างรูปกับเส้นคั่น
@@ -317,7 +317,7 @@
     if (message) {
       var fit = fitMessage(ctx, message, CARD_W - 220, textSpace);
       ctx.fillStyle = '#f4ece0';
-      ctx.font = '500 ' + fit.size + 'px Charm, Georgia, serif';
+      ctx.font = '400 ' + fit.size + 'px Charmonman, Charm, cursive';
       var y = textTop + fit.lineHeight * 0.8;
       fit.lines.forEach(function (line) {
         ctx.fillText(line, CARD_W / 2, y);
@@ -334,7 +334,7 @@
     ctx.stroke();
 
     ctx.fillStyle = '#e0c081';
-    ctx.font = '300 38px "Noto Sans Thai", system-ui, sans-serif';
+    ctx.font = '300 38px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText('จาก ' + guest.name, CARD_W / 2, footY);
   }
 

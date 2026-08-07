@@ -8,8 +8,8 @@
   --cream:     #f4ece0;
   --line: rgba(201, 160, 99, .22);
 
-  --th-display: 'Charm', Georgia, serif;
-  --th-body: 'Noto Sans Thai', system-ui, sans-serif;
+  --th-display: 'Charmonman', 'Charm', cursive;
+  --th-body: 'Mali', 'Noto Sans Thai', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }

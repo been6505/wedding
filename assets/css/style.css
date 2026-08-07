@@ -11,8 +11,8 @@
   --cream-dim: #cbbba7;
   --paper:     #ece3d6;
 
-  --th-display: 'Charm', Georgia, serif;
-  --th-body: 'Noto Sans Thai', system-ui, sans-serif;
+  --th-display: 'Charmonman', 'Charm', cursive;
+  --th-body: 'Mali', 'Noto Sans Thai', system-ui, sans-serif;
   --ar-display: 'Aref Ruqaa', 'Amiri', serif;
   --ar-body: 'Amiri', serif;
   --latin: 'Cormorant Garamond', Georgia, serif;
@@ -172,8 +172,8 @@ img { max-width: 100%; display: block; }
   margin: 0 0 1.2rem;
   font-size: .82rem;
   font-weight: 300;
-  letter-spacing: .42em;
-  text-indent: .42em;
+  letter-spacing: .2em;
+  text-indent: .2em;
   color: var(--gold-dim);
 }
 
@@ -187,10 +187,13 @@ img { max-width: 100%; display: block; }
 }
 
 .invite-line {
-  margin: 0 0 2.4rem;
+  /* บล็อกนี้อยู่สูงพอที่ขอบโค้งของการ์ดยังไม่บานออก ถ้าปล่อยยาวเป็นบรรทัดเดียว
+     หัวท้ายจะโดนขอบโค้งตัดหาย จำกัดความกว้างให้ตัดบรรทัดเองแทน */
+  max-width: 17ch;
+  margin: 0 auto 2.4rem;
   font-size: .88rem;
-  letter-spacing: .26em;
-  text-indent: .26em;
+  letter-spacing: .12em;
+  text-indent: .12em;
   color: var(--cream-dim);
 }
 
@@ -247,8 +250,8 @@ img { max-width: 100%; display: block; }
 .verse__ref {
   margin: 1rem 0 0;
   font-size: .78rem;
-  letter-spacing: .34em;
-  text-indent: .34em;
+  letter-spacing: .18em;
+  text-indent: .18em;
   color: var(--gold-dim);
 }
 
@@ -312,9 +315,13 @@ img { max-width: 100%; display: block; }
 
 /* ================= สถานที่ ================= */
 .venue__name {
+  /* ชื่อมัสยิดเป็นคำยาวที่มีวรรณยุกต์เยอะ ตัวเขียนหวัดจะเกี่ยวกันจนอ่านไม่ออก
+     ใช้ฟอนต์ลายมือตัวที่อ่านง่ายกว่าแทน แขกต้องอ่านชื่อสถานที่ให้ออก */
   margin: 0 0 .7rem;
-  font-family: var(--th-display);
-  font-size: clamp(1.5rem, 6vw, 1.9rem);
+  font-family: var(--th-body);
+  font-weight: 500;
+  font-size: clamp(1.25rem, 5vw, 1.5rem);
+  line-height: 1.5;
   color: var(--cream);
 }
 .venue__address p {
@@ -379,8 +386,8 @@ img { max-width: 100%; display: block; }
 }
 .countdown span {
   font-size: .78rem;
-  letter-spacing: .24em;
-  text-indent: .24em;
+  letter-spacing: .16em;
+  text-indent: .16em;
   color: var(--gold-dim);
 }
 .countdown__done {
@@ -415,7 +422,7 @@ img { max-width: 100%; display: block; }
   display: block;
   margin-bottom: .5rem;
   font-size: .82rem;
-  letter-spacing: .22em;
+  letter-spacing: .14em;
   color: var(--gold-dim);
 }
 
@@ -505,7 +512,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   border-radius: 6px;
 }
 .account__qr { width: 150px; margin: 0 auto 1rem; border-radius: 6px; }
-.account__bank { margin: 0; font-size: .82rem; letter-spacing: .2em; color: var(--gold-dim); }
+.account__bank { margin: 0; font-size: .82rem; letter-spacing: .14em; color: var(--gold-dim); }
 .account__number {
   margin: .3rem 0;
   font-size: 1.28rem;
