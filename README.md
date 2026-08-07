@@ -3,7 +3,7 @@
 การ์ดเชิญออนไลน์งานวะลีมะตุลอุรุส เปิดจากมือถือได้ทันที ส่งต่อทางไลน์ / เฟซบุ๊กได้เลย
 
 เว็บแบบ static ล้วน (HTML + CSS + JavaScript) ไม่มี build step ไม่ต้องติดตั้งอะไร
-เปิด `index.html` ก็ใช้งานได้ทันที และ deploy ขึ้น GitHub Pages ได้ฟรี
+เปิด `index.html` ก็ใช้งานได้ทันที deploy ขึ้น Firebase Hosting ได้ฟรี
 
 **งาน:** วันอาทิตย์ที่ 15 พฤศจิกายน 2569 · มัสยิดฮี่ดายาตุสซาลี่กีน เมืองพัทยา จังหวัดชลบุรี
 
@@ -234,17 +234,30 @@ python3 -m http.server 8000
 
 ---
 
-## เผยแพร่ขึ้น GitHub Pages
+## เผยแพร่ขึ้น Firebase Hosting
 
-repo นี้มี workflow `.github/workflows/pages.yml` เตรียมไว้แล้ว
+เว็บอยู่ที่ **https://myweddingday151169.web.app** (และ `.firebaseapp.com` ก็เข้าได้เหมือนกัน)
+ใช้บัญชีเดียวกับฐานข้อมูล ฟรี รองรับ repo ที่เป็น private และไม่มีวันหมดอายุ
 
-1. ไปที่ **Settings → Pages**
-2. ที่ **Source** เลือก **GitHub Actions**
-3. push ขึ้น branch `main` — เว็บจะขึ้นอัตโนมัติที่ `https://<username>.github.io/wedding/`
+ตั้งค่าไว้ให้แล้วใน `firebase.json` กับ `.firebaserc` เวลาจะอัปเดตเว็บ สั่งบรรทัดเดียว
 
-### หลัง deploy เสร็จ ทำอีกสองอย่าง
+```bash
+firebase deploy --only hosting
+```
 
-**1. แก้ลิงก์รูปพรีวิวให้เป็นโดเมนจริง**
+ครั้งแรกต้อง `firebase login` ก่อน (ถ้ายังไม่เคย) และเครื่องต้องมี Firebase CLI
+ติดตั้งด้วย `npm install -g firebase-tools` หรือ `brew install firebase-cli`
+
+กฎความปลอดภัยของ Firestore ก็ deploy จากที่นี่ได้เหมือนกัน ไม่ต้องเข้าไปวางในหน้าเว็บ
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+> **ถ้าอยากให้ deploy อัตโนมัติทุกครั้งที่ push** สั่ง `firebase init hosting:github`
+> ตัว CLI จะสร้าง service account ใส่ secret ให้ใน repo และเขียน workflow ให้เอง
+
+### แก้ลิงก์รูปพรีวิว (ทำแล้ว — ทำซ้ำเมื่อย้ายโดเมน)
 
 ตัวขูดข้อมูลของไลน์กับเฟซบุ๊กไม่รันจาวาสคริปต์ จึงอ่านค่าจาก `config.js` ไม่ได้
 ต้องแก้ที่ `index.html` ตรง ๆ สองบรรทัด ให้เป็น URL เต็มของเว็บที่ deploy แล้ว
@@ -257,15 +270,11 @@ repo นี้มี workflow `.github/workflows/pages.yml` เตรียม�
 ถ้าเปลี่ยนชื่อบ่าวสาวหรือวันงานใน `config.js` แล้วอยากให้รูปพรีวิวตามไปด้วย
 เปิด **`tools/og-maker.html`** ผ่านเซิร์ฟเวอร์ กด **ดาวน์โหลด og.jpg** แล้วเอาไฟล์ไปทับ `assets/img/og.jpg`
 
-**2. เอาลิงก์ไปทดสอบ**
+### เอาลิงก์ไปทดสอบ
 
 - ส่งลิงก์เข้าห้องไลน์ของตัวเองก่อน ดูว่าพรีวิวขึ้นถูกไหม
 - เปิด `admin.html` ล็อกอินให้ผ่าน แล้วลองตอบรับจากมือถือเครื่องอื่นดูว่าข้อมูลเข้าจริง
 - เปิด `qr.html` สั่งพิมพ์ แล้วลองสแกนด้วยกล้องมือถือว่าเข้าหน้าเช็คอินได้
-
-> repo เป็น **private** อยู่ ถ้าจะเปิด GitHub Pages ต้องใช้บัญชี GitHub Pro ขึ้นไป
-> บัญชีฟรีให้เปลี่ยน repo เป็น public ก่อน หรือ deploy ที่ Netlify / Vercel / Cloudflare Pages
-> (ลากโฟลเดอร์ทั้งอันไปวางได้เลย ไม่ต้องตั้งค่า build)
 
 ---
 
