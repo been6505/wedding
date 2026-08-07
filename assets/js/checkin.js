@@ -249,7 +249,7 @@
   function fitMessage(ctx, text, maxWidth, maxHeight) {
     var sizes = [54, 48, 42, 36, 30];
     for (var i = 0; i < sizes.length; i++) {
-      ctx.font = '400 ' + sizes[i] + 'px Charmonman, Charm, cursive';
+      ctx.font = '400 ' + sizes[i] + 'px Sriracha, Charm, cursive';
       var lines = wrapLines(ctx, text, maxWidth);
       var lineHeight = Math.round(sizes[i] * 1.42);
       if (lines.length * lineHeight <= maxHeight || i === sizes.length - 1) {
@@ -306,7 +306,7 @@
 
     // ชื่อคู่บ่าวสาวด้านบน
     ctx.fillStyle = '#c9a063';
-    ctx.font = '400 46px Charmonman, Charm, cursive';
+    ctx.font = '400 46px Sriracha, Charm, cursive';
     ctx.fillText(coupleNames(), CARD_W / 2, 108);
 
     // คำอวยพร จัดขนาดให้พอดีช่องว่างระหว่างรูปกับเส้นคั่น
@@ -317,7 +317,7 @@
     if (message) {
       var fit = fitMessage(ctx, message, CARD_W - 220, textSpace);
       ctx.fillStyle = '#f4ece0';
-      ctx.font = '400 ' + fit.size + 'px Charmonman, Charm, cursive';
+      ctx.font = '400 ' + fit.size + 'px Sriracha, Charm, cursive';
       var y = textTop + fit.lineHeight * 0.8;
       fit.lines.forEach(function (line) {
         ctx.fillText(line, CARD_W / 2, y);
