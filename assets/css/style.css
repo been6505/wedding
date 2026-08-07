@@ -108,21 +108,40 @@ img { max-width: 100%; display: block; }
 }
 
 /* ---------- ลายอิสลามตามขอบซอง ----------
-   ดาวแปดแฉกแบบเซลจุค วางซ้ำเป็นแถบตามขอบทั้งสี่ด้าน
-   บนล่างซ้ำแนวนอน ซ้ายขวาซ้ำแนวตั้ง ตรงกลางจึงว่างเปล่าเองโดยไม่ต้องเจาะ */
-.cover__pattern {
+   ดาวแปดแฉกแบบเซลจุค ตัวลายเชื่อมกันที่ "มุมช่อง" ด้วยเส้นทแยง ช่องข้าง ๆ
+   จึงมาต่อดาวให้สมบูรณ์ซึ่งกันและกัน — แต่จะต่อสนิทได้ก็ต่อเมื่อทุกช่องอยู่บน
+   ตารางเดียวกันและไม่มีช่องไหนถูกตัดครึ่ง
+   แถบบน-ล่างกินความกว้างเต็ม ส่วนแถบซ้าย-ขวาเว้นหัวท้ายไว้หนึ่งช่องพอดี
+   ทั้งสองแถบจึงชนกันที่มุมแบบพอดีเป๊ะ ไม่ทับกัน
+   ขนาดช่องคำนวณจริงด้วย JS (initCoverPattern) ให้หารความกว้าง/ความสูงลงตัว */
+.cover__pattern,
+.cover__pattern::after {
+  content: '';
   position: absolute;
-  inset: 14px;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
-  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
-  background-position: left top, left bottom, left top, right top;
-  background-size: 30px 30px;
-  opacity: .32;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"), url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2744%27%20height%3D%2744%27%20viewBox%3D%270%200%2044%2044%27%3E%3Cg%20fill%3D%27none%27%20stroke%3D%27%23a21925%27%20stroke-width%3D%271%27%20stroke-linejoin%3D%27round%27%20opacity%3D%270.5%27%3E%3Cpath%20d%3D%27M22%205%20L39%2022%20L22%2039%20L5%2022%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20H34%20V34%20H10%20Z%27%2F%3E%3Cpath%20d%3D%27M10%2010%20L0%200%20M34%2010%20L44%200%20M34%2034%20L44%2044%20M10%2034%20L0%2044%27%2F%3E%3Ccircle%20cx%3D%2722%27%20cy%3D%2722%27%20r%3D%273.2%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 
-@media (max-width: 380px) {
-  .cover__pattern { inset: 10px; background-size: 26px 26px; }
+.cover__pattern {
+  inset: 14px;
+  opacity: .32;
+  /* ค่าสำรองระหว่างที่ JS ยังไม่ได้วัด */
+  --tile-h: 30px;
+  --tile-v: 30px;
+  background-repeat: repeat-x, repeat-x;
+  background-position: left top, left bottom;
+  background-size: var(--tile-h) var(--tile-h);
+}
+
+/* แถบซ้าย-ขวา เริ่มใต้ช่องมุมบน จบเหนือช่องมุมล่าง */
+.cover__pattern::after {
+  left: 0;
+  right: 0;
+  top: var(--tile-h);
+  bottom: var(--tile-h);
+  background-repeat: repeat-y, repeat-y;
+  background-position: left top, right top;
+  background-size: var(--tile-h) var(--tile-v);
 }
 
 .cover__word {

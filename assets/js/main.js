@@ -133,6 +133,44 @@
     }
   }
 
+  /* ---------- 2.5 ลายขอบซองให้ต่อกันพอดีที่มุม ----------
+   * ลายจะเชื่อมกันได้ก็ต่อเมื่อทุกช่องอยู่บนตารางเดียวกันและไม่มีช่องไหนโดนตัดครึ่ง
+   * ถ้าปล่อยขนาดช่องตายตัว ความกว้างซองที่ไม่ลงตัวจะทำให้ช่องสุดท้ายแหว่งตรงมุมพอดี
+   * จึงยืดหดขนาดช่องเล็กน้อยให้หารความกว้างและความสูงลงตัวแทน
+   */
+  var IDEAL_TILE = 30;
+
+  function initCoverPattern() {
+    var pattern = $('.cover__pattern');
+    if (!pattern) return;
+
+    function fit() {
+      var box = pattern.getBoundingClientRect();
+      if (!box.width || !box.height) return;
+
+      var cols = Math.max(4, Math.round(box.width / IDEAL_TILE));
+      var tileH = box.width / cols;
+
+      // แถบตั้งกินความสูงที่เหลือหลังหักช่องมุมบนล่างออก
+      var middle = box.height - tileH * 2;
+      var rows = Math.max(1, Math.round(middle / tileH));
+      var tileV = middle / rows;
+
+      pattern.style.setProperty('--tile-h', tileH.toFixed(3) + 'px');
+      pattern.style.setProperty('--tile-v', tileV.toFixed(3) + 'px');
+    }
+
+    fit();
+
+    // เฝ้าทั้งสองทาง — ตัว element จับกรณีที่ขนาดเปลี่ยนเองโดยหน้าต่างไม่เปลี่ยน
+    // (ฟอนต์โหลดเสร็จ แถบที่อยู่ยุบ) ส่วน event ของหน้าต่างจับกรณีที่ observer
+    // ถูกหน่วงไว้ตอนแท็บไม่ได้อยู่หน้าจอ อย่างใดอย่างหนึ่งพลาดก็ยังมีอีกทางคุม
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(pattern);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+    window.addEventListener('resize', fit);
+    window.addEventListener('orientationchange', fit);
+  }
+
   /* ---------- 3. กำหนดการ ---------- */
   function initAgenda() {
     var list = $('#agenda');
@@ -509,6 +547,7 @@
 
   /* ---------- เริ่มทำงาน ---------- */
   bindText();
+  initCoverPattern();
   initCover();
   initAgenda();
   initVenue();
