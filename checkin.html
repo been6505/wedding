@@ -169,7 +169,9 @@
 
     <!-- Photobooth -->
     <div class="pane" data-pane="booth">
-      <p class="hint">กดเริ่ม แล้วยิ้มรับกล้อง ระบบจะนับถอยหลังถ่ายให้ 3 ช็อตติดกัน</p>
+      <p class="hint">เลือกกรอบ แล้วกดเริ่ม ระบบจะนับถอยหลังถ่ายให้ 3 ช็อตติดกัน</p>
+
+      <div class="frames" id="frames" role="radiogroup" aria-label="เลือกกรอบรูป"></div>
 
       <div class="video-box video-box--booth">
         <video id="boothLive" playsinline muted hidden></video>

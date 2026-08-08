@@ -758,52 +758,201 @@
     return new Promise(function (r) { setTimeout(r, 260); });
   }
 
+  /* ---------- กรอบรูปให้เลือก ----------
+   * แต่ละกรอบบอกแค่สีพื้น สีเส้น และลายพิเศษ ส่วนการจัดวางใช้ร่วมกันหมด
+   * เพิ่มกรอบใหม่ = เพิ่มอีกหนึ่งรายการในนี้ ไม่ต้องแตะโค้ดวาด
+   */
+  var FRAMES = [
+    {
+      id: 'classic',
+      label: 'คลาสสิก',
+      paper: '#ffffff',
+      line: 'rgba(162,25,37,.55)',
+      shotLine: 'rgba(162,25,37,.35)',
+      name: '#a21925',
+      sub: 'rgba(74,49,38,.6)',
+      by: '#8d2833',
+    },
+    {
+      id: 'islamic',
+      label: 'ลายอิสลาม',
+      paper: '#fffaf9',
+      line: 'rgba(162,25,37,.5)',
+      shotLine: 'rgba(162,25,37,.3)',
+      name: '#a21925',
+      sub: 'rgba(74,49,38,.6)',
+      by: '#8d2833',
+      stars: true,          // โรยลายดาวแปดแฉกตามขอบ
+    },
+    {
+      id: 'gold',
+      label: 'ทอง',
+      paper: '#fffdf7',
+      line: 'rgba(201,160,99,.85)',
+      shotLine: 'rgba(201,160,99,.55)',
+      name: '#8a6a34',
+      sub: 'rgba(74,49,38,.55)',
+      by: '#a2803f',
+    },
+    {
+      id: 'plain',
+      label: 'เรียบ',
+      paper: '#ffffff',
+      line: null,           // ไม่มีกรอบนอก
+      shotLine: 'rgba(74,49,38,.15)',
+      name: '#4a3126',
+      sub: 'rgba(74,49,38,.5)',
+      by: 'rgba(74,49,38,.6)',
+    },
+  ];
+
+  var frame = FRAMES[0];
+
+  // ดาวแปดแฉกดวงเดียว ใช้วาดซ้ำเป็นลายขอบของกรอบ "ลายอิสลาม"
+  function drawStar(ctx, cx, cy, r) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - r);
+    ctx.lineTo(cx + r, cy);
+    ctx.lineTo(cx, cy + r);
+    ctx.lineTo(cx - r, cy);
+    ctx.closePath();
+    ctx.stroke();
+    var d = r * 0.72;
+    ctx.strokeRect(cx - d, cy - d, d * 2, d * 2);
+  }
+
+  function drawStripBorderStars(ctx) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(162,25,37,.3)';
+    ctx.lineWidth = 1.4;
+    var step = 34;
+    for (var x = STRIP_PAD / 2 + 6; x < STRIP_W; x += step) {
+      drawStar(ctx, x, 16, 9);
+      drawStar(ctx, x, STRIP_H - 16, 9);
+    }
+    for (var y = 50; y < STRIP_H - 40; y += step) {
+      drawStar(ctx, 16, y, 9);
+      drawStar(ctx, STRIP_W - 16, y, 9);
+    }
+    ctx.restore();
+  }
+
   function drawStrip() {
     var ctx = boothCanvas.getContext('2d');
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = frame.paper;
     ctx.fillRect(0, 0, STRIP_W, STRIP_H);
+
+    if (frame.stars) drawStripBorderStars(ctx);
 
     boothShots.forEach(function (shot, i) {
       var y = STRIP_PAD + i * (SHOT_H + STRIP_GAP);
       ctx.drawImage(shot, STRIP_PAD, y, SHOT_W, SHOT_H);
-      ctx.strokeStyle = 'rgba(162,25,37,.35)';
+      ctx.strokeStyle = frame.shotLine;
       ctx.lineWidth = 2;
       ctx.strokeRect(STRIP_PAD, y, SHOT_W, SHOT_H);
     });
 
-    // กรอบแดงรอบแถบ
-    ctx.strokeStyle = 'rgba(162,25,37,.55)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(10, 10, STRIP_W - 20, STRIP_H - 20);
+    // กรอบรอบแถบ
+    if (frame.line) {
+      ctx.strokeStyle = frame.line;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(10, 10, STRIP_W - 20, STRIP_H - 20);
+    }
 
     // ท้ายแถบ: ชื่อบ่าวสาว วันที่ และชื่อคนถ่าย
     var footTop = STRIP_H - STRIP_FOOT;
     ctx.textAlign = 'center';
 
-    ctx.strokeStyle = 'rgba(162,25,37,.4)';
+    ctx.strokeStyle = frame.line || frame.shotLine;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(STRIP_W / 2 - 70, footTop + 26);
     ctx.lineTo(STRIP_W / 2 + 70, footTop + 26);
     ctx.stroke();
 
-    ctx.fillStyle = '#a21925';
+    ctx.fillStyle = frame.name;
     ctx.font = '400 46px Sriracha, Charm, cursive';
     ctx.fillText(coupleNames(), STRIP_W / 2, footTop + 90);
 
     var date = cfg.date || {};
     var line = [date.weekdayTh, date.monthYearTh].filter(Boolean).join(' · ');
-    ctx.fillStyle = 'rgba(74, 49, 38,.6)';
+    ctx.fillStyle = frame.sub;
     ctx.font = '300 26px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(line, STRIP_W / 2, footTop + 134);
 
     if (guest.name) {
-      ctx.fillStyle = '#8d2833';
+      ctx.fillStyle = frame.by;
       ctx.font = '300 24px Mali, "Noto Sans Thai", sans-serif';
       ctx.fillText('— ' + guest.name + ' —', STRIP_W / 2, footTop + 172);
     }
   }
+
+  // อัดไฟล์จากผืนผ้าใบล่าสุด ต้องเรียกทุกครั้งที่ภาพบนแถบเปลี่ยน
+  // ไม่งั้นไฟล์ที่บันทึกหรือส่งจะเป็นกรอบเก่าที่วาดทิ้งไว้
+  var stripUrl = null;
+  function refreshStripFile() {
+    boothCanvas.toBlob(function (blob) {
+      boothBlob = blob;
+      if (!blob) return;
+      if (stripUrl) URL.revokeObjectURL(stripUrl);
+      stripUrl = URL.createObjectURL(blob);
+      $('#boothSave').href = stripUrl;
+    }, 'image/jpeg', 0.9);
+  }
+
+  // ตัวอย่างกรอบย่อ ๆ ให้กดเลือกก่อนถ่าย
+  function frameThumb(spec) {
+    var c = document.createElement('canvas');
+    c.width = 60;
+    c.height = 96;
+    var g = c.getContext('2d');
+    g.fillStyle = spec.paper;
+    g.fillRect(0, 0, 60, 96);
+    if (spec.line) {
+      g.strokeStyle = spec.line;
+      g.lineWidth = 2;
+      g.strokeRect(3, 3, 54, 90);
+    }
+    g.fillStyle = 'rgba(74,49,38,.13)';
+    for (var i = 0; i < 3; i++) g.fillRect(9, 9 + i * 23, 42, 19);
+    g.fillStyle = spec.name;
+    g.fillRect(19, 80, 22, 3);
+    return c.toDataURL();
+  }
+
+  function initFrames() {
+    var wrap = $('#frames');
+    if (!wrap) return;
+    FRAMES.forEach(function (spec, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'frame' + (i === 0 ? ' is-active' : '');
+      btn.setAttribute('role', 'radio');
+      btn.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+      btn.dataset.frame = spec.id;
+
+      var img = document.createElement('img');
+      img.src = frameThumb(spec);
+      img.alt = '';
+      btn.appendChild(img);
+      btn.appendChild(el('span', 'frame__label', spec.label));
+
+      btn.addEventListener('click', function () {
+        frame = spec;
+        $$('.frame', wrap).forEach(function (o) {
+          o.classList.toggle('is-active', o === btn);
+          o.setAttribute('aria-checked', o === btn ? 'true' : 'false');
+        });
+        // ถ่ายไปแล้วก็วาดใหม่ให้เห็นผลทันที ไม่ต้องถ่ายซ้ำ
+        if (boothShots.length) { drawStrip(); refreshStripFile(); }
+      });
+
+      wrap.appendChild(btn);
+    });
+  }
+
+  initFrames();
 
   $('#boothShoot').addEventListener('click', function () {
     if (boothBusy) return;
@@ -838,10 +987,7 @@
       $('#boothPreview').hidden = false;
       $('#boothRedo').hidden = false;
       $('#boothDone').hidden = false;
-      boothCanvas.toBlob(function (blob) {
-        boothBlob = blob;
-        if (blob) $('#boothSave').href = URL.createObjectURL(blob);
-      }, 'image/jpeg', 0.9);
+      refreshStripFile();
       boothBusy = false;
     }).catch(function (err) {
       console.error(err);

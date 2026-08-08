@@ -473,3 +473,32 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   cursor: pointer;
 }
 .link-small:hover { color: var(--gold); }
+
+/* ================= กรอบรูป Photobooth ================= */
+.frames {
+  display: flex;
+  gap: .5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+}
+.frame {
+  display: grid;
+  justify-items: center;
+  gap: .3rem;
+  padding: .4rem .45rem .5rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--cream);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+.frame img { width: 42px; height: auto; border-radius: 3px; display: block; }
+.frame__label { font-size: .72rem; color: rgba(74, 49, 38, .6); }
+.frame.is-active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(162, 25, 37, .14);
+}
+.frame.is-active .frame__label { color: var(--gold); }
