@@ -87,7 +87,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    gap: clamp(.9rem, 3.5%, 1.8rem);
     text-align: center;
     border-radius: 10px;
     background: radial-gradient(120% 60% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
@@ -103,7 +104,16 @@
     pointer-events: none;
   }
 
-  .poster__eyebrow { margin: 0; font-size: .8rem; letter-spacing: .38em; text-indent: .38em; color: var(--gold-dim); }
+  .poster__eyebrow span { display: inline-block; }
+  .poster__eyebrow {
+    margin: 0 auto;
+    max-width: 30ch;
+    font-size: .8rem;
+    letter-spacing: .14em;
+    text-indent: .14em;
+    line-height: 1.9;
+    color: var(--gold-dim);
+  }
   .poster__names { margin: .5rem 0 0; font-family: var(--th-display); font-weight: 500; font-size: 1.75rem; color: var(--cream); }
   .poster__ar { margin: .2rem 0 0; font-family: 'Amiri', serif; font-size: 1.2rem; color: var(--gold); }
 
@@ -156,7 +166,7 @@
 
   <div class="poster" id="poster">
     <div>
-      <p class="poster__eyebrow" id="posterEyebrow">นิกะหฺ</p>
+      <p class="poster__eyebrow" id="posterEyebrow"><span>ยินดีต้อนรับสู่งาน</span> <span>วะลีมะตุลนิกะห์</span></p>
       <p class="poster__names" id="names">—</p>
       <p class="poster__ar" dir="rtl" id="namesAr"></p>
     </div>
