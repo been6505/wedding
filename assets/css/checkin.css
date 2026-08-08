@@ -24,7 +24,8 @@ body {
   font-weight: 300;
   line-height: 1.85;
   color: var(--cream);
-  background: radial-gradient(120% 55% at 50% 0%, var(--wine) 0%, var(--wine-800) 45%, var(--wine-900) 100%);
+  /* ไล่สีชุดเดียวกับหน้าการ์ด ขาวบนสุด ลงมาแดงอ่อน */
+  background: linear-gradient(180deg, #ffffff 0%, #fdf1f0 46%, #f2cfcd 100%);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
