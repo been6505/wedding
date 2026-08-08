@@ -8,8 +8,8 @@
   --gold:      #a21925;  /* แดงหลัก ใช้กับเส้นและปุ่ม */
   --gold-soft: #c2303c;
   --gold-dim:  #8d2833;
-  --cream:     #241d1c;  /* สีตัวอักษรหลัก */
-  --cream-dim: #665854;  /* เข้มขึ้นเล็กน้อย ให้ยังอ่านได้ตรงปลายไล่สีที่เข้มที่สุด */
+  --cream:     #4a3126;  /* สีตัวอักษรหลัก */
+  --cream-dim: #6b5040;  /* เข้มขึ้นเล็กน้อย ให้ยังอ่านได้ตรงปลายไล่สีที่เข้มที่สุด */
   --paper:     #f1e9e6;  /* พื้นหลังนอกการ์ด */
   --gold-ring:      #c9a063;  /* ใช้เฉพาะแหวนคู่บนซองจดหมาย */
   --gold-ring-soft: #f2dcae;
@@ -426,7 +426,7 @@ img { max-width: 100%; display: block; }
   font-family: var(--th-display);
   font-size: 1.06rem;
   line-height: 1.95;
-  color: rgba(36, 29, 28, .88);
+  color: rgba(74, 49, 38, .88);
 }
 .verse__ref {
   margin: 1rem 0 0;
@@ -491,7 +491,7 @@ img { max-width: 100%; display: block; }
 .agenda__note {
   margin: 0;
   font-size: .95rem;
-  color: rgba(36, 29, 28, .6);
+  color: rgba(74, 49, 38, .6);
 }
 
 /* ================= สถานที่ ================= */
@@ -505,7 +505,7 @@ img { max-width: 100%; display: block; }
 .venue__address p {
   margin: 0;
   font-size: .98rem;
-  color: rgba(36, 29, 28, .68);
+  color: rgba(74, 49, 38, .68);
 }
 
 .venue__map { margin: 1.6rem 0 0; border-radius: 10px; overflow: hidden; }
@@ -615,7 +615,7 @@ img { max-width: 100%; display: block; }
   font-size: 1.1rem;
   border-radius: 0;
 }
-.field__input::placeholder { color: rgba(36, 29, 28, .32); }
+.field__input::placeholder { color: rgba(74, 49, 38, .32); }
 .field__input:focus {
   outline: none;
   border-bottom-color: var(--gold);
@@ -647,7 +647,7 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   margin: 1.1rem 0 0;
   text-align: center;
   font-size: .88rem;
-  color: rgba(36, 29, 28, .55);
+  color: rgba(74, 49, 38, .55);
 }
 
 .form__thanks {
@@ -662,7 +662,7 @@ select.field__input option { background: #ffffff; color: var(--cream); }
 .form__thanks-detail {
   font-family: var(--th-body);
   font-size: .88rem;
-  color: rgba(36, 29, 28, .6);
+  color: rgba(74, 49, 38, .6);
 }
 
 .link-btn {
@@ -682,7 +682,7 @@ select.field__input option { background: #ffffff; color: var(--cream); }
 #rsvpSubmit[disabled] { opacity: .6; cursor: default; }
 
 /* ================= ร่วมแสดงความยินดี ================= */
-.gift__note { margin: 0 auto 1.8rem; max-width: 34ch; color: rgba(36, 29, 28, .7); }
+.gift__note { margin: 0 auto 1.8rem; max-width: 34ch; color: rgba(74, 49, 38, .7); }
 .accounts { display: grid; gap: 1rem; max-width: 340px; margin: 0 auto; }
 .account {
   padding: 1.3rem 1rem;
@@ -697,7 +697,7 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   color: var(--cream);
   font-variant-numeric: tabular-nums;
 }
-.account__name { margin: 0 0 1rem; font-size: .9rem; color: rgba(36, 29, 28, .6); }
+.account__name { margin: 0 0 1rem; font-size: .9rem; color: rgba(74, 49, 38, .6); }
 
 /* ================= ดุอาอ์ ================= */
 .rule {
@@ -718,13 +718,13 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   max-width: 32ch;
   font-family: var(--th-display);
   font-size: 1.06rem;
-  color: rgba(36, 29, 28, .88);
+  color: rgba(74, 49, 38, .88);
 }
 .closing__lead {
   margin: 2.6rem 0 .2rem;
   font-family: var(--th-display);
   font-size: 1.2rem;
-  color: rgba(36, 29, 28, .7);
+  color: rgba(74, 49, 38, .7);
 }
 .closing__host {
   margin: 0;

@@ -375,7 +375,7 @@
 
     if (message) {
       var fit = fitMessage(ctx, message, CARD_W - 220, textSpace);
-      ctx.fillStyle = '#241d1c';
+      ctx.fillStyle = '#4a3126';
       ctx.font = '400 ' + fit.size + 'px Sriracha, Charm, cursive';
       var y = textTop + fit.lineHeight * 0.8;
       fit.lines.forEach(function (line) {
@@ -743,7 +743,7 @@
 
     var date = cfg.date || {};
     var line = [date.weekdayTh, date.monthYearTh].filter(Boolean).join(' · ');
-    ctx.fillStyle = 'rgba(36,29,28,.6)';
+    ctx.fillStyle = 'rgba(74, 49, 38,.6)';
     ctx.font = '300 26px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(line, STRIP_W / 2, footTop + 134);
 

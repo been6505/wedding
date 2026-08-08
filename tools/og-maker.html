@@ -10,7 +10,7 @@
 <style>
   body {
     margin: 0; padding: 2rem;
-    background: #f6f0ee; color: #241d1c;
+    background: #f6f0ee; color: #4a3126;
     font-family: 'Noto Sans Thai', system-ui, sans-serif; font-weight: 300;
     text-align: center;
   }
@@ -21,7 +21,7 @@
     border: 1px solid #c9a063; border-radius: 999px;
     color: #e0c081; text-decoration: none;
   }
-  p { color: rgba(36,29,28,.6); font-size: .9rem; }
+  p { color: rgba(74, 49, 38,.6); font-size: .9rem; }
 </style>
 </head>
 <body>
@@ -81,7 +81,7 @@
     // ชื่อคู่บ่าวสาว ภาษาไทย
     var groom = pick('couple.groom.th', '');
     var bride = pick('couple.bride.th', '');
-    ctx.fillStyle = '#241d1c';
+    ctx.fillStyle = '#4a3126';
     ctx.font = '400 86px Sriracha, Charm, cursive';
     ctx.fillText(groom + '  &  ' + bride, W / 2, 320);
 
@@ -109,12 +109,12 @@
       date.weekdayTh ? date.weekdayTh + (date.day ? 'ที่ ' + thaiDigits(date.day) : '') : thaiDigits(date.day || ''),
       date.monthYearTh || '',
     ].filter(Boolean).join(' ');
-    ctx.fillStyle = '#241d1c';
+    ctx.fillStyle = '#4a3126';
     ctx.font = '400 34px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(line, W / 2, 496);
 
     // สถานที่
-    ctx.fillStyle = 'rgba(36,29,28,.6)';
+    ctx.fillStyle = 'rgba(74, 49, 38,.6)';
     ctx.font = '300 25px Mali, "Noto Sans Thai", sans-serif';
     ctx.fillText(pick('venue.name', ''), W / 2, 542);
   }

@@ -5,7 +5,7 @@
   --gold:      #a21925;
   --gold-soft: #c2303c;
   --gold-dim:  #8d2833;
-  --cream:     #241d1c;
+  --cream:     #4a3126;
   --line: rgba(162, 25, 37, .25);
 
   --th-display: 'Sriracha', 'Charm', cursive;
@@ -66,7 +66,7 @@ body {
 .lead {
   margin: 0 0 1.8rem;
   font-size: .95rem;
-  color: rgba(36, 29, 28, .65);
+  color: rgba(74, 49, 38, .65);
 }
 .lead code { color: var(--gold-soft); font-size: .9em; word-break: break-all; }
 
@@ -98,7 +98,7 @@ body {
 }
 .field__input--area { resize: vertical; line-height: 1.8; }
 .field__input:focus { outline: none; border-color: var(--gold); }
-.field__input::placeholder { color: rgba(36, 29, 28, .3); }
+.field__input::placeholder { color: rgba(74, 49, 38, .3); }
 select.field__input { appearance: none; cursor: pointer; }
 select.field__input option { background: var(--wine-800); color: var(--cream); }
 
@@ -141,7 +141,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   border: 1px solid var(--line);
   border-radius: 999px;
   background: transparent;
-  color: rgba(36, 29, 28, .7);
+  color: rgba(74, 49, 38, .7);
   font: inherit;
   font-size: .9rem;
   cursor: pointer;
@@ -154,7 +154,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 .hint {
   margin: 0 0 1.2rem;
   font-size: .88rem;
-  color: rgba(36, 29, 28, .5);
+  color: rgba(74, 49, 38, .5);
 }
 
 /* ---------- การ์ดรูป ---------- */
@@ -194,7 +194,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   object-fit: cover;
   display: block;
 }
-.video-empty { margin: 0; font-size: .9rem; color: rgba(36, 29, 28, .4); }
+.video-empty { margin: 0; font-size: .9rem; color: rgba(74, 49, 38, .4); }
 
 .rec {
   position: absolute;
@@ -230,7 +230,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   margin: 1.8rem auto 0;
   border: 0;
   background: none;
-  color: rgba(36, 29, 28, .45);
+  color: rgba(74, 49, 38, .45);
   font: inherit;
   font-size: .9rem;
   text-decoration: underline;
@@ -333,7 +333,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   stroke-linejoin: round;
 }
 .menu__label { font-family: var(--th-display); font-size: 1.02rem; }
-.menu__sub { font-size: .74rem; line-height: 1.5; color: rgba(36, 29, 28, .55); }
+.menu__sub { font-size: .74rem; line-height: 1.5; color: rgba(74, 49, 38, .55); }
 
 /* ปุ่มย้อนกลับหน้าเมนู */
 .back {
@@ -449,7 +449,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   margin-bottom: .35rem;
 }
 .wish__name { margin: 0; font-family: var(--th-display); font-size: 1rem; color: var(--gold); }
-.wish__when { font-size: .72rem; color: rgba(36, 29, 28, .45); }
+.wish__when { font-size: .72rem; color: rgba(74, 49, 38, .45); }
 .wish__message { margin: 0; font-size: .92rem; line-height: 1.75; white-space: pre-wrap; }
 .wish__media { margin-top: .7rem; }
 .wish__media img,
