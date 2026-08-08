@@ -1104,26 +1104,25 @@
   }
 
   function feedVideo(slot, ref) {
-    var button = el('button', 'btn btn--ghost', 'เล่นคลิป');
-    button.type = 'button';
-    button.addEventListener('click', function () {
-      button.disabled = true;
-      window.BACKEND.mediaUrl(ref).then(function (url) {
-        slot.textContent = '';
-        var video = document.createElement('video');
-        video.src = url;
-        video.controls = true;
-        video.playsInline = true;
-        video.preload = 'metadata';
-        var poster = window.BACKEND.mediaPoster(ref);
-        if (poster) video.poster = poster;
-        slot.appendChild(video);
-      }, function () {
-        button.disabled = false;
-        toast('เปิดคลิปไม่ได้');
-      });
-    });
-    slot.appendChild(button);
+    // แสดงคลิปขึ้นมาเลย เล่นวนแบบเงียบ (ปิดเสียงไว้) แขกกดที่คลิปเพื่อเปิดเสียงได้
+    window.BACKEND.mediaUrl(ref).then(function (url) {
+      slot.textContent = '';
+      var video = document.createElement('video');
+      video.src = url;
+      video.controls = true;
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      video.preload = 'metadata';
+      var poster = window.BACKEND.mediaPoster(ref);
+      if (poster) video.poster = poster;
+      slot.appendChild(video);
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+    }, function () { slot.remove(); });
   }
 
   window.addEventListener('pagehide', function () { stopCamera(); stopBooth(); });
