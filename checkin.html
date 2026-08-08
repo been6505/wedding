@@ -22,33 +22,36 @@
     <ul class="issues" id="setupIssues"></ul>
   </section>
 
-  <!-- ---------- ขั้นที่ 1: เช็คอิน ---------- -->
-  <section class="card" id="stepCheckin" hidden>
+  <!-- ---------- หน้าหลักหน้างาน: เช็คอิน + เมนู + feed อยู่ด้วยกัน ---------- -->
+  <section class="card" id="stepHub" hidden>
     <p class="bismillah" dir="rtl">السَّلَامُ عَلَيْكُمْ</p>
     <h1 class="title" id="coupleTitle">—</h1>
-    <p class="lead">ยินดีต้อนรับสู่งานวะลีมะฮฺ<br>กรุณาเช็คอินเพื่อแจ้งว่าท่านมาถึงแล้ว</p>
 
-    <form id="checkinForm">
-      <label class="field">
-        <span class="field__label">ชื่อของท่าน</span>
-        <input class="field__input" id="guestName" type="text" placeholder="ชื่อ–นามสกุล"
-               autocomplete="name" required maxlength="120">
-      </label>
+    <!-- ยังไม่เช็คอิน: กรอกชื่อตรงนี้เลย ไม่ต้องข้ามหน้า -->
+    <div id="checkinBox">
+      <p class="lead">ยินดีต้อนรับสู่งานวะลีมะฮฺ<br>กรอกชื่อเพื่อเช็คอินและร่วมอวยพร</p>
 
-      <label class="field">
-        <span class="field__label">มากันกี่ท่าน</span>
-        <select class="field__input" id="partySize"></select>
-      </label>
+      <form id="checkinForm">
+        <label class="field">
+          <span class="field__label">ชื่อของท่าน</span>
+          <input class="field__input" id="guestName" type="text" placeholder="ชื่อ–นามสกุล"
+                 autocomplete="name" required maxlength="120">
+        </label>
 
-      <button class="btn btn--solid" type="submit" id="checkinSubmit">เช็คอิน</button>
-    </form>
-  </section>
+        <label class="field">
+          <span class="field__label">มากันกี่ท่าน</span>
+          <select class="field__input" id="partySize"></select>
+        </label>
 
-  <!-- ---------- ขั้นที่ 2: เมนูหน้างาน ---------- -->
-  <section class="card" id="stepHub" hidden>
-    <p class="welcome" id="welcome"></p>
-    <h2 class="title title--sm">ร่วมอวยพรบ่าวสาว</h2>
-    <p class="lead">เลือกสิ่งที่อยากทำได้เลย ทำกี่อย่างก็ได้</p>
+        <button class="btn btn--solid" type="submit" id="checkinSubmit">เช็คอิน</button>
+      </form>
+    </div>
+
+    <!-- เช็คอินแล้ว -->
+    <div id="welcomeBox" hidden>
+      <p class="welcome" id="welcome"></p>
+      <p class="lead">เลือกสิ่งที่อยากทำได้เลย ทำกี่อย่างก็ได้</p>
+    </div>
 
     <div class="menu" id="menu">
       <button class="menu__item" type="button" data-go="text">

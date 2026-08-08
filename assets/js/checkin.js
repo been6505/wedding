@@ -13,7 +13,7 @@
   var videoBlob = null;
   var boothBlob = null;
 
-  var STEPS = ['setupNotice', 'stepCheckin', 'stepHub', 'stepDo', 'stepDone'];
+  var STEPS = ['setupNotice', 'stepHub', 'stepDo', 'stepDone'];
 
   /* ---------- ตัวช่วย ---------- */
   function toast(message) {
@@ -147,13 +147,28 @@
       .then(function () { idle(button); });
   });
 
-  function greet() {
-    $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
+  // ยังไม่เช็คอิน = โชว์ฟอร์มกรอกชื่อ และล็อกเมนูไว้ก่อน เพราะคำอวยพรต้องมีชื่อผู้ส่ง
+  // เช็คอินแล้ว = เก็บฟอร์ม โชว์คำทักทายและปลดล็อกเมนู
+  function paintSeat() {
+    var seated = !!guest.name;
+    $('#checkinBox').hidden = seated;
+    $('#welcomeBox').hidden = !seated;
+    $('#notMe').hidden = !seated;
+    $('#skipWish').hidden = !seated;
+    if (seated) $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
+
+    $$('.menu__item').forEach(function (item) {
+      var blocked = !seated ||
+                    (item.hasAttribute('data-needs-media') && !canUpload) ||
+                    (item.dataset.go === 'video' && !canVideo);
+      item.disabled = blocked;
+      item.classList.toggle('is-off', blocked);
+    });
   }
 
-  // เปิดหน้าเมนูทีไรก็ดึงคำอวยพรมาใหม่ ของที่เพิ่งส่งจะได้โผล่ทันที
+  // เปิดหน้าหลักทีไรก็ดึงคำอวยพรมาใหม่ ของที่เพิ่งส่งจะได้โผล่ทันที
   function showHub() {
-    greet();
+    paintSeat();
     show('stepHub');
     if (feedOn) loadFeed(feedStale);
     feedStale = false;
@@ -163,16 +178,15 @@
   if (seat) {
     guest.name = seat.name;
     guest.partySize = seat.partySize || 1;
-    showHub();
-  } else {
-    show('stepCheckin');
   }
+  showHub();
 
   $('#notMe').addEventListener('click', function () {
     writeSeat(null);
     guest = { name: '', partySize: 1 };
     $('#guestName').value = '';
-    show('stepCheckin');
+    paintSeat();
+    $('#guestName').focus();
   });
 
   /* ---------- เมนูหน้างาน ---------- */
@@ -185,14 +199,8 @@
 
   // รูปเก็บลงฐานข้อมูลได้ถ้าไม่มีที่เก็บไฟล์ แต่คลิปวิดีโอใหญ่เกินกว่าจะทำแบบนั้น
   if (!canUpload) {
-    $$('.menu__item[data-needs-media]').forEach(function (item) {
-      item.disabled = true;
-      item.classList.add('is-off');
-    });
     $('#mediaOff').hidden = false;
   } else if (!canVideo) {
-    var vid = $('.menu__item[data-go="video"]');
-    if (vid) { vid.disabled = true; vid.classList.add('is-off'); }
     $('#mediaOff').textContent = 'เมนูถ่ายวิดีโอยังปิดอยู่ เพราะคลิปต้องใช้ที่เก็บไฟล์แยก ' +
                                  'ส่วนถ่ายภาพกับ Photobooth ใช้ได้ตามปกติ';
     $('#mediaOff').hidden = false;
