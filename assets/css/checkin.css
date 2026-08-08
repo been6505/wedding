@@ -21,7 +21,7 @@ body {
   margin: 0;
   min-height: 100svh;
   font-family: var(--th-body);
-  font-weight: 300;
+  font-weight: 500;
   line-height: 1.85;
   color: var(--cream);
   /* ไล่สีชุดเดียวกับหน้าการ์ด ขาวบนสุด ลงมาแดงอ่อน */
@@ -59,7 +59,8 @@ body {
 .title {
   margin: 0 0 .6rem;
   font-family: var(--th-display);
-  font-weight: 500;
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
+  font-weight: 400;
   font-size: clamp(1.8rem, 7vw, 2.3rem);
   line-height: 1.4;
 }
@@ -75,6 +76,7 @@ body {
 .welcome {
   margin: 0 0 1.4rem;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.3rem;
   color: var(--gold-soft);
 }
@@ -343,7 +345,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.menu__label { font-family: var(--th-display); font-size: .8rem; line-height: 1.35; }
+.menu__label { font-family: var(--th-display); font-size: .8rem; line-height: 1.35; font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */ }
 
 
 /* ปุ่มย้อนกลับหน้าเมนู */
@@ -379,6 +381,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   display: grid;
   place-items: center;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 5rem;
   color: #fff;
   text-shadow: 0 3px 18px rgba(90, 20, 30, .55);
@@ -459,7 +462,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   gap: .6rem;
   margin-bottom: .35rem;
 }
-.wish__name { margin: 0; font-family: var(--th-display); font-size: 1rem; color: var(--gold); }
+.wish__name { margin: 0; font-family: var(--th-display); font-size: 1rem; color: var(--gold); font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */ }
 .wish__when { font-size: .72rem; color: rgba(74, 49, 38, .45); }
 .wish__message { margin: 0; font-size: .92rem; line-height: 1.75; white-space: pre-wrap; }
 .wish__media { margin-top: .7rem; }
@@ -524,6 +527,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 .hub-feed__title {
   margin: 0 0 .8rem;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.1rem;
   color: var(--gold);
   text-align: center;

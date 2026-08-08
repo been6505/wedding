@@ -44,7 +44,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   font-family: var(--th-body);
-  font-weight: 300;
+  font-weight: 500;
   line-height: 1.9;
   color: var(--cream);
   /* เห็นเฉพาะตอนดึงเกินขอบล่าง ใช้สีปลายไล่ให้กลืนกัน */
@@ -160,6 +160,7 @@ img { max-width: 100%; display: block; }
 
 .cover__word {
   font-family: var(--ar-display);
+  font-weight: 400;
   font-size: clamp(1.7rem, 6vw, 2.2rem);
   color: var(--gold);
   margin: 0 0 1.6rem;
@@ -355,7 +356,7 @@ img { max-width: 100%; display: block; }
 .label {
   margin: 0 0 1.2rem;
   font-size: .82rem;
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: .2em;
   text-indent: .2em;
   color: var(--gold-dim);
@@ -382,6 +383,7 @@ img { max-width: 100%; display: block; }
   margin: 0;
   font-family: var(--ar-display);
   font-weight: 400;
+  font-weight: 400;
   font-size: clamp(2.8rem, 13vw, 4.6rem);
   line-height: 1.7;
   color: var(--cream);
@@ -407,6 +409,7 @@ img { max-width: 100%; display: block; }
 .names-th {
   margin: .6rem 0 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: clamp(1.5rem, 6.4vw, 2rem);
   color: var(--cream);
 }
@@ -424,6 +427,7 @@ img { max-width: 100%; display: block; }
   margin: 1.5rem auto 0;
   max-width: 34ch;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.06rem;
   line-height: 1.95;
   color: rgba(74, 49, 38, .88);
@@ -440,12 +444,14 @@ img { max-width: 100%; display: block; }
 .date__weekday {
   margin: 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.55rem;
   color: var(--cream);
 }
 .date__day {
   margin: .1rem 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-weight: 400;
   font-size: clamp(3.4rem, 15vw, 4.6rem);
   line-height: 1.1;
@@ -454,6 +460,7 @@ img { max-width: 100%; display: block; }
 .date__month {
   margin: 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.6rem;
   color: var(--cream);
 }
@@ -483,6 +490,7 @@ img { max-width: 100%; display: block; }
 .agenda__title {
   margin: .3rem 0 .2rem;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.45rem;
   color: var(--cream);
 }
@@ -496,6 +504,7 @@ img { max-width: 100%; display: block; }
 .venue__name {
   margin: 0 0 .7rem;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: clamp(1.35rem, 5.4vw, 1.7rem);
   line-height: 1.5;
   color: var(--cream);
@@ -553,6 +562,7 @@ img { max-width: 100%; display: block; }
 .countdown strong {
   display: block;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-weight: 400;
   font-style: italic;
   font-size: clamp(1.7rem, 8vw, 2.4rem);
@@ -569,6 +579,7 @@ img { max-width: 100%; display: block; }
 .countdown__done {
   margin: 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.15rem;
   color: var(--cream);
 }
@@ -651,6 +662,7 @@ select.field__input option { background: #ffffff; color: var(--cream); }
 .form__thanks {
   margin: 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.25rem;
   color: var(--cream);
 }
@@ -732,18 +744,21 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   margin: 1.4rem auto 0;
   max-width: 32ch;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.06rem;
   color: rgba(74, 49, 38, .88);
 }
 .closing__lead {
   margin: 2.6rem 0 .2rem;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.2rem;
   color: rgba(74, 49, 38, .7);
 }
 .closing__host {
   margin: 0;
   font-family: var(--th-display);
+  font-weight: 400;   /* ฟอนต์นี้มีน้ำหนักเดียว */
   font-size: 1.28rem;
   color: var(--cream);
 }
@@ -810,13 +825,13 @@ select.field__input option { background: #ffffff; color: var(--cream); }
 .scan__note {
   margin: 0 auto 1.6rem;
   max-width: 30ch;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--cream);
 }
 
 /* หมวดนี้เป็นสิ่งที่แขกต้องกดจริงตอนมางาน ทำให้เด่นกว่าหมวดอื่น */
 .block--scan .label {
-  font-weight: 500;
+  font-weight: 600;
   color: var(--gold);
 }
-.btn--scan { font-weight: 500; }
+.btn--scan { font-weight: 600; }
