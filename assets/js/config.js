@@ -122,8 +122,8 @@ window.WEDDING_CONFIG = {
    * คีย์ลับ (API Secret) ไม่ต้องใช้และห้ามเอามาใส่ที่นี่
    */
   cloudinary: {
-    cloudName: '',            // เช่น 'dxxxxxxx'
-    uploadPreset: '',         // ชื่อ unsigned upload preset
+    cloudName: 'dei5jktuw',
+    uploadPreset: 'MyWedding',   // ต้องเป็นแบบ Unsigned
     folder: 'wedding-wishes', // โฟลเดอร์ปลายทางในบัญชี Cloudinary
   },
 
