@@ -100,13 +100,10 @@
     ctx.moveTo(W / 2 - 110, 436); ctx.lineTo(W / 2 + 110, 436);
     ctx.stroke();
 
-    // วันที่ — แปลงเลขอารบิกเป็นเลขไทย ให้เข้าชุดกับปีที่เขียนเป็นเลขไทยใน config
+    // วันที่ — ใช้เลขสากลตามที่ตั้งไว้ใน config ไม่แปลงเป็นเลขไทย
     var date = cfg.date || {};
-    var thaiDigits = function (text) {
-      return String(text).replace(/[0-9]/g, function (d) { return '๐๑๒๓๔๕๖๗๘๙'[+d]; });
-    };
     var line = [
-      date.weekdayTh ? date.weekdayTh + (date.day ? 'ที่ ' + thaiDigits(date.day) : '') : thaiDigits(date.day || ''),
+      date.weekdayTh ? date.weekdayTh + (date.day ? 'ที่ ' + date.day : '') : (date.day || ''),
       date.monthYearTh || '',
     ].filter(Boolean).join(' ');
     ctx.fillStyle = '#4a3126';

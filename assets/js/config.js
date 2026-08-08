@@ -29,7 +29,7 @@ window.WEDDING_CONFIG = {
   date: {
     weekdayTh: 'วันอาทิตย์',
     day: '15',
-    monthYearTh: 'พฤศจิกายน ๒๕๖๙',
+    monthYearTh: 'พฤศจิกายน 2569',
     hijri: '٥ جمادى الآخرة ١٤٤٨',
   },
 
