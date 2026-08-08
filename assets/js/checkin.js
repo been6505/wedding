@@ -84,6 +84,7 @@
     return;
   }
 
+  var feedStale = false;
   var canUpload = window.BACKEND.mediaConfigured();
   var canVideo = window.BACKEND.videoConfigured();
   var feedOn = !(cfg.wishFeed && cfg.wishFeed.enabled === false);
@@ -137,8 +138,7 @@
     window.BACKEND.submitCheckin(guest)
       .then(function () {
         writeSeat({ name: guest.name, partySize: guest.partySize, at: Date.now() });
-        greet();
-        show('stepHub');
+        showHub();
       })
       .catch(function (err) {
         console.error(err);
@@ -151,12 +151,19 @@
     $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
   }
 
+  // เปิดหน้าเมนูทีไรก็ดึงคำอวยพรมาใหม่ ของที่เพิ่งส่งจะได้โผล่ทันที
+  function showHub() {
+    greet();
+    show('stepHub');
+    if (feedOn) loadFeed(feedStale);
+    feedStale = false;
+  }
+
   var seat = readSeat();
   if (seat) {
     guest.name = seat.name;
     guest.partySize = seat.partySize || 1;
-    greet();
-    show('stepHub');
+    showHub();
   } else {
     show('stepCheckin');
   }
@@ -174,7 +181,6 @@
     photo: 'ถ่ายภาพอวยพร',
     video: 'ถ่ายวิดีโออวยพร',
     booth: 'Photobooth',
-    feed: 'Feed อวยพร',
   };
 
   // รูปเก็บลงฐานข้อมูลได้ถ้าไม่มีที่เก็บไฟล์ แต่คลิปวิดีโอใหญ่เกินกว่าจะทำแบบนั้น
@@ -191,9 +197,10 @@
                                  'ส่วนถ่ายภาพกับ Photobooth ใช้ได้ตามปกติ';
     $('#mediaOff').hidden = false;
   }
+  // ปิด feed = ซ่อนทั้งบล็อกที่อยู่ในหน้าเมนู
   if (!feedOn) {
-    var feedBtn = $('.menu__item[data-go="feed"]');
-    if (feedBtn) feedBtn.hidden = true;
+    var feedSection = $('.hub-feed');
+    if (feedSection) feedSection.hidden = true;
   }
 
   function openPane(mode) {
@@ -204,7 +211,6 @@
     if (mode !== 'video') stopCamera();
     if (mode !== 'booth') stopBooth();
     show('stepDo');
-    if (mode === 'feed') loadFeed();
   }
 
   $$('.menu__item').forEach(function (item) {
@@ -214,10 +220,11 @@
   $('#backHub').addEventListener('click', function () {
     stopCamera();
     stopBooth();
-    show('stepHub');
+    showHub();
   });
 
   function finish(message) {
+    feedStale = true;          // เพิ่งมีของใหม่ รอบหน้าที่กลับหน้าเมนูต้องโหลดใหม่
     $('#doneText').textContent = message;
     stopCamera();
     stopBooth();
@@ -255,8 +262,7 @@
 
   $('#againBtn').addEventListener('click', function () {
     resetAll();
-    greet();
-    show('stepHub');
+    showHub();
   });
 
   /* ---------- อวยพรด้วยข้อความ ---------- */

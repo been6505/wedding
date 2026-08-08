@@ -56,7 +56,6 @@
           <path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>
         </svg>
         <span class="menu__label">เขียนอวยพร</span>
-        <span class="menu__sub">พิมพ์คำอวยพรถึงบ่าวสาว</span>
       </button>
 
       <button class="menu__item" type="button" data-go="photo" data-needs-media>
@@ -64,7 +63,6 @@
           <path d="M3 8h4l1.5-2h7L17 8h4v11H3z"/><circle cx="12" cy="13" r="3.4"/>
         </svg>
         <span class="menu__label">ถ่ายภาพอวยพร</span>
-        <span class="menu__sub">ทำเป็นการ์ดรูปพร้อมข้อความ</span>
       </button>
 
       <button class="menu__item" type="button" data-go="video" data-needs-media>
@@ -72,7 +70,6 @@
           <path d="M3 6h12v12H3z"/><path d="M15 10l6-3v10l-6-3z"/>
         </svg>
         <span class="menu__label">ถ่ายวิดีโออวยพร</span>
-        <span class="menu__sub">อัดคลิปสั้นไม่เกิน 30 วินาที</span>
       </button>
 
       <button class="menu__item" type="button" data-go="booth" data-needs-media>
@@ -80,23 +77,30 @@
           <path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h6"/>
         </svg>
         <span class="menu__label">Photobooth</span>
-        <span class="menu__sub">ถ่าย 3 ช็อต ได้รูปแถบเก็บไว้</span>
       </button>
 
-      <button class="menu__item menu__item--wide" type="button" data-go="feed">
-        <svg class="menu__icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/>
-        </svg>
-        <span class="menu__label">Feed อวยพร</span>
-        <span class="menu__sub">ดูคำอวยพรของแขกท่านอื่น</span>
-      </button>
     </div>
 
-    <button class="link-small" type="button" id="notMe">ไม่ใช่คุณ? เช็คอินใหม่</button>
 
     <p class="hint" id="mediaOff" hidden>
       เมนูที่ต้องใช้กล้องยังปิดอยู่ เพราะเจ้าภาพยังไม่ได้ตั้งค่าที่เก็บไฟล์
     </p>
+
+    <button class="link-small" type="button" id="notMe">ไม่ใช่คุณ? เช็คอินใหม่</button>
+
+
+    <section class="hub-feed" aria-label="คำอวยพรล่าสุด">
+      <h3 class="hub-feed__title">คำอวยพรล่าสุด</h3>
+      <div class="feed__bar">
+        <button class="chip is-active" type="button" data-feed="all">ทั้งหมด</button>
+        <button class="chip" type="button" data-feed="text">ข้อความ</button>
+        <button class="chip" type="button" data-feed="photo">รูป</button>
+        <button class="chip" type="button" data-feed="video">คลิป</button>
+        <button class="chip chip--ghost" type="button" id="feedRefresh">รีเฟรช</button>
+      </div>
+      <p class="hint" id="feedState">กำลังโหลด...</p>
+      <div class="feed" id="feed"></div>
+    </section>
 
     <button class="skip" type="button" id="skipWish">ไว้ทีหลัง</button>
   </section>
@@ -200,18 +204,6 @@
       </p>
     </div>
 
-    <!-- Feed -->
-    <div class="pane" data-pane="feed">
-      <div class="feed__bar">
-        <button class="chip is-active" type="button" data-feed="all">ทั้งหมด</button>
-        <button class="chip" type="button" data-feed="text">ข้อความ</button>
-        <button class="chip" type="button" data-feed="photo">รูป</button>
-        <button class="chip" type="button" data-feed="video">คลิป</button>
-        <button class="chip chip--ghost" type="button" id="feedRefresh">รีเฟรช</button>
-      </div>
-      <p class="hint" id="feedState">กำลังโหลด...</p>
-      <div class="feed" id="feed"></div>
-    </div>
   </section>
 
   <!-- ---------- ขั้นที่ 3: เสร็จแล้ว ---------- -->

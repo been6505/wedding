@@ -293,17 +293,18 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 .issues li { margin-bottom: .5rem; }
 
 /* ================= เมนูหน้างาน ================= */
+/* การ์ดย่อลงเหลือไอคอนกับชื่อ เพราะ feed อยู่หน้าเดียวกันแล้ว ต้องเหลือที่ให้มัน */
 .menu {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: .8rem;
-  margin: 1.6rem 0 1.4rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .5rem;
+  margin: 1.3rem 0 1.2rem;
 }
 .menu__item {
   display: grid;
   justify-items: center;
-  gap: .35rem;
-  padding: 1.2rem .7rem 1.1rem;
+  gap: .3rem;
+  padding: .75rem .35rem .7rem;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: #fff;
@@ -324,16 +325,16 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 .menu__item.is-off { opacity: .38; cursor: not-allowed; }
 
 .menu__icon {
-  width: 30px;
-  height: 30px;
+  width: 23px;
+  height: 23px;
   fill: none;
   stroke: var(--gold);
   stroke-width: 1.4;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.menu__label { font-family: var(--th-display); font-size: 1.02rem; }
-.menu__sub { font-size: .74rem; line-height: 1.5; color: rgba(74, 49, 38, .55); }
+.menu__label { font-family: var(--th-display); font-size: .8rem; line-height: 1.35; }
+
 
 /* ปุ่มย้อนกลับหน้าเมนู */
 .back {
@@ -430,7 +431,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   cursor: pointer;
 }
 .chip.is-active { background: var(--gold); border-color: var(--gold); color: #fff; }
-.chip--ghost { margin-left: auto; }
+.chip--ghost { margin-left: 0; }
 
 .feed { display: grid; gap: .8rem; }
 
@@ -502,3 +503,23 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   box-shadow: 0 0 0 2px rgba(162, 25, 37, .14);
 }
 .frame.is-active .frame__label { color: var(--gold); }
+
+/* ================= feed ในหน้าเมนู ================= */
+.hub-feed {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.hub-feed__title {
+  margin: 0 0 .8rem;
+  font-family: var(--th-display);
+  font-size: 1.1rem;
+  color: var(--gold);
+  text-align: center;
+}
+
+/* จอแคบมากให้เหลือสองคอลัมน์ ชื่อเมนูจะได้ไม่หักคำจนอ่านยาก */
+@media (max-width: 359px) {
+  .menu { grid-template-columns: 1fr 1fr; }
+}
