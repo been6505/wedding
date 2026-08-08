@@ -415,8 +415,8 @@
     section.hidden = false;
   }
 
-  function copy(text) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  // วิธีสำรองแบบเก่า ใช้ได้กว้างกว่าและไม่ต้องการ secure context
+  function copyByExec(text) {
     return new Promise(function (resolve, reject) {
       var input = document.createElement('textarea');
       input.value = text;
@@ -425,10 +425,20 @@
       input.style.opacity = '0';
       document.body.appendChild(input);
       input.select();
-      try { document.execCommand('copy') ? resolve() : reject(); }
+      input.setSelectionRange(0, text.length);   // iOS ไม่เลือกข้อความให้ถ้าไม่สั่งช่วงเอง
+      try { document.execCommand('copy') ? resolve() : reject(new Error('copy ถูกปฏิเสธ')); }
       catch (err) { reject(err); }
       finally { input.remove(); }
     });
+  }
+
+  function copy(text) {
+    // clipboard API ถูกปฏิเสธได้แม้อยู่บน https เช่นในเบราว์เซอร์ที่ฝังในแอปไลน์/เฟซบุ๊ก
+    // หรือตอนหน้าต่างไม่ได้โฟกัส ถ้าพลาดให้ถอยไปวิธีเก่าก่อน ค่อยยอมแพ้
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () { return copyByExec(text); });
+    }
+    return copyByExec(text);
   }
 
   /* ---------- 8. ร่วมสนับสนุนการจัดงาน ---------- */
