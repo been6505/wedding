@@ -25,7 +25,10 @@ body {
   line-height: 1.85;
   color: var(--cream);
   /* ไล่สีชุดเดียวกับหน้าการ์ด ขาวบนสุด ลงมาแดงอ่อน */
-  background: linear-gradient(180deg, #ffffff 0%, #fdf1f0 46%, #f2cfcd 100%);
+  background:
+    url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27200%27%20height%3D%27200%27%3E%3Cfilter%20id%3D%27g%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.9%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type%3D%27linear%27%20slope%3D%270.35%27%20intercept%3D%270%27%2F%3E%3C%2FfeComponentTransfer%3E%3C%2Ffilter%3E%3Crect%20width%3D%27200%27%20height%3D%27200%27%20filter%3D%27url%28%23g%29%27%20opacity%3D%270.22%27%2F%3E%3C%2Fsvg%3E"),
+    linear-gradient(180deg, #ffffff 0%, #fdf1f0 46%, #f2cfcd 100%);
+  background-blend-mode: multiply, normal;
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
 }
