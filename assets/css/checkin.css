@@ -41,9 +41,10 @@ body {
 }
 
 .card {
+  --card-pad-x: clamp(1.1rem, 5vw, 1.8rem);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: clamp(1.6rem, 6vw, 2.4rem) clamp(1.1rem, 5vw, 1.8rem) 2rem;
+  padding: clamp(1.6rem, 6vw, 2.4rem) var(--card-pad-x) 2rem;
   background: rgba(162, 25, 37, .02);
   text-align: center;
 }
@@ -180,9 +181,11 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 /* ---------- วิดีโอ ---------- */
 .video-box {
   position: relative;
-  aspect-ratio: 3 / 4;
-  /* จอเตี้ยจะโดนกล่องกล้องกินพื้นที่จนต้องเลื่อนหาปุ่ม จำกัดความสูงไว้ก่อน */
-  max-height: 46svh;
+  /* ดึงออกไปชนขอบการ์ดทั้งสองข้าง ให้ภาพกล้องกว้างเต็มที่ */
+  width: auto;
+  margin-left: calc(-1 * var(--card-pad-x));
+  margin-right: calc(-1 * var(--card-pad-x));
+  aspect-ratio: 1 / 1;
   margin-bottom: 1.1rem;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -191,7 +194,11 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   display: grid;
   place-items: center;
 }
+/* วางทับเต็มกรอบ ไม่ให้ place-items: center ของกรอบย่อภาพลงมาเป็นก้อนเล็ก ๆ
+   (ข้อความ "กด เปิดกล้อง" ยังถูกจัดกลางตามเดิม) */
 .video-box video {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -540,8 +547,7 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
   .hint { margin-bottom: .5rem; }
   .field { margin-bottom: .6rem; }
   .video-actions { margin-bottom: .5rem; gap: .4rem; }
-  /* หลังอัดเสร็จจะมีทั้งช่องข้อความและปุ่มส่งเพิ่มมา กล่องกล้องต้องยอมเล็กลง */
-  .video-box { max-height: 27svh; margin-bottom: .6rem; }
+  .video-box { margin-bottom: .6rem; }
   .frames { margin-bottom: .6rem; }
   .preview { margin-bottom: .6rem; }
 }
