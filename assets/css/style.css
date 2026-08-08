@@ -471,10 +471,8 @@ img { max-width: 100%; display: block; }
   padding: 0;
 }
 .agenda li { padding: .3rem 0 1.4rem; }
-.agenda li + li {
-  border-top: 1px solid rgba(162, 25, 37, .16);
-  padding-top: 1.4rem;
-}
+/* ไม่มีเส้นคั่นระหว่างรายการ ใช้ระยะห่างแยกให้พอ */
+.agenda li + li { padding-top: 1.8rem; }
 .agenda__time {
   display: block;
   font-size: 1rem;
