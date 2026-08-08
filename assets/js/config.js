@@ -114,7 +114,7 @@ window.WEDDING_CONFIG = {
    * ไม่งั้นบัญชี Google ของใครก็ได้จะอ่านข้อมูลได้หมด
    */
   googleSignIn: {
-    clientId: '',
+    clientId: '507801379922-ubus487mrergqpuvfsrnu50koc1vsk7i.apps.googleusercontent.com',
   },
 
   /* ---------- Cloudinary ----------
