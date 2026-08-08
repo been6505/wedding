@@ -26,8 +26,24 @@ service cloud.firestore {
              && value >= request.time - duration.value(1, 'h');
     }
 
+    // =================================================================
+    // รายชื่ออีเมลของเจ้าภาพ — แก้ตรงนี้แล้ว Publish ใหม่ทุกครั้งที่เพิ่มคน
+    //
+    // สำคัญ: ห้ามกลับไปใช้แค่ "request.auth != null"
+    // apiKey ของ Firebase เปิดเผยอยู่ในหน้าเว็บ ใครก็เรียก accounts:signUp
+    // สร้างบัญชีเองได้ และถ้าเปิดล็อกอินด้วย Google ก็ยิ่งง่ายเข้าไปอีก
+    // เงื่อนไขที่เช็คแค่ว่า "ล็อกอินแล้ว" จึงเท่ากับเปิดข้อมูลให้คนนอกอ่านและลบได้
+    // =================================================================
+    function hostEmails() {
+      return [
+        'ใส่อีเมลเจ้าภาพที่นี่@example.com',
+      ];
+    }
+
     function isHost() {
-      return request.auth != null;
+      return request.auth != null
+             && request.auth.token.email_verified == true
+             && request.auth.token.email in hostEmails();
     }
 
     // ---------- ตอบรับคำเชิญ ----------

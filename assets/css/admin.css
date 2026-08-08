@@ -547,3 +547,22 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .side-nav, .nav-veil { transition: none; }
 }
+
+/* ================= ล็อกอินด้วย Google ================= */
+.gate__alt { margin-top: 1.4rem; }
+.gate__or {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin: 0 0 1rem;
+  color: rgba(74, 49, 38, .45);
+  font-size: .82rem;
+}
+.gate__or::before,
+.gate__or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+#googleBtn { display: flex; justify-content: center; }

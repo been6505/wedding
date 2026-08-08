@@ -199,6 +199,34 @@ window.BACKEND_FIREBASE = (function () {
     });
   }
 
+
+  /* ---------- ล็อกอินด้วย Google ----------
+   * ใช้ Google Identity Services หยิบ ID token ของ Google มาก่อน
+   * แล้วเอาไปแลกเป็น session ของ Firebase ผ่าน accounts:signInWithIdp
+   * ทั้งหมดเป็น REST ล้วน ไม่ต้องโหลด Firebase SDK
+   */
+  function signInWithGoogleToken(googleIdToken) {
+    if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Firebase'));
+    return call('https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=' +
+                encodeURIComponent(apiKey), {
+      method: 'POST',
+      body: {
+        postBody: 'id_token=' + encodeURIComponent(googleIdToken) + '&providerId=google.com',
+        requestUri: window.location.origin,
+        returnIdpCredential: true,
+        returnSecureToken: true,
+      },
+    }).then(function (data) {
+      var session = {
+        idToken: data.idToken,
+        refreshToken: data.refreshToken,
+        email: data.email || '',
+      };
+      writeSession(session);
+      return session;
+    });
+  }
+
   function refreshSession() {
     var session = readSession();
     if (!session || !session.refreshToken) return Promise.reject(new Error('หมดเวลาเข้าสู่ระบบ'));
@@ -240,6 +268,7 @@ window.BACKEND_FIREBASE = (function () {
     configured: configured,
     session: readSession,
     signIn: signIn,
+    signInWithGoogleToken: signInWithGoogleToken,
     signOut: signOut,
 
     // Firebase Storage ต้องผูกบัตรก่อนใช้ จึงให้ไฟล์ไปอยู่กับผู้ให้บริการสื่อแยก

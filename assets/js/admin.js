@@ -427,6 +427,51 @@
 
 
 
+
+  /* ---------- ล็อกอินด้วย Google ---------- */
+  function initGoogleSignIn() {
+    var conf = (window.WEDDING_CONFIG && window.WEDDING_CONFIG.googleSignIn) || {};
+    var clientId = String(conf.clientId || '');
+    var wrap = $('#googleWrap');
+    if (!clientId || !wrap) return;   // ไม่ได้ตั้งค่าไว้ ก็ใช้อีเมล/รหัสผ่านตามเดิม
+
+    var script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+
+    script.onload = function () {
+      if (!window.google || !google.accounts || !google.accounts.id) return;
+
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: function (res) {
+          if (!res || !res.credential) return;
+          loginError.hidden = true;
+          window.BACKEND.signInWithGoogleToken(res.credential)
+            .then(function () { showDash(); })
+            .catch(function (err) {
+              // กฎฝั่ง Firestore เป็นตัวตัดสินจริงว่าใครเป็นเจ้าภาพ
+              // ล็อกอินผ่านไม่ได้แปลว่ามีสิทธิ์ ข้อความจึงต้องไม่ทำให้เข้าใจผิด
+              loginError.textContent = 'เข้าสู่ระบบด้วย Google ไม่สำเร็จ: ' + err.message;
+              loginError.hidden = false;
+            });
+        },
+      });
+
+      google.accounts.id.renderButton($('#googleBtn'), {
+        theme: 'outline', size: 'large', width: 260, text: 'signin_with', locale: 'th',
+      });
+      wrap.hidden = false;
+    };
+
+    // โหลดสคริปต์ของ Google ไม่ได้ (เน็ตหลุด/โดนบล็อก) ก็ยังล็อกอินด้วยอีเมลได้
+    script.onerror = function () { wrap.hidden = true; };
+    document.head.appendChild(script);
+  }
+
+  initGoogleSignIn();
+
   /* ---------- เมนูด้านข้าง ---------- */
   function initSideNav() {
     var nav = $('#sideNav');

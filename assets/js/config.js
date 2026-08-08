@@ -104,6 +104,19 @@ window.WEDDING_CONFIG = {
     apiKey: 'AIzaSyDSXEcL_2bL9W7cAovF148dEYNyQzaZuJw',
   },
 
+  /* ---------- ล็อกอินหน้าเจ้าภาพด้วย Google ----------
+   * เว้นว่าง = ใช้อีเมล/รหัสผ่านอย่างเดียว (ปุ่ม Google จะไม่โผล่)
+   * หา clientId ได้จาก Firebase console > Authentication > Sign-in method
+   * > Google > Web SDK configuration > Web client ID
+   * ค่านี้เปิดเผยได้ ไม่ใช่ความลับ
+   *
+   * ต้องคุมสิทธิ์ที่ firebase/firestore.rules ด้วย (ใส่อีเมลใน hostEmails)
+   * ไม่งั้นบัญชี Google ของใครก็ได้จะอ่านข้อมูลได้หมด
+   */
+  googleSignIn: {
+    clientId: '',
+  },
+
   /* ---------- Cloudinary ----------
    * uploadPreset ต้องตั้งเป็นแบบ Unsigned ใน Settings > Upload
    * คีย์ลับ (API Secret) ไม่ต้องใช้และห้ามเอามาใส่ที่นี่

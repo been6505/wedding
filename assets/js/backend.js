@@ -92,6 +92,7 @@ window.BACKEND = (function () {
 
     session: function () { return db && db.configured() ? db.session() : null; },
     signIn: via('signIn'),
+    signInWithGoogleToken: via('signInWithGoogleToken'),
     signOut: function () { return db ? db.signOut() : Promise.resolve(); },
 
     submitRsvp: via('submitRsvp'),
