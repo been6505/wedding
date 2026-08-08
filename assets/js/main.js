@@ -431,42 +431,105 @@
     });
   }
 
-  /* ---------- 8. ร่วมแสดงความยินดี ---------- */
+  /* ---------- 8. ร่วมสนับสนุนการจัดงาน ---------- */
   function initGifts() {
     var section = $('#gift');
     var wrap = $('#accounts');
     var gifts = cfg.gifts || {};
     if (!section || !wrap || !gifts.enabled) return;
 
-    var accounts = (gifts.accounts || []).filter(function (a) { return a && a.number; });
+    // รับได้ทั้งแบบมีเลขบัญชี มี QR หรือมีทั้งคู่
+    var accounts = (gifts.accounts || []).filter(function (a) { return a && (a.number || a.qr); });
     if (!accounts.length) return;
 
     accounts.forEach(function (acc) {
       var card = el('div', 'account');
+
       if (acc.qr) {
         var qr = document.createElement('img');
         qr.className = 'account__qr';
         qr.src = acc.qr;
-        qr.alt = 'QR พร้อมเพย์';
-        qr.loading = 'lazy';
+        qr.alt = 'QR พร้อมเพย์' + (acc.name ? ' ' + acc.name : '');
+        // หมวดนี้ตั้งต้นเป็น hidden แล้วค่อยเปิดด้วย JS รูปที่ตั้ง lazy ไว้ในกิ่งที่ถูกซ่อน
+        // บางเบราว์เซอร์ไม่กลับมาโหลดให้ แขกจะเห็นเป็นช่องว่าง — รูปเดียวไม่กี่สิบ KB
+        // โหลดตรง ๆ ไปเลยคุ้มกว่า
         qr.addEventListener('error', function () { qr.remove(); });
         card.appendChild(qr);
       }
-      card.appendChild(el('p', 'account__bank', acc.bank || ''));
-      card.appendChild(el('p', 'account__number', acc.number));
-      card.appendChild(el('p', 'account__name', acc.name || ''));
 
-      var button = el('button', 'btn', 'คัดลอกเลขบัญชี');
-      button.type = 'button';
-      button.addEventListener('click', function () {
-        copy(acc.number).then(function () { toast('คัดลอกเลขบัญชีแล้ว'); },
-                              function () { toast('คัดลอกไม่สำเร็จ'); });
-      });
-      card.appendChild(button);
+      if (acc.bank) card.appendChild(el('p', 'account__bank', acc.bank));
+      if (acc.number) card.appendChild(el('p', 'account__number', acc.number));
+      if (acc.name) card.appendChild(el('p', 'account__name', acc.name));
+
+      var actions = el('div', 'account__actions');
+
+      if (acc.number) {
+        var copyBtn = el('button', 'btn', 'คัดลอกเลขบัญชี');
+        copyBtn.type = 'button';
+        copyBtn.addEventListener('click', function () {
+          copy(acc.number).then(function () { toast('คัดลอกเลขบัญชีแล้ว'); },
+                                function () { toast('คัดลอกไม่สำเร็จ'); });
+        });
+        actions.appendChild(copyBtn);
+      }
+
+      if (acc.qr) {
+        var saveLink = document.createElement('a');
+        saveLink.className = 'btn';
+        saveLink.href = acc.qr;
+        saveLink.download = 'promptpay.jpg';
+        saveLink.textContent = 'บันทึกรูป';
+        actions.appendChild(saveLink);
+
+        // แชร์ไฟล์ตรง ๆ ได้เฉพาะบางเบราว์เซอร์ ถ้าไม่รองรับก็ไม่ต้องโชว์ปุ่มให้เก้อ
+        if (navigator.share) {
+          var shareBtn = el('button', 'btn', 'แชร์');
+          shareBtn.type = 'button';
+          shareBtn.addEventListener('click', function () { shareQr(acc, shareBtn); });
+          actions.appendChild(shareBtn);
+        }
+      }
+
+      if (actions.children.length) card.appendChild(actions);
       wrap.appendChild(card);
     });
 
     section.hidden = false;
+  }
+
+  // แชร์รูป QR เป็นไฟล์ถ้าทำได้ ไม่งั้นแชร์เป็นลิงก์ของหน้าเว็บแทน
+  function shareQr(acc, button) {
+    var label = button.textContent;
+    button.disabled = true;
+    button.textContent = 'กำลังเตรียม...';
+
+    var reset = function () { button.disabled = false; button.textContent = label; };
+    var shareLink = function () {
+      return navigator.share({
+        title: document.title,
+        text: (cfg.gifts && cfg.gifts.title) || '',
+        url: location.href,
+      });
+    };
+
+    fetch(acc.qr)
+      .then(function (res) { return res.ok ? res.blob() : Promise.reject(new Error('โหลดรูปไม่ได้')); })
+      .then(function (blob) {
+        var file = new File([blob], 'promptpay.jpg', { type: blob.type || 'image/jpeg' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: (cfg.gifts && cfg.gifts.title) || '' });
+        }
+        return shareLink();
+      })
+      .catch(function (err) {
+        // ผู้ใช้กดยกเลิกหน้าต่างแชร์ ไม่ใช่ความผิดพลาด ไม่ต้องเตือน
+        if (err && err.name === 'AbortError') return;
+        return shareLink().catch(function (e) {
+          if (e && e.name === 'AbortError') return;
+          toast('แชร์ไม่สำเร็จ ลองบันทึกรูปแล้วส่งเองได้');
+        });
+      })
+      .then(reset, reset);
   }
 
   /* ---------- 8.5 สแกนเข้างาน ---------- */

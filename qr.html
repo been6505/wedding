@@ -83,6 +83,7 @@
     max-width: 480px;
     margin: 0 auto;
     aspect-ratio: 1 / 1.414;          /* สัดส่วน A4 / A5 */
+    container-type: inline-size;      /* ให้หน่วย cqw อ้างความกว้างของป้ายนี้ */
     padding: 6% 7%;
     display: flex;
     flex-direction: column;
@@ -95,30 +96,60 @@
     box-shadow: 0 20px 50px rgba(162, 25, 37, .04);
     position: relative;
   }
-  .poster::before {
+  /* กรอบสองชั้น เส้นนอกหนากว่าเส้นใน */
+  .poster::before,
+  .poster::after {
     content: '';
     position: absolute;
-    inset: 3.2%;
-    border: 1px solid rgba(162, 25, 37,.4);
-    border-radius: 4px;
     pointer-events: none;
+    border-radius: 3px;
+  }
+  .poster::before { inset: 2.6%; border: 1.5px solid rgba(162, 25, 37,.45); }
+  .poster::after  { inset: 4.2%; border: 1px solid rgba(162, 25, 37,.22); }
+
+  /* ลายมุมทั้งสี่ วางทับกรอบตรงหัวมุม */
+  .poster__corner {
+    position: absolute;
+    width: 9%;
+    height: auto;
+    fill: none;
+    stroke: rgba(162, 25, 37,.55);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+  .poster__corner--tl { top: 2.2%;    left: 2.2%; }
+  .poster__corner--tr { top: 2.2%;    right: 2.2%;  transform: scaleX(-1); }
+  .poster__corner--bl { bottom: 2.2%; left: 2.2%;   transform: scaleY(-1); }
+  .poster__corner--br { bottom: 2.2%; right: 2.2%;  transform: scale(-1); }
+
+  /* เส้นคั่นเล็ก ๆ ใต้หัวเรื่อง */
+  .poster__rule {
+    width: 22%;
+    height: auto;
+    stroke: rgba(162, 25, 37,.5);
+    stroke-width: 1.4;
+    fill: none;
+    margin: .1rem auto 0;
+    display: block;
   }
 
   .poster__eyebrow span { display: inline-block; }
   .poster__eyebrow {
     margin: 0 auto;
     max-width: 30ch;
-    font-size: .8rem;
+    font-size: 3.7cqw;
     letter-spacing: .14em;
     text-indent: .14em;
     line-height: 1.9;
     color: var(--gold-dim);
   }
-  .poster__names { margin: .5rem 0 0; font-family: var(--th-display); font-weight: 500; font-size: 1.75rem; color: var(--cream); }
-  .poster__ar { margin: .2rem 0 0; font-family: 'Amiri', serif; font-size: 1.2rem; color: var(--gold); }
+  .poster__names { margin: .35em 0 0; font-family: var(--th-display); font-weight: 500; font-size: 9cqw; line-height: 1.3; color: var(--cream); }
+  .poster__ar { margin: .25em 0 0; font-family: 'Amiri', serif; font-size: 5.6cqw; color: var(--gold); }
 
   .poster__qr {
-    width: 62%;
+    width: 66%;
     padding: 4%;
     background: #fff;
     border-radius: 8px;
@@ -126,8 +157,8 @@
   }
   .poster__qr svg { width: 100%; height: auto; display: block; }
 
-  .poster__cta { margin: 0; font-family: var(--th-display); font-size: 1.5rem; color: var(--gold-soft); }
-  .poster__hint { margin: .3rem 0 0; font-size: .82rem; color: rgba(74, 49, 38,.55); line-height: 1.7; }
+  .poster__cta { margin: 0; font-family: var(--th-display); font-size: 7.2cqw; color: var(--gold-soft); }
+  .poster__hint { margin: .5em 0 0; font-size: 3.4cqw; color: rgba(74, 49, 38,.55); line-height: 1.85; }
 
   @media print {
     body { background: #fff; padding: 0; }
@@ -165,10 +196,12 @@
   </div>
 
   <div class="poster" id="poster">
+    <svg class="poster__corner poster__corner--tl" viewBox="0 0 64 64" aria-hidden="true"><path d="M2 30 C2 14, 14 2, 30 2"/><path d="M2 46 C2 20, 20 2, 46 2" opacity=".45"/><path d="M13 13 l7 0 m-7 0 l0 7"/><circle cx="13" cy="13" r="2.2"/></svg><svg class="poster__corner poster__corner--tr" viewBox="0 0 64 64" aria-hidden="true"><path d="M2 30 C2 14, 14 2, 30 2"/><path d="M2 46 C2 20, 20 2, 46 2" opacity=".45"/><path d="M13 13 l7 0 m-7 0 l0 7"/><circle cx="13" cy="13" r="2.2"/></svg><svg class="poster__corner poster__corner--bl" viewBox="0 0 64 64" aria-hidden="true"><path d="M2 30 C2 14, 14 2, 30 2"/><path d="M2 46 C2 20, 20 2, 46 2" opacity=".45"/><path d="M13 13 l7 0 m-7 0 l0 7"/><circle cx="13" cy="13" r="2.2"/></svg><svg class="poster__corner poster__corner--br" viewBox="0 0 64 64" aria-hidden="true"><path d="M2 30 C2 14, 14 2, 30 2"/><path d="M2 46 C2 20, 20 2, 46 2" opacity=".45"/><path d="M13 13 l7 0 m-7 0 l0 7"/><circle cx="13" cy="13" r="2.2"/></svg>
     <div>
       <p class="poster__eyebrow" id="posterEyebrow"><span>ยินดีต้อนรับสู่งาน</span> <span>วะลีมะตุลนิกะห์</span></p>
       <p class="poster__names" id="names">—</p>
       <p class="poster__ar" dir="rtl" id="namesAr"></p>
+      <svg class="poster__rule" viewBox="0 0 120 12" aria-hidden="true"><path d="M4 6 H44"/><path d="M76 6 H116"/><path d="M60 1 L65 6 L60 11 L55 6 Z"/><circle cx="49" cy="6" r="1.4"/><circle cx="71" cy="6" r="1.4"/></svg>
     </div>
 
     <div class="poster__qr" id="qrBox"></div>

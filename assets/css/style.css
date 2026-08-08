@@ -687,7 +687,17 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   border: 1px solid rgba(162, 25, 37, .28);
   border-radius: 6px;
 }
-.account__qr { width: 150px; margin: 0 auto 1rem; border-radius: 6px; }
+/* กรอบสองชั้นรอบรูป QR ให้เข้าชุดกับกรอบอื่นบนการ์ด */
+.account__qr {
+  width: min(100%, 230px);
+  margin: 0 auto 1.3rem;
+  padding: 7px;
+  border: 1px solid rgba(162, 25, 37, .38);
+  border-radius: 10px;
+  outline: 1px solid rgba(162, 25, 37, .15);
+  outline-offset: 5px;
+  background: #fff;
+}
 .account__bank { margin: 0; font-size: .82rem; letter-spacing: .14em; color: var(--gold-dim); }
 .account__number {
   margin: .3rem 0;
@@ -696,6 +706,13 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   font-variant-numeric: tabular-nums;
 }
 .account__name { margin: 0 0 1rem; font-size: .9rem; color: rgba(74, 49, 38, .6); }
+
+.account__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .5rem;
+}
 
 /* ================= ดุอาอ์ ================= */
 .rule {
