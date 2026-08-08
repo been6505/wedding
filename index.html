@@ -167,18 +167,6 @@
   </section>
 
 
-  <!-- สแกนเข้างาน (โผล่เฉพาะเมื่อเปิดไว้ใน config) -->
-  <section class="block block--scan reveal" id="scan" hidden>
-    <p class="label" data-bind="checkin.title"></p>
-    <p class="scan__note" data-bind="checkin.note"></p>
-    <a class="btn btn--solid btn--scan" id="scanLink" href="checkin.html">
-      <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4M7 12h10"/>
-      </svg>
-      <span data-bind="checkin.button"></span>
-    </a>
-  </section>
-
   <!-- ตอบรับคำเชิญ -->
   <section class="block block--rsvp reveal" id="rsvp" hidden>
     <p class="label" data-bind="rsvp.title"></p>
@@ -205,6 +193,18 @@
       <button class="btn btn--solid" type="submit" id="rsvpSubmit">ส่งคำตอบรับ</button>
       <p class="form__note" data-bind="rsvp.note"></p>
     </form>
+  </section>
+
+  <!-- สแกนเข้างาน (โผล่เฉพาะเมื่อเปิดไว้ใน config) -->
+  <section class="block block--scan reveal" id="scan" hidden>
+    <p class="label" data-bind="checkin.title"></p>
+    <p class="scan__note" data-bind="checkin.note"></p>
+    <a class="btn btn--solid btn--scan" id="scanLink" href="checkin.html">
+      <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4M7 12h10"/>
+      </svg>
+      <span data-bind="checkin.button"></span>
+    </a>
   </section>
 
   <!-- ร่วมแสดงความยินดี (ซ่อนอัตโนมัติถ้าปิดใน config) -->

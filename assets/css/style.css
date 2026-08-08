@@ -810,8 +810,16 @@ select.field__input option { background: #ffffff; color: var(--cream); }
 .scan__note {
   margin: 0 auto 1.6rem;
   max-width: 30ch;
-  color: var(--cream-dim);
+  font-weight: 500;
+  color: var(--cream);
 }
+
+/* หมวดนี้เป็นสิ่งที่แขกต้องกดจริงตอนมางาน ทำให้เด่นกว่าหมวดอื่น */
+.block--scan .label {
+  font-weight: 500;
+  color: var(--gold);
+}
+.btn--scan { font-weight: 500; }
 .btn--scan {
   display: inline-flex;
   align-items: center;
