@@ -820,17 +820,3 @@ select.field__input option { background: #ffffff; color: var(--cream); }
   color: var(--gold);
 }
 .btn--scan { font-weight: 500; }
-.btn--scan {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-}
-.btn__icon {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
