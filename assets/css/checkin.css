@@ -36,7 +36,8 @@ body {
 .wrap {
   max-width: 480px;
   margin: 0 auto;
-  padding: clamp(1.5rem, 6vw, 3rem) 1.25rem 4rem;
+  /* ช่องล่างมีไว้ให้พ้น toast ที่ลอยอยู่มุมล่าง ไม่ต้องเผื่อถึง 4rem */
+  padding: clamp(1.5rem, 6vw, 3rem) 1.25rem 2.2rem;
 }
 
 .card {
@@ -180,6 +181,8 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 .video-box {
   position: relative;
   aspect-ratio: 3 / 4;
+  /* จอเตี้ยจะโดนกล่องกล้องกินพื้นที่จนต้องเลื่อนหาปุ่ม จำกัดความสูงไว้ก่อน */
+  max-height: 46svh;
   margin-bottom: 1.1rem;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -522,4 +525,23 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 /* จอแคบมากให้เหลือสองคอลัมน์ ชื่อเมนูจะได้ไม่หักคำจนอ่านยาก */
 @media (max-width: 359px) {
   .menu { grid-template-columns: 1fr 1fr; }
+}
+
+/* จอเตี้ย (มือถือที่แถบเบราว์เซอร์กินพื้นที่ หรือแนวนอน) — บีบระยะให้เนื้อหาพอดีจอ
+   หน้าที่เนื้อหาไม่เยอะจะได้ไม่ต้องเลื่อนหาปุ่ม */
+@media (max-height: 700px) {
+  .wrap { padding-top: 1rem; padding-bottom: 1.4rem; }
+  .card { padding: 1.2rem 1.1rem 1.4rem; }
+  .title { margin-bottom: .3rem; }
+  .lead { margin-bottom: .9rem; }
+  .bismillah { margin-bottom: .6rem; }
+
+  .back { margin-bottom: .4rem; }
+  .hint { margin-bottom: .5rem; }
+  .field { margin-bottom: .6rem; }
+  .video-actions { margin-bottom: .5rem; gap: .4rem; }
+  /* หลังอัดเสร็จจะมีทั้งช่องข้อความและปุ่มส่งเพิ่มมา กล่องกล้องต้องยอมเล็กลง */
+  .video-box { max-height: 27svh; margin-bottom: .6rem; }
+  .frames { margin-bottom: .6rem; }
+  .preview { margin-bottom: .6rem; }
 }

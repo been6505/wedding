@@ -115,14 +115,6 @@
   /* ---------- ขั้นที่ 1: เช็คอิน ---------- */
   $('#coupleTitle').textContent = coupleNames();
 
-  var partySelect = $('#partySize');
-  for (var n = 1; n <= 20; n++) {
-    var option = document.createElement('option');
-    option.value = String(n);
-    option.textContent = n + ' ท่าน';
-    partySelect.appendChild(option);
-  }
-
   $('#checkinForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var input = $('#guestName');
@@ -133,7 +125,7 @@
     busy(button, 'กำลังเช็คอิน...');
 
     guest.name = name;
-    guest.partySize = parseInt(partySelect.value, 10) || 1;
+    guest.partySize = 1;
 
     window.BACKEND.submitCheckin(guest)
       .then(function () {

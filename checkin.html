@@ -38,11 +38,6 @@
                  autocomplete="name" required maxlength="120">
         </label>
 
-        <label class="field">
-          <span class="field__label">มากันกี่ท่าน</span>
-          <select class="field__input" id="partySize"></select>
-        </label>
-
         <button class="btn btn--solid" type="submit" id="checkinSubmit">เช็คอิน</button>
       </form>
     </div>
@@ -165,7 +160,8 @@
 
       <label class="field" id="videoMessageField" hidden>
         <span class="field__label">ข้อความเพิ่มเติม (ไม่ใส่ก็ได้)</span>
-        <input class="field__input" id="videoMessage" type="text" maxlength="180">
+        <textarea class="field__input field__input--area" id="videoMessage" rows="2"
+                  maxlength="180" placeholder="เขียนเพิ่มได้ถ้าต้องการ"></textarea>
       </label>
 
       <button class="btn btn--solid" type="button" id="sendVideo" hidden>ส่งคลิปอวยพร</button>
