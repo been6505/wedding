@@ -85,7 +85,31 @@
   }
 
   var canUpload = window.BACKEND.mediaConfigured();
+  var canVideo = window.BACKEND.videoConfigured();
   var feedOn = !(cfg.wishFeed && cfg.wishFeed.enabled === false);
+
+  /* ---------- จำว่าเช็คอินไปแล้ว ----------
+   * กลับเข้าหน้านี้อีกครั้ง (หรือรีเฟรช) จะเข้าหน้าเมนูเลย ไม่ต้องกรอกชื่อซ้ำ
+   * เก็บไว้ที่เครื่องแขกล้วน ไม่แตะฐานข้อมูล — และหมดอายุหลังจบงานไปแล้วหนึ่งวัน
+   */
+  var SEAT_KEY = 'wedding.checkin.seat';
+  var SEAT_TTL = 36 * 60 * 60 * 1000;
+
+  function readSeat() {
+    try {
+      var seat = JSON.parse(localStorage.getItem(SEAT_KEY) || 'null');
+      if (!seat || !seat.name) return null;
+      if (seat.at && Date.now() - seat.at > SEAT_TTL) return null;
+      return seat;
+    } catch (e) { return null; }
+  }
+
+  function writeSeat(seat) {
+    try {
+      if (seat) localStorage.setItem(SEAT_KEY, JSON.stringify(seat));
+      else localStorage.removeItem(SEAT_KEY);
+    } catch (e) { /* โหมดส่วนตัวเขียนไม่ได้ ก็แค่ต้องเช็คอินใหม่ */ }
+  }
 
   /* ---------- ขั้นที่ 1: เช็คอิน ---------- */
   $('#coupleTitle').textContent = coupleNames();
@@ -112,7 +136,8 @@
 
     window.BACKEND.submitCheckin(guest)
       .then(function () {
-        $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
+        writeSeat({ name: guest.name, partySize: guest.partySize, at: Date.now() });
+        greet();
         show('stepHub');
       })
       .catch(function (err) {
@@ -122,7 +147,26 @@
       .then(function () { idle(button); });
   });
 
-  show('stepCheckin');
+  function greet() {
+    $('#welcome').textContent = 'เช็คอินเรียบร้อยแล้ว ' + guest.name;
+  }
+
+  var seat = readSeat();
+  if (seat) {
+    guest.name = seat.name;
+    guest.partySize = seat.partySize || 1;
+    greet();
+    show('stepHub');
+  } else {
+    show('stepCheckin');
+  }
+
+  $('#notMe').addEventListener('click', function () {
+    writeSeat(null);
+    guest = { name: '', partySize: 1 };
+    $('#guestName').value = '';
+    show('stepCheckin');
+  });
 
   /* ---------- เมนูหน้างาน ---------- */
   var TITLES = {
@@ -133,12 +177,18 @@
     feed: 'Feed อวยพร',
   };
 
-  // เมนูที่ต้องอัปโหลดไฟล์ กดไม่ได้ถ้ายังไม่ได้ตั้งค่าที่เก็บไฟล์
+  // รูปเก็บลงฐานข้อมูลได้ถ้าไม่มีที่เก็บไฟล์ แต่คลิปวิดีโอใหญ่เกินกว่าจะทำแบบนั้น
   if (!canUpload) {
     $$('.menu__item[data-needs-media]').forEach(function (item) {
       item.disabled = true;
       item.classList.add('is-off');
     });
+    $('#mediaOff').hidden = false;
+  } else if (!canVideo) {
+    var vid = $('.menu__item[data-go="video"]');
+    if (vid) { vid.disabled = true; vid.classList.add('is-off'); }
+    $('#mediaOff').textContent = 'เมนูถ่ายวิดีโอยังปิดอยู่ เพราะคลิปต้องใช้ที่เก็บไฟล์แยก ' +
+                                 'ส่วนถ่ายภาพกับ Photobooth ใช้ได้ตามปกติ';
     $('#mediaOff').hidden = false;
   }
   if (!feedOn) {
@@ -205,6 +255,7 @@
 
   $('#againBtn').addEventListener('click', function () {
     resetAll();
+    greet();
     show('stepHub');
   });
 
@@ -893,7 +944,9 @@
       var img = document.createElement('img');
       img.src = url;
       img.alt = 'การ์ดอวยพร';
-      img.loading = 'lazy';
+      // data URL ไม่มีอะไรให้โหลดข้ามเครือข่ายอยู่แล้ว การตั้ง lazy จึงไม่ได้ประโยชน์
+      // ซ้ำยังทำให้บางเบราว์เซอร์เลื่อนการถอดรหัสไว้จนรูปไม่ขึ้นเลย
+      if (url.indexOf('data:') !== 0) img.loading = 'lazy';
       slot.appendChild(img);
     }, function () { slot.remove(); });
   }

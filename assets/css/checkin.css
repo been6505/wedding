@@ -458,3 +458,18 @@ select.field__input option { background: var(--wine-800); color: var(--cream); }
 @media (prefers-reduced-motion: reduce) {
   .booth__count.is-tick, .booth__flash.is-on { animation: none; }
 }
+
+.link-small {
+  display: inline-block;
+  margin-top: .9rem;
+  padding: .3rem .4rem;
+  border: 0;
+  background: none;
+  color: var(--gold-dim);
+  font: inherit;
+  font-size: .82rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.link-small:hover { color: var(--gold); }

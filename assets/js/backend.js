@@ -17,6 +17,7 @@ window.BACKEND = (function () {
 
   var db = (choice === 'supabase') ? window.BACKEND_SUPABASE : window.BACKEND_FIREBASE;
   var cloud = window.MEDIA_CLOUDINARY;
+  var inline = window.MEDIA_INLINE;
 
   // ปัญหาการตั้งค่าที่ทำให้ใช้งานไม่ได้ เก็บไว้บอกผู้ใช้เป็นภาษาคน
   // แยกสองกอง เพราะฐานข้อมูลกับที่เก็บไฟล์ล้มคนละเรื่องกัน:
@@ -34,12 +35,14 @@ window.BACKEND = (function () {
 
   var media = null;
   if (mediaChoice === 'cloudinary') {
-    if (!cloud) {
-      mediaProblems.push('ไม่พบไฟล์ assets/js/cloudinary.js');
-    } else if (!cloud.configured()) {
-      mediaProblems.push('ยังไม่ได้กรอก cloudinary.cloudName และ cloudinary.uploadPreset ใน assets/js/config.js');
-    } else {
+    if (cloud && cloud.configured()) {
       media = cloud;
+    } else if (inline) {
+      // ยังไม่ได้ตั้งค่า Cloudinary — ถอยไปเก็บรูปไว้ในฐานข้อมูลแทน
+      // ส่งรูปได้เลยโดยไม่ต้องรอตั้งค่าอะไร แลกกับที่คลิปวิดีโอยังส่งไม่ได้
+      media = inline;
+    } else {
+      mediaProblems.push('ไม่พบไฟล์ assets/js/cloudinary.js และ assets/js/inline-media.js');
     }
   } else if (db && db.hasOwnStorage) {
     media = {
@@ -54,6 +57,8 @@ window.BACKEND = (function () {
 
   function dbConfigured() { return dbProblems.length === 0; }
   function mediaConfigured() { return !!media; }
+  // คลิปวิดีโอต้องมีที่เก็บไฟล์จริง เก็บลงฐานข้อมูลไม่ไหว
+  function videoConfigured() { return !!media && media.name !== 'inline'; }
   function configured() { return dbConfigured() && mediaConfigured(); }
   function issues() { return dbProblems.concat(mediaProblems); }
 
@@ -82,6 +87,7 @@ window.BACKEND = (function () {
     dbConfigured: dbConfigured,
     dbIssues: function () { return dbProblems.slice(); },
     mediaConfigured: mediaConfigured,
+    videoConfigured: videoConfigured,
     mediaIssues: function () { return mediaProblems.slice(); },
 
     session: function () { return db && db.configured() ? db.session() : null; },
@@ -108,8 +114,11 @@ window.BACKEND = (function () {
     },
 
     mediaUrl: function (ref) {
-      if (!media) return guard();
+      // อ่านตามผู้ให้บริการที่ฝังมากับตัวข้อมูล ไม่ใช่ตามที่ตั้งค่าไว้ตอนนี้
+      // ของเก่าที่ส่งมาก่อนเปลี่ยนการตั้งค่าจึงยังเปิดดูได้
+      if (ref && ref.provider === 'inline' && inline) return Promise.resolve(inline.url(ref));
       if (ref && ref.provider === 'cloudinary' && cloud) return Promise.resolve(cloud.url(ref));
+      if (!media) return guard();
       return Promise.resolve(media.url(ref));
     },
 

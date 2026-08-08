@@ -344,7 +344,9 @@
       var img = document.createElement('img');
       img.src = url;
       img.alt = 'การ์ดอวยพร';
-      img.loading = 'lazy';
+      // data URL ไม่มีอะไรให้โหลดข้ามเครือข่ายอยู่แล้ว การตั้ง lazy จึงไม่ได้ประโยชน์
+      // ซ้ำยังทำให้บางเบราว์เซอร์เลื่อนการถอดรหัสไว้จนรูปไม่ขึ้นเลย
+      if (url.indexOf('data:') !== 0) img.loading = 'lazy';
       link.appendChild(img);
       slot.appendChild(link);
     }, function (err) {
