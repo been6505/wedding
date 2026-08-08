@@ -49,21 +49,36 @@
 <main class="dash" id="dash" hidden>
 
   <header class="dash__head">
+    <button class="menu-btn" type="button" id="navOpen" aria-label="เปิดเมนู"
+            aria-controls="sideNav" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
     <div>
       <h1 class="dash__title">หน้าเจ้าภาพ</h1>
       <p class="dash__sub" id="dashUser"></p>
     </div>
-    <div class="dash__tools">
-      <button class="btn" type="button" id="refreshBtn">รีเฟรช</button>
-      <button class="btn" type="button" id="exportBtn">ดาวน์โหลด CSV</button>
-      <button class="btn" type="button" id="logoutBtn">ออกจากระบบ</button>
-    </div>
   </header>
+
+  <!-- เมนูด้านข้าง เก็บปุ่มที่ไม่ได้ใช้บ่อยไว้ ไม่ให้เบียดหัวหน้าจอ -->
+  <div class="nav-veil" id="navVeil" hidden></div>
+  <aside class="side-nav" id="sideNav" aria-label="เมนูเจ้าภาพ" hidden>
+    <div class="side-nav__head">
+      <p class="side-nav__title">เมนู</p>
+      <button class="side-nav__close" type="button" id="navClose" aria-label="ปิดเมนู">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <p class="side-nav__user" id="navUser"></p>
+    <button class="side-nav__item" type="button" id="refreshBtn">รีเฟรช</button>
+    <button class="side-nav__item" type="button" id="exportBtn">ดาวน์โหลด CSV</button>
+    <button class="side-nav__item side-nav__item--out" type="button" id="logoutBtn">ออกจากระบบ</button>
+  </aside>
 
   <nav class="views" role="tablist">
     <button class="view-tab is-active" type="button" data-view="rsvp" role="tab" aria-selected="true">ตอบรับคำเชิญ</button>
     <button class="view-tab" type="button" data-view="checkin" role="tab" aria-selected="false">เช็คอินหน้างาน</button>
     <button class="view-tab" type="button" data-view="wish" role="tab" aria-selected="false">คำอวยพร</button>
+    <button class="view-tab" type="button" data-view="qr" role="tab" aria-selected="false">QR หน้างาน</button>
   </nav>
 
   <!-- ตอบรับคำเชิญ -->
@@ -153,6 +168,37 @@
     <div class="wishes" id="wishes"></div>
   </section>
 
+
+  <!-- ---------- QR ให้แขกสแกนเข้าหน้าเช็คอิน ---------- -->
+  <section class="view" id="viewQr" hidden>
+    <p class="qr__lead">ให้แขกส่องกล้องมือถือที่ QR นี้ เข้าหน้าเช็คอินได้เลย</p>
+
+    <div class="qr__card">
+      <p class="qr__couple" id="qrCouple">—</p>
+      <div class="qr__code" id="qrCode"></div>
+      <p class="qr__hint">สแกนเพื่อเช็คอินและร่วมอวยพร</p>
+    </div>
+
+    <label class="field">
+      <span class="field__label">ลิงก์ที่อยู่ใน QR</span>
+      <input class="field__input" id="qrUrl" type="url" spellcheck="false">
+    </label>
+
+    <div class="qr__actions">
+      <button class="btn btn--solid" type="button" id="qrFull">แสดงเต็มจอ</button>
+      <button class="btn" type="button" id="qrCopy">คัดลอกลิงก์</button>
+      <a class="btn" id="qrPrint" href="qr.html" target="_blank" rel="noopener">ป้ายสำหรับพิมพ์</a>
+    </div>
+  </section>
+
+  <!-- โหมดเต็มจอ สำหรับตั้งไว้ที่โต๊ะต้อนรับ -->
+  <div class="qr-full" id="qrFullView" hidden>
+    <p class="qr-full__couple" id="qrFullCouple">—</p>
+    <div class="qr-full__code" id="qrFullCode"></div>
+    <p class="qr-full__hint">ส่องกล้องมือถือที่ QR เพื่อเช็คอิน</p>
+    <button class="btn" type="button" id="qrFullClose">ปิด</button>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </main>
 
@@ -162,6 +208,7 @@
 <script src="assets/js/firebase.js"></script>
 <script src="assets/js/supabase.js"></script>
 <script src="assets/js/backend.js"></script>
+<script src="assets/js/qrcode.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>
 </html>

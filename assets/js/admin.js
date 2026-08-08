@@ -102,7 +102,9 @@
     login.hidden = true;
     dash.hidden = false;
     var session = window.BACKEND.session();
-    $('#dashUser').textContent = (session && session.email) || '';
+    var email = (session && session.email) || '';
+    $('#dashUser').textContent = email;
+    $('#navUser').textContent = email;
     loadAll();
   }
 
@@ -119,6 +121,7 @@
       $('#viewRsvp').hidden = view !== 'rsvp';
       $('#viewCheckin').hidden = view !== 'checkin';
       $('#viewWish').hidden = view !== 'wish';
+      $('#viewQr').hidden = view !== 'qr';
     });
   });
 
@@ -421,6 +424,122 @@
     link.click();
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   });
+
+
+
+  /* ---------- เมนูด้านข้าง ---------- */
+  function initSideNav() {
+    var nav = $('#sideNav');
+    var veil = $('#navVeil');
+    var openBtn = $('#navOpen');
+    if (!nav || !veil || !openBtn) return;
+
+    function open() {
+      nav.hidden = false;
+      veil.hidden = false;
+      // ต้องให้เบราว์เซอร์คำนวณตำแหน่งตั้งต้นก่อนค่อยใส่คลาส ไม่งั้นสไลด์ไม่ทำงาน
+      // ใช้บังคับ reflow แทน requestAnimationFrame เพราะ rAF ไม่ยิงตอนแท็บถูกพักไว้
+      void nav.offsetWidth;
+      nav.classList.add('is-open');
+      veil.classList.add('is-open');
+      openBtn.setAttribute('aria-expanded', 'true');
+      $('#navClose').focus();
+    }
+
+    function close() {
+      nav.classList.remove('is-open');
+      veil.classList.remove('is-open');
+      openBtn.setAttribute('aria-expanded', 'false');
+      setTimeout(function () {
+        nav.hidden = true;
+        veil.hidden = true;
+      }, 260);
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener('click', open);
+    $('#navClose').addEventListener('click', close);
+    veil.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !nav.hidden) close();
+    });
+
+    // กดเมนูอะไรก็ตามแล้วปิดเอง จะได้เห็นผลที่เกิดขึ้นข้างหลังทันที
+    $$('.side-nav__item').forEach(function (item) {
+      item.addEventListener('click', function () { setTimeout(close, 120); });
+    });
+  }
+
+  initSideNav();
+
+  /* ---------- QR ให้แขกสแกนเข้าหน้าเช็คอิน ---------- */
+  function initQr() {
+    var box = $('#qrCode');
+    var input = $('#qrUrl');
+    if (!box || !input || !window.QRCode) return;
+
+    var couple = (window.WEDDING_CONFIG && window.WEDDING_CONFIG.couple) || {};
+    var names = [(couple.groom || {}).th, (couple.bride || {}).th].filter(Boolean).join(' & ');
+    $('#qrCouple').textContent = names;
+    $('#qrFullCouple').textContent = names;
+
+    // ลิงก์เริ่มต้นชี้ไปหน้าเช็คอินของโดเมนเดียวกับที่เปิดหน้านี้อยู่
+    // Firebase Hosting เปิด cleanUrls ไว้ ถ้าหน้านี้เปิดมาแบบไม่มี .html ก็ใช้ /checkin
+    // ให้ตรงกัน จะได้ไม่ต้องเสียจังหวะ redirect ตอนแขกสแกน
+    var clean = !/\.html?$/i.test(location.pathname);
+    input.value = new URL(clean ? 'checkin' : 'checkin.html', location.href).href;
+
+    function paint() {
+      var value = input.value.trim();
+      if (!value) { box.textContent = ''; return; }
+      try {
+        box.innerHTML = window.QRCode.toSvg(value, { scale: 8, margin: 1, dark: '#4a3126', light: '#ffffff' });
+        $('#qrFullCode').innerHTML = window.QRCode.toSvg(value, { scale: 12, margin: 1, dark: '#4a3126', light: '#ffffff' });
+        $('#qrPrint').href = 'qr.html';
+      } catch (e) {
+        box.textContent = 'สร้าง QR ไม่สำเร็จ: ' + e.message;
+      }
+    }
+
+    paint();
+    input.addEventListener('input', paint);
+
+    $('#qrCopy').addEventListener('click', function () {
+      var text = input.value.trim();
+      var done = function () { toast('คัดลอกลิงก์แล้ว'); };
+      var fail = function () { toast('คัดลอกไม่สำเร็จ'); };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(done, fail);
+        return;
+      }
+      // http ธรรมดาใช้ clipboard API ไม่ได้ ต้องถอยไปวิธีเดิม
+      var tmp = document.createElement('textarea');
+      tmp.value = text;
+      tmp.style.position = 'fixed';
+      tmp.style.opacity = '0';
+      document.body.appendChild(tmp);
+      tmp.select();
+      try { document.execCommand('copy') ? done() : fail(); }
+      catch (e) { fail(); }
+      finally { tmp.remove(); }
+    });
+
+    var full = $('#qrFullView');
+    $('#qrFull').addEventListener('click', function () {
+      full.hidden = false;
+      // กันจอดับระหว่างตั้งโชว์ที่โต๊ะต้อนรับ ถ้าเบราว์เซอร์รองรับ
+      if (navigator.wakeLock && navigator.wakeLock.request) {
+        navigator.wakeLock.request('screen').then(function (lock) { full._lock = lock; },
+                                                  function () { /* ไม่ได้ก็ไม่เป็นไร */ });
+      }
+    });
+    $('#qrFullClose').addEventListener('click', function () {
+      full.hidden = true;
+      if (full._lock) { full._lock.release(); full._lock = null; }
+    });
+  }
+
+  initQr();
 
   /* ---------- เริ่มทำงาน ---------- */
   if (window.BACKEND.session()) showDash();
