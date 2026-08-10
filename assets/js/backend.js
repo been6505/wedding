@@ -108,6 +108,14 @@ window.BACKEND = (function () {
     deleteCheckin: via('deleteCheckin'),
     deleteWish: via('deleteWish'),
 
+    // สถานที่จัดงาน เก็บในฐานข้อมูล เจ้าภาพแก้ทีหลังได้จากหน้า /admin
+    // อ่านล้มเหลว/ยังไม่ตั้งค่า = คืน null การ์ดจะโชว์ "เร็วๆ นี้" แทน
+    getVenue: function () {
+      if (db && db.configured() && typeof db.getVenue === 'function') return db.getVenue();
+      return Promise.resolve(null);
+    },
+    saveVenue: via('saveVenue'),
+
     // kind คือ 'photo' หรือ 'video'
     uploadMedia: function (blob, kind) {
       if (!media) return guard();

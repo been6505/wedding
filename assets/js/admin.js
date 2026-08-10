@@ -122,7 +122,60 @@
       $('#viewCheckin').hidden = view !== 'checkin';
       $('#viewWish').hidden = view !== 'wish';
       $('#viewQr').hidden = view !== 'qr';
+      $('#viewVenue').hidden = view !== 'venue';
+      if (view === 'venue') loadVenue();
     });
+  });
+
+  /* ---------- แก้ไขสถานที่จัดงาน ---------- */
+  var venueLoaded = false;
+
+  function loadVenue() {
+    if (venueLoaded) return;   // โหลดครั้งเดียวพอ กันเขียนทับสิ่งที่พิมพ์ค้างไว้
+    window.BACKEND.getVenue().then(function (doc) {
+      venueLoaded = true;
+      if (!doc) return;
+      $('#venueNameInput').value = doc.name || '';
+      $('#venueAddressInput').value = doc.address || '';
+      $('#venueMapInput').value = doc.map_url || '';
+    }, function (err) {
+      if (!handleAuthError(err)) showVenueError('โหลดสถานที่ไม่สำเร็จ: ' + err.message);
+    });
+  }
+
+  function showVenueError(msg) {
+    var box = $('#venueError');
+    if (!box) return;
+    box.textContent = msg; box.hidden = false;
+  }
+
+  function submitVenue(data, okText) {
+    $('#venueError').hidden = true;
+    var btn = $('#venueSave');
+    btn.disabled = true;
+    window.BACKEND.saveVenue(data).then(function () {
+      btn.disabled = false;
+      toast(okText);
+    }, function (err) {
+      btn.disabled = false;
+      if (!handleAuthError(err)) showVenueError('บันทึกไม่สำเร็จ: ' + err.message);
+    });
+  }
+
+  $('#venueForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    submitVenue({
+      name: $('#venueNameInput').value.trim(),
+      address: $('#venueAddressInput').value.trim(),
+      mapUrl: $('#venueMapInput').value.trim(),
+    }, 'บันทึกสถานที่แล้ว');
+  });
+
+  $('#venueClear').addEventListener('click', function () {
+    $('#venueNameInput').value = '';
+    $('#venueAddressInput').value = '';
+    $('#venueMapInput').value = '';
+    submitVenue({ name: '', address: '', mapUrl: '' }, 'ล้างสถานที่แล้ว การ์ดจะโชว์ “เร็วๆ นี้”');
   });
 
   /* ---------- โหลดข้อมูล ---------- */

@@ -90,6 +90,22 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    // ---------- ตั้งค่างาน (สถานที่ ฯลฯ) ----------
+    // อ่านได้ทุกคน เพราะการ์ดหน้าแรกต้องเอาไปแสดง
+    // เขียนได้เฉพาะเจ้าภาพ ผ่านหน้า /admin
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isHost()
+                   && request.resource.data.keys().hasOnly(['name', 'address', 'map_url', 'updated_at'])
+                   && request.resource.data.name is string
+                   && request.resource.data.name.size() <= 200
+                   && request.resource.data.address is string
+                   && request.resource.data.address.size() <= 600
+                   && request.resource.data.map_url is string
+                   && request.resource.data.map_url.size() <= 600
+                   && freshTimestamp(request.resource.data.updated_at);
+    }
+
     // ---------- ที่เหลือปิดหมด ----------
     match /{document=**} {
       allow read, write: if false;

@@ -83,6 +83,10 @@ body {
 }
 .field__input:focus { outline: none; border-color: var(--gold); }
 .field__input::placeholder { color: rgba(74, 49, 38, .35); }
+textarea.field__input { resize: vertical; min-height: 3.2rem; line-height: 1.5; }
+
+.venue-form { display: flex; flex-direction: column; gap: 1.1rem; max-width: 460px; }
+.venue-form .qr__actions { margin-top: .2rem; }
 
 /* ---------- หน้าเข้าสู่ระบบ / แจ้งเตือน ---------- */
 .gate {

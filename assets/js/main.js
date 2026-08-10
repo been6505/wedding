@@ -192,45 +192,73 @@
   }
 
   /* ---------- 4. สถานที่ + ปุ่ม ---------- */
-  function initVenue() {
-    var venue = cfg.venue || {};
+  // สถานที่มาจากฐานข้อมูล (settings/venue) เจ้าภาพกรอกทีหลังได้จากหน้า /admin
+  // ยังไม่ได้กรอก = โชว์ "เร็วๆ นี้" ซ่อนที่อยู่/แผนที่/ปุ่มไว้ก่อน
+  var COMING_SOON = 'เร็วๆ นี้';
 
+  function paintVenue(venue) {
+    var nameEl = $('#venueName') || document.querySelector('[data-bind="venue.name"]');
     var address = $('#venueAddress');
-    if (address) (venue.addressLines || []).forEach(function (line) {
-      address.appendChild(el('p', null, line));
-    });
-
     var mapLink = $('#mapLink');
+    var calLink = $('#calendarLink');
+    var box = $('#venueMap');
+
+    var hasVenue = !!(venue && venue.name);
+
+    if (nameEl) nameEl.textContent = hasVenue ? venue.name : COMING_SOON;
+    if (nameEl) nameEl.classList.toggle('venue__name--soon', !hasVenue);
+
+    if (address) {
+      address.textContent = '';
+      if (hasVenue) {
+        String(venue.address || '').split('\n').forEach(function (line) {
+          if (line.trim()) address.appendChild(el('p', null, line.trim()));
+        });
+      }
+    }
+
     if (mapLink) {
-      if (venue.mapUrl) mapLink.href = venue.mapUrl;
+      if (hasVenue && venue.mapUrl) { mapLink.href = venue.mapUrl; mapLink.hidden = false; }
       else mapLink.hidden = true;
     }
 
-    var box = $('#venueMap');
-    if (box && venue.mapEmbedUrl) {
-      var frame = document.createElement('iframe');
-      frame.src = venue.mapEmbedUrl;
-      frame.loading = 'lazy';
-      frame.referrerPolicy = 'no-referrer-when-downgrade';
-      frame.allowFullscreen = true;
-      frame.title = 'แผนที่' + (venue.name ? ' ' + venue.name : '');
-      box.appendChild(frame);
+    if (box) {
+      box.textContent = '';
+      if (hasVenue && venue.mapEmbedUrl) {
+        var frame = document.createElement('iframe');
+        frame.src = venue.mapEmbedUrl;
+        frame.loading = 'lazy';
+        frame.referrerPolicy = 'no-referrer-when-downgrade';
+        frame.allowFullscreen = true;
+        frame.title = 'แผนที่ ' + venue.name;
+        box.appendChild(frame);
+      }
     }
 
-    var calLink = $('#calendarLink');
     var start = new Date(cfg.startsAt);
-    if (calLink && !isNaN(start)) {
+    if (calLink && hasVenue && !isNaN(start)) {
       var end = cfg.endsAt ? new Date(cfg.endsAt) : new Date(start.getTime() + 5 * 3600 * 1000);
       var stamp = function (d) { return d.toISOString().replace(/[-:]|\.\d{3}/g, ''); };
       var title = 'วะลีมะฮฺ ' + (get('couple.groom.th') || '') + ' & ' + (get('couple.bride.th') || '');
+      var loc = [venue.name].concat(String(venue.address || '').split('\n')).filter(function (s) { return s && s.trim(); });
       calLink.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
         + '&text=' + encodeURIComponent(title.trim())
         + '&dates=' + stamp(start) + '/' + stamp(end)
         + '&details=' + encodeURIComponent([venue.name, venue.mapUrl].filter(Boolean).join('\n'))
-        + '&location=' + encodeURIComponent([venue.name].concat(venue.addressLines || []).filter(Boolean).join(' '));
+        + '&location=' + encodeURIComponent(loc.join(' '));
+      calLink.hidden = false;
     } else if (calLink) {
       calLink.hidden = true;
     }
+  }
+
+  function initVenue() {
+    paintVenue(null);   // ตั้งต้นเป็น "เร็วๆ นี้" ก่อน แล้วค่อยอัปเดตเมื่อโหลดเสร็จ
+    if (!window.BACKEND || !window.BACKEND.getVenue) return;
+    window.BACKEND.getVenue().then(function (doc) {
+      if (!doc || !doc.name) return;
+      paintVenue({ name: doc.name, address: doc.address || '', mapUrl: doc.map_url || '' });
+    }, function () { /* โหลดไม่ได้ก็คงไว้ที่ "เร็วๆ นี้" */ });
   }
 
   /* ---------- 5. นับถอยหลัง ---------- */

@@ -509,6 +509,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.5;
   color: var(--cream);
 }
+.venue__name--soon { color: var(--gold); letter-spacing: .02em; }
 .venue__address p {
   margin: 0;
   font-size: .98rem;

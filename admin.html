@@ -85,6 +85,7 @@
     <button class="view-tab" type="button" data-view="checkin" role="tab" aria-selected="false">เช็คอินหน้างาน</button>
     <button class="view-tab" type="button" data-view="wish" role="tab" aria-selected="false">คำอวยพร</button>
     <button class="view-tab" type="button" data-view="qr" role="tab" aria-selected="false">QR หน้างาน</button>
+    <button class="view-tab" type="button" data-view="venue" role="tab" aria-selected="false">สถานที่</button>
   </nav>
 
   <!-- ตอบรับคำเชิญ -->
@@ -195,6 +196,34 @@
       <button class="btn" type="button" id="qrCopy">คัดลอกลิงก์</button>
       <a class="btn" id="qrPrint" href="qr.html" target="_blank" rel="noopener">ป้ายสำหรับพิมพ์</a>
     </div>
+  </section>
+
+  <!-- ---------- แก้ไขสถานที่จัดงาน ---------- -->
+  <section class="view" id="viewVenue" hidden>
+    <p class="qr__lead">กรอกสถานที่แล้วบันทึก การ์ดหน้าแรกจะแสดงให้แขกทันที<br>ปล่อยว่างไว้ = การ์ดจะโชว์ว่า “เร็วๆ นี้”</p>
+
+    <form class="venue-form" id="venueForm">
+      <label class="field">
+        <span class="field__label">ชื่อสถานที่</span>
+        <input class="field__input" id="venueNameInput" type="text" maxlength="200" placeholder="เช่น มัสยิดฮี่ดายาตุสซาลี่กีน">
+      </label>
+
+      <label class="field">
+        <span class="field__label">ที่อยู่ (ขึ้นบรรทัดใหม่ได้)</span>
+        <textarea class="field__input" id="venueAddressInput" rows="3" maxlength="600" placeholder="9 ซอยสุขุมวิท-พัทยา 26 เมืองพัทยา&#10;อำเภอบางละมุง จังหวัดชลบุรี 20150"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field__label">ลิงก์ Google Maps (ไม่ใส่ก็ได้)</span>
+        <input class="field__input" id="venueMapInput" type="url" spellcheck="false" placeholder="https://maps.google.com/...">
+      </label>
+
+      <div class="qr__actions">
+        <button class="btn btn--solid" type="submit" id="venueSave">บันทึกสถานที่</button>
+        <button class="btn" type="button" id="venueClear">ล้างเป็น “เร็วๆ นี้”</button>
+      </div>
+      <p class="gate__error" id="venueError" hidden></p>
+    </form>
   </section>
 
   <!-- โหมดเต็มจอ สำหรับตั้งไว้ที่โต๊ะต้อนรับ -->

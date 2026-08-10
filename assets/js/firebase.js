@@ -181,6 +181,30 @@ window.BACKEND_FIREBASE = (function () {
                   '?key=' + encodeURIComponent(apiKey), { method: 'DELETE' });
   }
 
+  /* ---------- ตั้งค่าสถานที่ (เอกสารเดียว settings/venue) ---------- */
+  // อ่านแบบไม่ต้องล็อกอิน การ์ดหน้าแรกเรียกใช้ได้เลย
+  function getVenue() {
+    if (!configured()) return Promise.resolve(null);
+    return call(docsUrl + '/settings/venue?key=' + encodeURIComponent(apiKey))
+      .then(function (doc) { return doc && doc.fields ? fromFields(doc.fields) : null; })
+      .catch(function (err) { if (err.status === 404) return null; throw err; });
+  }
+
+  // เขียนทับทั้งเอกสาร ใช้เฉพาะเจ้าภาพที่ล็อกอินแล้ว
+  function saveVenue(data) {
+    return authed(docsUrl + '/settings/venue?key=' + encodeURIComponent(apiKey), {
+      method: 'PATCH',
+      body: {
+        fields: toFields({
+          name: String(data.name || ''),
+          address: String(data.address || ''),
+          map_url: String(data.mapUrl || ''),
+          updated_at: now(),
+        }),
+      },
+    });
+  }
+
   /* ---------- ล็อกอินเจ้าภาพ ---------- */
   function signIn(email, password) {
     if (!configured()) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Firebase'));
@@ -346,5 +370,8 @@ window.BACKEND_FIREBASE = (function () {
     deleteRsvp: function (id) { return deleteDoc('rsvps', id); },
     deleteCheckin: function (id) { return deleteDoc('checkins', id); },
     deleteWish: function (id) { return deleteDoc('wishes', id); },
+
+    getVenue: getVenue,
+    saveVenue: saveVenue,
   };
 })();
